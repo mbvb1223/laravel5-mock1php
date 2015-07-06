@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Contracts\Auth\Guard;
+use libraries\Authen;
 
 class Authenticate
 {
@@ -17,7 +18,7 @@ class Authenticate
     /**
      * Create a new filter instance.
      *
-     * @param  Guard  $auth
+     * @param  Guard $auth
      * @return void
      */
     public function __construct(Guard $auth)
@@ -28,13 +29,22 @@ class Authenticate
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param  \Illuminate\Http\Request $request
+     * @param  \Closure $next
      * @return mixed
      */
     public function handle($request, Closure $next)
     {
+//        if(Authen::checkLogin() == false) {
+//            return redirect('auth/login');
+//        }
+//        if(Authen::checkPermission() == false) {
+//            return view('errors.access_deny');
+//        }
+//        return $next($request);
+//    }
         if ($this->auth->guest()) {
+
             if ($request->ajax()) {
                 return response('Unauthorized.', 401);
             } else {
@@ -42,6 +52,9 @@ class Authenticate
             }
         }
 
+        if (Authen::checkPermission() == false) {
+            return view('errors.disable');
+        }
         return $next($request);
     }
 }

@@ -16,7 +16,7 @@ class RolesController extends Controller
 
     public function __construct()
     {
-        $title = 'Dashboard - Role';
+        $title = 'Dashboard - Roles';
         $class_name= substr(__CLASS__,21);
         $action_name=substr(strrchr(Route::currentRouteAction(),"@"),1);
         View::share(array(

@@ -19,7 +19,7 @@ class UsersController extends Controller
 
     public function __construct()
     {
-        $title = 'My Title Here';
+        $title = 'Dashboard - Users';
         $class_name = substr(__CLASS__, 21);
         $action_name = substr(strrchr(Route::currentRouteAction(), "@"), 1);
         View::share(array(
@@ -101,7 +101,6 @@ class UsersController extends Controller
     public function store(UserRequest $request)
     {
         $allRequest = $request->all();
-
 
         $model = new Users();
         $avatar = Input::file('avatar');

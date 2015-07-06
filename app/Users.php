@@ -59,5 +59,12 @@ class Users extends Model {
     }
 
 
+    /**
+     * Log the given user ID into the application.
+     *
+     * @param  mixed  $id
+     * @param  bool   $remember
+     * @return \Illuminate\Contracts\Auth\Authenticatable
+     */
 }
 

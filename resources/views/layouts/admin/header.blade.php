@@ -1,12 +1,12 @@
 <?php $user = Auth::user();
-// adump($user);
+ //adump($user);
 ?>
 <div class="page-header navbar navbar-fixed-top">
 <!-- BEGIN HEADER INNER -->
 <div class="page-header-inner">
 <!-- BEGIN LOGO -->
 <div class="page-logo">
-    <a href="index.html">
+    <a href="home">
         <img src="<?php echo url("/"); ?>/../theme/assets/admin/layout/img/logo.png" alt="logo" class="logo-default"/>
     </a>
     <div class="menu-toggler sidebar-toggler hide">
@@ -46,6 +46,10 @@
         <li>
             <a href="extra_profile.html">
                 <i class="icon-user"></i> My Profile </a>
+        </li>
+        <li>
+            <a href="../auth/logout">
+                <i class="icon-logout"></i> Logout </a>
         </li>
 <!--        <li>-->
 <!--            <a href="page_calendar.html">-->

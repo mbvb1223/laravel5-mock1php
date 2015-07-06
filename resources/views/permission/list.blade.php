@@ -15,7 +15,7 @@
             <div class="portlet">
                 <div class="portlet-title">
                     <div class="caption">
-                        <i class="fa fa-shopping-cart"></i><?php echo Lang::get('messages.list_users'); ?>
+                        <i class="fa fa-shopping-cart"></i><?php echo Lang::get('messages.list_permission'); ?>
                     </div>
                     <div class="actions">
                         <button class="btn green" type="submit">
@@ -45,18 +45,18 @@
                                                value="<?php echo $role['id']; ?>|<?php echo $route; ?>"/>
                                         </td>
                                    <?php else : ?>
-                                       <?php if (in_array($valueInInput, $routesInTablePermission)): ?>
+                                       <?php if (in_array($valueInInput,$routesInTablePermission)): ?>
                                             <td>
                                                 <input type="checkbox" name="data[]"
                                                        value="<?php echo $role['id']; ?>|<?php echo $route; ?>"
                                                        checked="checked"/>
                                             </td>
-                                        <?php else : ?>
+                                       <?php else : ?>
                                             <td>
                                                 <input type="checkbox" name="data[]"
                                                        value="<?php echo $role['id']; ?>|<?php echo $route; ?>"/>
                                             </td>
-                                        <?php endif; ?>
+                                       <?php  endif; ?>
                                    <?php endif; ?>
                                 <?php endforeach; ?>
                             </tr>

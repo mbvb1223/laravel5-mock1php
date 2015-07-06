@@ -32,12 +32,14 @@ return [
      */
     'create_user' => 'Create User',
     'list_users' => 'List Users',
+    'login_user' => 'Login',
     'edit_user' => 'Edit User',
     'users_username' => 'Username',
     'users_password' => 'Password',
     'users_repassword' => 'Re-Password',
     'fail_password'=>'Password is not correct',
     'users_email' => 'Email',
+    'users_remeber' => 'Remember',
     'users_phone' => 'Phone',
     'users_avatar' => 'Avatar',
     'users_status' => 'Status',
@@ -64,4 +66,5 @@ return [
 
     'permission_routes' => 'Routes',
     'permission_update' => 'Update',
+    'list_permission' => 'List Permission',
 ];
