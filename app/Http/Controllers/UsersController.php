@@ -8,10 +8,14 @@ use App\Http\Requests\UserEditRequest;
 use Illuminate\Http\Request;
 use App\Users;
 use App\Roles;
+use libraries\UploadImage;
+use libraries\Authen;
 use Lang;
 use View;
 use Route;
 use Input;
+use Mail;
+
 
 class UsersController extends Controller
 {
@@ -103,17 +107,29 @@ class UsersController extends Controller
         $allRequest = $request->all();
 
         $model = new Users();
-        $avatar = Input::file('avatar');
+        //upload avatar
+        $fileName = UploadImage::uploadImage('avatar');
 
-        if (Input::file('avatar')->isValid()) {
-            $destinationPath = "upload/images";
-            $fileName = change_alias($avatar->getClientOriginalName()) . time() . "." . $avatar->getClientOriginalExtension();
-            Input::file('avatar')->move($destinationPath, $fileName);
-        }
-        $allRequest = $request->all();
+        //Set attribute -> save()
         $allRequest['avatar'] = $fileName;
+        $allRequest['keyactive'] = md5(time());
+        $allRequest['remember_token'] = hash('sha256',time().$fileName);
+        $allRequest['password'] = bcrypt($allRequest['password']);
         autoAssignDataToProperty($model, $allRequest);
         $model->save();
+
+        if($allRequest['status']==Users::INACTIVE){
+            //Sent mail to this user for active account
+            $userInfo = $model->toArray();
+            Mail::send('mail.welcome', ['userInfo' => $userInfo], function($message) use ($userInfo)
+            {
+                $message->subject("Welcome to khienpc");
+                $message->to($userInfo['email']);
+            });
+
+        }
+
+        //redirect page
         return redirect()->action('UsersController@index')->withSuccess(Lang::get('messages.create_success'));
     }
 
@@ -158,6 +174,23 @@ class UsersController extends Controller
     {
         Users::find($id)->delete();
         return redirect_success('UsersController@index', Lang::get('messages.delete_success'));
+    }
+
+    public function active($id, $key)
+    {
+
+
+        $checkUser = Users::where(array('id'=>$id,
+                           'keyactive'=>$key))->count();
+
+        if($checkUser!=0){
+            $model = Users::find($id);
+            $model->status = Users::ACTIVE;
+            $model->save();
+            Authen::setUser($model);
+
+        }
+        return redirect('auth/login')->withSuccess(Lang::get('messages.active_successful'));
     }
 
 }

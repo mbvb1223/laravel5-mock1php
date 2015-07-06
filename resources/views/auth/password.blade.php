@@ -1,6 +1,6 @@
 @extends('auth.layouts.master')
 @section('content')
-
+<div class="content">
 <div class="row">
     <div class="col-md-12">
         <form class="form-horizontal form-row-seperated" action="{{ url('/auth/login') }}"
@@ -41,7 +41,7 @@
                 </div>
         </form>
     </div>
-
+</div>
 </div>
 @stop
 

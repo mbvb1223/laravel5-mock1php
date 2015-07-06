@@ -25,7 +25,7 @@ class UserEditRequest extends Request {
     public function rules()
     {
         return [
-            'username'=>'required',
+            'username'=>'required|unique:users',
             'password'=>'',
             'repassword'=>'same:password',
             'email'=>'required',

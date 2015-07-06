@@ -48,10 +48,10 @@ License: You must have a valid license purchased only from themeforest(the above
 
 <body class="login">
 @include("auth.layouts.header")
-@include('layouts.admin.notification')
-<div class="content">
+@include('auth.layouts.notification')
+
 @yield('content', 'chưa tạo vùng content')
-</div>
+
 <script src=" <?php echo url('/'); ?>/../theme/assets/global/plugins/respond.min.js"></script>
 <script src=" <?php echo url('/'); ?>/../theme/assets/global/plugins/excanvas.min.js"></script>
 <![endif]-->

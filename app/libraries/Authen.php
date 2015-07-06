@@ -2,6 +2,7 @@
 namespace libraries;
 use App\Roles;
 use App\Permission;
+use App\Users;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Route;
 
@@ -13,19 +14,27 @@ class Authen
             'username' =>$data['username'],
             'email' => $data['email'],
             'avatar' => $data['avatar'],
+            'status' =>$data['status'],
             'role_id' => $data['role_id'],
-
         ];
 
 
         Session::put('user', $user);
     }
 
-    public static function checkLogin() {
-        if(Session::get('user')) {
-            return true;
+    public static function checkLoginToBackEnd() {
+        //check role == member
+        if(Session::get('user')['role_id'] == Users::MEMBER) {
+            return false;
         }
-        return false;
+        return true;
+    }
+    public static function checkStatus() {
+        //check role == member
+        if(Session::get('user')['status'] == Users::INACTIVE) {
+            return false;
+        }
+        return true;
     }
 
     public static function getUser() {

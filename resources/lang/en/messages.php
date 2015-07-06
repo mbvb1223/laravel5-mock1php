@@ -67,4 +67,12 @@ return [
     'permission_routes' => 'Routes',
     'permission_update' => 'Update',
     'list_permission' => 'List Permission',
+
+    /**
+     * For authentication
+     */
+    'do_not_permission' => 'You can not go to backend',
+    'no_active'=>'This account need to active, please check your email for this action',
+    'active_successful'=> 'This account is active',
+    'warning' => 'Warning'
 ];

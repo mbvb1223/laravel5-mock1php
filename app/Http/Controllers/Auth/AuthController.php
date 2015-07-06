@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Mail;
 
 class AuthController extends Controller
 {
@@ -48,7 +49,7 @@ class AuthController extends Controller
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'username' => 'required|max:255',
+            'username' => 'required|max:255|unique:users',
             'email' => 'required|email|max:255|unique:users',
             'password' => 'required|min:6',
         ]);
@@ -67,8 +68,9 @@ class AuthController extends Controller
             'email' => $data['email'],
             'phone' => $data['phone'],
             'avatar' => $data['avatar'],
-            'status' => $data['status'],
-            'role_id' => $data['role_id'],
+            'status' => Users::INACTIVE,
+            'role_id' => Users::MEMBER,
+            'keyactive'=>md5(time()),
             'password' => bcrypt($data['password']),
         ]);
     }
@@ -84,6 +86,19 @@ class AuthController extends Controller
         }
         $this->create($request->all());
 
+        $inputUsername = $this->getCredentials($request)['username'];
+        //Get info User, this User have just registry
+        $user = new Users();
+        $userInfo = $user->where('username', $inputUsername)->first()->toArray();
+
+        //Sent mail to this user for active account
+        Mail::send('mail.welcome', ['userInfo' => $userInfo], function($message) use ($userInfo)
+        {
+            $message->subject("Welcome to khienpc");
+            $message->to($userInfo['email']);
+        });
+
+        Authen::setUser($userInfo);
         //Authen::setUser($request->all());
         //Auth::login($this->create($request->all()),$remember = false);
         Auth::attempt($this->getCredentials($request), $remember = true);
@@ -105,8 +120,10 @@ class AuthController extends Controller
             return $this->sendLockoutResponse($request);
         }
 
+
         if (Auth::attempt($this->getCredentials($request), $request->has('remember'))) {
             // Get info this userLogin
+
             $inputUsername = $this->getCredentials($request)['username'];
             $user = new Users();
             $userInfo = $user->where('username', $inputUsername)->first();

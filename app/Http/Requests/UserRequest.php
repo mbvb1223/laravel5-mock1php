@@ -25,10 +25,10 @@ class UserRequest extends Request {
     public function rules()
     {
         return [
-            'username'=>'required',
+            'username'=>'required|unique:users',
             'password'=>'required',
             'repassword'=>'required|same:password',
-            'email'=>'required',
+            'email'=>'required|unique:users',
             'phone'=>'required',
             'avatar'=>'required|mimes:jpeg,bmp,png,jpg|max:55000',
             'status'=>'required',

@@ -5,7 +5,8 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Contracts\Auth\Guard;
 use libraries\Authen;
-
+use Lang;
+use View;
 class Authenticate
 {
     /**
@@ -35,14 +36,7 @@ class Authenticate
      */
     public function handle($request, Closure $next)
     {
-//        if(Authen::checkLogin() == false) {
-//            return redirect('auth/login');
-//        }
-//        if(Authen::checkPermission() == false) {
-//            return view('errors.access_deny');
-//        }
-//        return $next($request);
-//    }
+
         if ($this->auth->guest()) {
 
             if ($request->ajax()) {
@@ -51,7 +45,12 @@ class Authenticate
                 return redirect()->guest('auth/login');
             }
         }
-
+        if(Authen::checkStatus()==false){
+            return redirect()->action('TestController@index')->withErrors(Lang::get('messages.no_active'));
+        }
+        if(Authen::checkLoginToBackEnd() == false){
+            return redirect()->action('TestController@index')->withErrors(Lang::get('messages.do_not_permission'));
+        }
         if (Authen::checkPermission() == false) {
             return view('errors.disable');
         }

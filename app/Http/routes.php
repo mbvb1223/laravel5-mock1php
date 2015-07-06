@@ -56,3 +56,7 @@ Route::controllers([
     'auth' => 'Auth\AuthController',
     'password' => 'Auth\PasswordController',
 ]);
+
+Route::get('front-end','TestController@index');
+//Route::get('auth/notification','NotificationController@index');
+Route::get('user/active/{id}/{key}','UsersController@active');

@@ -7,10 +7,13 @@ use DB;
 class Users extends Model {
     protected $guarded = ['id'];
     protected $table = 'users';
-    public $properties = array('id','username','password','email','phone','avatar','status','role_id','remember_token','created_at','updated_at');
+    public $properties = array('id','username','password','email','phone','avatar','status','role_id','keyactive','remember_token','created_at','updated_at');
     public $timestamps = true;
     const ACTIVE = 1;
     const INACTIVE = 0;
+    const ADMIN =1;
+    const MOD = 2;
+    const MEMBER =3;
 
     /**
      * getData for pagination using ajax bootgrid
