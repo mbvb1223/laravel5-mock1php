@@ -40,7 +40,7 @@
             </div>
         </div>
     </div>
-
+</div>
     @stop
     @section('js')
 

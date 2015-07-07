@@ -48,7 +48,7 @@
                 <i class="icon-user"></i> My Profile </a>
         </li>
         <li>
-            <a href="../auth/logout">
+            <a href="{{ url('auth/logout') }}">
                 <i class="icon-logout"></i> Logout </a>
         </li>
 <!--        <li>-->

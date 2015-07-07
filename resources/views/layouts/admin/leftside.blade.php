@@ -117,6 +117,26 @@
                 </ul>
             </li>
             <!--End Permission-->
+            <!--Category-->
+            <li <?php if ($class_name == "CategoryController") echo 'class="start active open"'; ?>>
+                <a href="javascript:;">
+                    <i class="icon-user"></i>
+                    <span class="title">Category</span>
+                    <span class="arrow "></span>
+                </a>
+                <ul class="sub-menu">
+                    <li <?php if ($action_name == "index") echo 'class="active"'; ?>>
+                        <a href="{{ URL::action('CategoryController@index') }}">
+                            List Category</a>
+                    </li>
+                    <li <?php if ($action_name == "create") echo 'class="active"'; ?>>
+                        <a href="{{ URL::action('CategoryController@create') }}">
+                            Create Category</a>
+                    </li>
+
+                </ul>
+            </li>
+            <!--End Category-->
 
             <li>
                 <a href="javascript:;">

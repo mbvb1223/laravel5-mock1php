@@ -10,6 +10,7 @@ use App\Users;
 use App\Roles;
 use libraries\UploadImage;
 use libraries\Authen;
+use Illuminate\Support\Facades\Auth;
 use Lang;
 use View;
 use Route;
@@ -124,6 +125,7 @@ class UsersController extends Controller
             Mail::send('mail.welcome', ['userInfo' => $userInfo], function($message) use ($userInfo)
             {
                 $message->subject("Welcome to khienpc");
+                $message->from('khienpc.sosc@gmail.com');
                 $message->to($userInfo['email']);
             });
 
@@ -178,8 +180,6 @@ class UsersController extends Controller
 
     public function active($id, $key)
     {
-
-
         $checkUser = Users::where(array('id'=>$id,
                            'keyactive'=>$key))->count();
 
@@ -190,6 +190,7 @@ class UsersController extends Controller
             Authen::setUser($model);
 
         }
+        Auth::logout();
         return redirect('auth/login')->withSuccess(Lang::get('messages.active_successful'));
     }
 

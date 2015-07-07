@@ -27,6 +27,7 @@ class AuthController extends Controller
     public $username = 'username';
     public $redirectPath = 'admin/home';
     public $loginPath = 'auth/login';
+    public $redirectTo = 'admin/users';
     use AuthenticatesAndRegistersUsers;
 
     /**
@@ -95,6 +96,7 @@ class AuthController extends Controller
         Mail::send('mail.welcome', ['userInfo' => $userInfo], function($message) use ($userInfo)
         {
             $message->subject("Welcome to khienpc");
+            $message->from('khienpc.sosc@gmail.com');
             $message->to($userInfo['email']);
         });
 

@@ -45,7 +45,13 @@ Route::group(['middleware'=>'auth'],function(){
     Route::get('admin/permission','PermissionController@index');
     Route::post('admin/permission/store','PermissionController@store');
 
-
+    /**
+     * Category CONTROLLERS
+     */
+    Route::get('admin/category','CategoryController@index');
+    Route::get('admin/category/getJsonData','CategoryController@getJsonData');
+    Route::post('admin/category','CategoryController@store');
+    Route::get('admin/category/create','CategoryController@create');
     Route::get('admin/home','HomeController@index');
     Route::get('home','HomeController@index');
 });
