@@ -11,7 +11,7 @@
 |
 */
 
-Route::get('/', function () {
+Route::get('/index', function () {
     return view('welcome');
 });
 
@@ -52,6 +52,12 @@ Route::group(['middleware'=>'auth'],function(){
     Route::get('admin/category/getJsonData','CategoryController@getJsonData');
     Route::post('admin/category','CategoryController@store');
     Route::get('admin/category/create','CategoryController@create');
+
+    Route::post('admin/category/update','CategoryController@update');
+    Route::post('admin/category/delete','CategoryController@delete');
+
+
+
     Route::get('admin/home','HomeController@index');
     Route::get('home','HomeController@index');
 });
@@ -66,3 +72,11 @@ Route::controllers([
 Route::get('front-end','TestController@index');
 //Route::get('auth/notification','NotificationController@index');
 Route::get('user/active/{id}/{key}','UsersController@active');
+
+
+
+/**
+ * Front-End
+ */
+
+Route::get('/','FrontendController@index');

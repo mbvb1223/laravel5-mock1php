@@ -55,7 +55,6 @@ return [
     'create_role' => 'Create Role',
     'list_roles' => 'List Roles',
     'roles_rolename' => 'Role Name',
-    'list_roles' => 'List Roles',
     'roles_remember_token' => 'remember_token',
     'roles_created_at' => 'Creat at',
     'roles_updated_at' => 'Update at',
@@ -74,5 +73,15 @@ return [
     'do_not_permission' => 'You can not go to backend',
     'no_active'=>'This account need to active, please check your email for this action',
     'active_successful'=> 'This account is active',
-    'warning' => 'Warning'
+    'warning' => 'Warning',
+
+    /**
+     * For Category
+     */
+    'category_parent' => 'Parent',
+    'category_name'=>'Category Name',
+    'list_category' => 'List Category',
+    'create_category'=>'Create Category',
+    'edit_category' =>'Edit Category',
+    'has_childrent' =>'You must delete childrent category',
 ];

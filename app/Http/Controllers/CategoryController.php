@@ -38,10 +38,11 @@ class CategoryController extends Controller
 
     public function index()
     {
-        $categories = Category::where('parent', '=', 0)->get();
+        $categories = Category::all()->toArray();
 
         return View::make('category.list', ['categories' => $categories]);
     }
+
     public function getJsonData()
     {
         $categories = Category::all();
@@ -50,29 +51,78 @@ class CategoryController extends Controller
 //         }
 //        dd($categories->toArray());
         //dd($categories->toArray());
-        foreach($categories as $category){
-            if($category['parent']==0){
-                $category['parent']="#";
+        foreach ($categories as $category) {
+            if ($category['parent'] == 0) {
+                $category['parent'] = "#";
             }
-            $newCategoryConvert[] = array('id'=>$category['id'],
-                                        'parent'=>$category['parent'],
-                                        'text'=>$category['name'],
+            $newCategoryConvert[] = array('id' => $category['id'],
+                'parent' => $category['parent'],
+                'text' => $category['category_name'],
             );
 
         }
 
         return $newCategoryConvert;
     }
+    public function create()
+    {
+        $categories = Category::all()->toArray();
+       // getAllCategory($categories);
+//        dd($categories);
+//        foreach($categories as $category){
+//
+//        }
+
+
+//        $categories = Category::where('parent',0)->get();
+//        foreach($categories as $category){
+//            $data[] = $category;
+//            foreach($data as $key){
+//
+//            }
+//           Category::where('parent',$category['id'])->get();
+//        }
+//        dd($categories->toArray());
+//        getAllCategory($data,$parent,$prefix);
+
+        return view('category.create')->with([
+            "categories" => $categories,
+
+        ]);
+
+    }
+    public function update(Request $request)
+    {
+        $allRequest = $request->all();
+        $model = Category::find($allRequest['id']);
+
+        autoAssignDataToProperty($model,$request->all());
+        $model->save();
+        return redirect()->action('CategoryController@index')->withSuccess(Lang::get('messages.update_success'));
+
+
+    }
+    public function delete(Request $request)
+    {
+        $allRequest = $request->all();
+        $model = Category::find($allRequest['id']);
+        if(Category::where('parent', $model->id)->count() !=0){
+            return redirect()->action('CategoryController@index')->withErrors(Lang::get('messages.has_childrent'));
+        }
+        $model->delete();
+        return redirect()->action('CategoryController@index')->withSuccess(Lang::get('messages.delete_success'));
+
+
+    }
 
     public function store(Request $request)
     {
-        $allRequest = $request->all();
-
-        $a =  json_decode($allRequest['data']);
-        dd($a);
-
-        }
-
+        $model=new Category();
+        autoAssignDataToProperty($model,$request->all());
+        $model->save();
+        return redirect()->action('CategoryController@index')
+            ->withSuccess(Lang::get('messages.create_success'));
+    }
 
 
 }
