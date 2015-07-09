@@ -55,7 +55,29 @@ Route::group(['middleware'=>'auth'],function(){
 
     Route::post('admin/category/update','CategoryController@update');
     Route::post('admin/category/delete','CategoryController@delete');
+    Route::get('admin/category/test','CategoryController@test');
 
+    /**
+     * Style CONTROLLERS
+     */
+    Route::any('admin/style/getDataAjax','StyleController@getDataAjax');
+    Route::get('admin/style','StyleController@index');
+    Route::get('admin/style/create','StyleController@create');
+    Route::post('admin/style','StyleController@store');
+    Route::get('admin/style/{id}/edit','StyleController@edit');
+    Route::put('admin/style/{id}','StyleController@update');
+    Route::get('admin/style/{id}/del','StyleController@destroy');
+
+    /**
+     * Madein CONTROLLERS
+     */
+    Route::any('admin/madein/getDataAjax','MadeinController@getDataAjax');
+    Route::get('admin/madein','MadeinController@index');
+    Route::get('admin/madein/create','MadeinController@create');
+    Route::post('admin/madein','MadeinController@store');
+    Route::get('admin/madein/{id}/edit','MadeinController@edit');
+    Route::put('admin/madein/{id}','MadeinController@update');
+    Route::get('admin/madein/{id}/del','MadeinController@destroy');
 
 
     Route::get('admin/home','HomeController@index');

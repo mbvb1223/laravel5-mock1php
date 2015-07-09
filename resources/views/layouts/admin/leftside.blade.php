@@ -62,6 +62,23 @@
                     </li>
                 </ul>
             </li>
+            <!--Product-->
+            <li <?php if ($class_name == "CategoryController") echo 'class="start active open"'; ?>>
+                <a href="javascript:;">
+                    <i class="icon-user"></i>
+                    <span class="title">Product - Shoes</span>
+                    <span class="arrow "></span>
+                </a>
+                <ul class="sub-menu">
+                    <li <?php if ($action_name == "index") echo 'class="active"'; ?>>
+                        <a href="{{ URL::action('StyleController@index') }}">
+                            List/Create Style</a>
+                    </li>
+
+
+                </ul>
+            </li>
+            <!--End Product-->
             <li <?php if ($class_name == "UsersController") echo 'class="start active open"'; ?>>
                 <a href="javascript:;">
                     <i class="icon-user"></i>

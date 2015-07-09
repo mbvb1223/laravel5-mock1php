@@ -1,5 +1,5 @@
 <?php
-namespace libraries;
+namespace App\libraries;
 use App\Roles;
 use App\Permission;
 use App\Users;

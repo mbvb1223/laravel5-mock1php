@@ -86,6 +86,12 @@
                                        onchange="loadFile(event)"/>
                             </div>
                         </div>
+                        <div class="form-group">
+                            <div class="col-sm-10 col-sm-offset-2">
+                                <div class="g-recaptcha" data-sitekey="6LcrigkTAAAAAABb8PmhEcXmF-mAH4DI9td5P4HY"></div>
+                            </div>
+                        </div>
+
 
                     </div>
                     <div class="porlet-body-right col-xs-12 col-md-6 col-md-offset-3">
@@ -98,6 +104,7 @@
 @stop
 
 @section('js')
+<script src='https://www.google.com/recaptcha/api.js'></script>
 
 <script>
     var loadFile = function (event) {

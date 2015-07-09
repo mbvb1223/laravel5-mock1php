@@ -4,38 +4,55 @@ use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
 use App\Roles;
 use App\Users;
-class DatabaseSeeder extends Seeder {
+
+class DatabaseSeeder extends Seeder
+{
 
     public function run()
     {
         $faker = Faker\Factory::create();
-        for ($i = 0; $i < 200; $i++)
-        {
+        Users::create([
+            "email" => $faker->email,
+            "password" => bcrypt('123456'),
+            "username" => 'phamkhien',
+            "phone" => $faker->phoneNumber,
+            "status" => 1,
+            "role_id" => 1,
+            "avatar" => '12121',
+            "remember_token" => 'asdasdas',
+        ]);
+        for ($i = 0; $i < 200; $i++) {
             Users::create([
                 "email" => $faker->email,
                 "password" => $faker->password,
                 "username" => $faker->userName,
                 "phone" => $faker->phoneNumber,
                 "status" => 0,
-                "role_id" => $faker->numberBetween(1,3),
+                "role_id" => $faker->numberBetween(1, 3),
                 "avatar" => '12121',
                 "remember_token" => 'asdasdas',
             ]);
 
         }
-        for ($i = 0; $i < 3; $i++)
-        {
-            Roles::create([
-                "rolename" => $faker->userName,
-            ]);
 
-        }
+
+        Roles::create([
+            "rolename" => "Administrator",
+        ]);
+        Roles::create([
+            "rolename" => "Moderator",
+        ]);
+        Roles::create([
+            "rolename" => "Member",
+        ]);
+
 
     }
 
 }
 
-class RolesTableSeeder extends Seeder {
+class RolesTableSeeder extends Seeder
+{
 
     public function run()
     {
@@ -47,12 +64,13 @@ class RolesTableSeeder extends Seeder {
     }
 
 }
-class UsersTableSeeder extends Seeder {
+
+class UsersTableSeeder extends Seeder
+{
 
     public function run()
     {
         DB::table('users')->delete();
-
 
 
     }

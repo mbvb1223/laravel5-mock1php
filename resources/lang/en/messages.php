@@ -48,16 +48,34 @@ return [
     'users_remember_token' => 'Remember token',
     'users_created_at' => 'Creat at',
     'users_updated_at' => 'Update at',
+    'recaptcha_fail'=>'Rechaptcha fail',
 
     /**
      * For Roles
      */
     'create_role' => 'Create Role',
     'list_roles' => 'List Roles',
+    'edit_role' => 'Edit Role',
     'roles_rolename' => 'Role Name',
     'roles_remember_token' => 'remember_token',
     'roles_created_at' => 'Creat at',
     'roles_updated_at' => 'Update at',
+
+    /**
+     * For Style
+     */
+    'create_style' => 'Create Style',
+    'list_style' => 'List Style',
+    'list_styles' => 'List Styles',
+    'edit_style' => 'Edit Style',
+    'style_name' => 'Style Name',
+    /**
+     * For Madein
+     */
+    'create_madein' => 'Create Country',
+    'list_madein' => 'List Countries',
+    'edit_madein' => 'Edit Country',
+    'madein_name' => 'Country Name',
 
     /**
      * For Permission

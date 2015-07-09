@@ -10,13 +10,13 @@
         <div class="portlet">
             <div class="portlet-title">
                 <div class="caption">
-                    <i class="fa fa-shopping-cart"></i><?php echo Lang::get('messages.list_users'); ?>
+                    <i class="fa fa-shopping-cart"></i><?php echo Lang::get('messages.list_madein'); ?>
                 </div>
                 <div class="actions">
-                    <a href="{{ URL::action('UsersController@create') }}" class="btn default yellow-stripe">
-                         <i class="fa fa-plus"></i>
+                    <a href="{{ URL::action('MadeinController@create') }}" class="btn default yellow-stripe">
+                        <i class="fa fa-plus"></i>
                          <span class="hidden-480">
-                            <?php echo Lang::get('messages.create_new'); ?>
+                         <?php echo Lang::get('messages.create_new'); ?>
                          </span>
                     </a>
                 </div>
@@ -25,14 +25,9 @@
                 <table id="grid-data-api" class="table table-condensed table-hover table-striped">
                     <thead>
                     <tr>
-                        <th data-column-id="username"><?php echo Lang::get('messages.users_username'); ?></th>
-                        <th data-column-id="email"><?php echo Lang::get('messages.users_email'); ?></th>
-                        <th data-column-id="phone"><?php echo Lang::get('messages.users_phone'); ?></th>
-                        <th data-column-id="avatar"><?php echo Lang::get('messages.users_avatar'); ?></th>
-                        <th data-column-id="status"><?php echo Lang::get('messages.users_status'); ?></th>
-                        <th data-column-id="role_id"><?php echo Lang::get('messages.users_rolename'); ?></th>
-                        <th data-column-id="created_at"><?php echo Lang::get('messages.users_created_at'); ?></th>
-                        <th data-column-id="updated_at"><?php echo Lang::get('messages.users_updated_at'); ?></th>
+                        <th data-column-id="madein_name"><?php echo Lang::get('messages.madein_name'); ?></th>
+                        <th data-column-id="created_at"><?php echo Lang::get('messages.created_at'); ?></th>
+                        <th data-column-id="updated_at"><?php echo Lang::get('messages.updated_at'); ?></th>
                         <th data-column-id="action"><?php echo Lang::get('messages.action'); ?></th>
                     </tr>
                     </thead>
@@ -60,16 +55,8 @@
                         _token: "{{csrf_token()}}"
                     };
                 },
-                url: "{{url('admin/users/getDataAjax')}}"
+                url: "{{url('admin/madein/getDataAjax')}}"
 
-
-            });
-
-            $('.delete-record').delegate('click' ,function () {
-
-                alert('khisxss');
-                //if (!confirm("Do you want to delete?")) {
-                //}
 
             });
         })

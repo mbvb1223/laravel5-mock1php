@@ -2,14 +2,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\UserRequest;
-use App\Http\Requests\UserEditRequest;
+use App\Http\Requests\CategoryRequest;
 use Illuminate\Http\Request;
 use App\Category;
-use libraries\UploadImage;
-use libraries\Authen;
-use Illuminate\Support\Facades\Auth;
 use Lang;
 use View;
 use Route;
@@ -67,23 +62,6 @@ class CategoryController extends Controller
     public function create()
     {
         $categories = Category::all()->toArray();
-       // getAllCategory($categories);
-//        dd($categories);
-//        foreach($categories as $category){
-//
-//        }
-
-
-//        $categories = Category::where('parent',0)->get();
-//        foreach($categories as $category){
-//            $data[] = $category;
-//            foreach($data as $key){
-//
-//            }
-//           Category::where('parent',$category['id'])->get();
-//        }
-//        dd($categories->toArray());
-//        getAllCategory($data,$parent,$prefix);
 
         return view('category.create')->with([
             "categories" => $categories,
@@ -91,7 +69,7 @@ class CategoryController extends Controller
         ]);
 
     }
-    public function update(Request $request)
+    public function update(CategoryRequest $request)
     {
         $allRequest = $request->all();
         $model = Category::find($allRequest['id']);
@@ -115,7 +93,7 @@ class CategoryController extends Controller
 
     }
 
-    public function store(Request $request)
+    public function store(CategoryRequest $request)
     {
         $model=new Category();
         autoAssignDataToProperty($model,$request->all());
@@ -124,6 +102,13 @@ class CategoryController extends Controller
             ->withSuccess(Lang::get('messages.create_success'));
     }
 
+    public function test()
+    {
+        $categories = Category::all()->toArray();
+        $data=array();
+        getAllCategoryTest($categories,$data);
+        dd($data);
+    }
 
 }
 

@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Contracts\Auth\Guard;
-use libraries\Authen;
+use App\libraries\Authen;
 use Lang;
 use View;
 class Authenticate

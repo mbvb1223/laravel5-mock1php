@@ -47,8 +47,9 @@
 
                             <div class="col-sm-8">
                                 <input type="text" class="form-control" name="category_name"
-                                       value="{{ old('category_name', '')}}"
+
                                        id="category_name"
+                                       required="required"
                                        placeholder="<?php echo Lang::get('messages.category_name'); ?>">
                             </div>
                         </div>
@@ -98,6 +99,7 @@
                                 <input type="text" class="form-control" name="category_name"
                                        value="{{ old('category_name', '')}}"
                                        id="category_name_edit"
+
                                        placeholder="<?php echo Lang::get('messages.category_name'); ?>">
                             </div>
                         </div>
@@ -205,12 +207,16 @@
 
             //for form edit
             $('#category_name_edit').val(r[1]);
+            if(r[2]=="#"){
+                r[2]=0;
+            }
             var optionValue = r[2];
             $("#parent_edit").val(optionValue)
                 .find("option[value=" + optionValue + "]").attr('selected', true);
             $('#id_edit').val(r[0]);
 
             //for form delete
+
             $('#id_delete').val(r[0]);
         });
 

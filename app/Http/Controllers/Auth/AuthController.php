@@ -4,14 +4,15 @@ namespace App\Http\Controllers\Auth;
 
 use App\Users;
 use Validator;
-use libraries\Authen;
+use App\libraries\Authen;
+use App\libraries\ReCaptcha;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Mail;
-
+use Lang;
 class AuthController extends Controller
 {
     /*
@@ -71,41 +72,61 @@ class AuthController extends Controller
             'avatar' => $data['avatar'],
             'status' => Users::INACTIVE,
             'role_id' => Users::MEMBER,
-            'keyactive'=>md5(time()),
+            'keyactive' => md5(time()),
             'password' => bcrypt($data['password']),
         ]);
     }
 
     public function postRegister(Request $request)
     {
-        $validator = $this->validator($request->all());
+        $allRequest = $request->all();
+        $recaptcha = $allRequest['g-recaptcha-response'];
 
-        if ($validator->fails()) {
-            $this->throwValidationException(
-                $request, $validator
-            );
+        if($recaptcha==null){
+            return redirect('auth/register')->withErrors(Lang::get('messages.recaptcha_fail'))
+                                            ->withInput();
         }
-        $this->create($request->all());
 
-        $inputUsername = $this->getCredentials($request)['username'];
-        //Get info User, this User have just registry
-        $user = new Users();
-        $userInfo = $user->where('username', $inputUsername)->first()->toArray();
 
-        //Sent mail to this user for active account
-        Mail::send('mail.welcome', ['userInfo' => $userInfo], function($message) use ($userInfo)
+        $secret = "6LcrigkTAAAAAILxkngAvRl77FEm4mpEWYvi4XNA";
+        $response = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=".$secret."&response=".$recaptcha);
+        $res= json_decode($response, true);
+
+        if($res['success'])
         {
-            $message->subject("Welcome to khienpc");
-            $message->from('khienpc.sosc@gmail.com');
-            $message->to($userInfo['email']);
-        });
 
-        Authen::setUser($userInfo);
-        //Authen::setUser($request->all());
-        //Auth::login($this->create($request->all()),$remember = false);
-        Auth::attempt($this->getCredentials($request), $remember = true);
+            $validator = $this->validator($allRequest);
+            if ($validator->fails()) {
+                $this->throwValidationException(
+                    $request, $validator
+                );
+            }
+            $this->create($request->all());
 
-        return redirect($this->redirectPath());
+            $inputUsername = $this->getCredentials($request)['username'];
+            //Get info User, this User have just registry
+            $user = new Users();
+            $userInfo = $user->where('username', $inputUsername)->first()->toArray();
+
+            //Sent mail to this user for active account
+            Mail::send('mail.welcome', ['userInfo' => $userInfo], function ($message) use ($userInfo) {
+                $message->subject("Welcome to khienpc");
+                $message->from('khienpc.sosc@gmail.com');
+                $message->to($userInfo['email']);
+            });
+
+            Authen::setUser($userInfo);
+            Auth::attempt($this->getCredentials($request), $remember = true);
+
+            return redirect($this->redirectPath());
+        }
+        else
+        {
+            return redirect('auth/register')->withErrors(Lang::get('messages.recaptcha_fail'))
+                                            ->withInput();
+        }
+
+
     }
 
     public function postLogin(Request $request)

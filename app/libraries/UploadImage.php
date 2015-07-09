@@ -1,5 +1,5 @@
 <?php
-namespace libraries;
+namespace App\libraries;
 
 use Input;
 
