@@ -1,10 +1,7 @@
 <?php
-/**
- * Request for Role
- */
+
 namespace App\Http\Requests;
 
-use App\Http\Requests\Request;
 use Lang;
 
 class CategoryRequest extends Request {
@@ -27,7 +24,7 @@ class CategoryRequest extends Request {
     public function rules()
     {
         return [
-            'category_name'=>'required|unique:category',
+            'category_name'=>'required|unique:category,category_name,'.$this->get('id'),
 
         ];
     }

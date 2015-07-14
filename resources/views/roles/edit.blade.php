@@ -11,7 +11,7 @@
                         <i class="fa fa-shopping-cart"></i><?php echo Lang::get('messages.edit_role'); ?>
                     </div>
                     <div class="actions btn-set">
-                        <a href="{{ URL::action('UsersController@index') }}" name="back" class="btn default"><i class="fa fa-angle-left"></i> <?php echo Lang::get('messages.list_roles'); ?></a>
+                        <a href="{{ URL::action('RolesController@index') }}" name="back" class="btn default"><i class="fa fa-angle-left"></i> <?php echo Lang::get('messages.list_roles'); ?></a>
                         <button class="btn default" type="reset"><i class="fa fa-reply"></i> <?php echo Lang::get('messages.reset'); ?></button>
                         <button class="btn green" type="submit"><i class="fa fa-check"></i>  <?php echo Lang::get('messages.update'); ?></button>
                     </div>

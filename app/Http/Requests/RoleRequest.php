@@ -4,7 +4,6 @@
  */
 namespace App\Http\Requests;
 
-use App\Http\Requests\Request;
 use Lang;
 
 class RoleRequest extends Request {
@@ -27,7 +26,7 @@ class RoleRequest extends Request {
     public function rules()
     {
         return [
-            'rolename'=>'required',
+            'rolename'=>'required|unique:role',
 
         ];
     }

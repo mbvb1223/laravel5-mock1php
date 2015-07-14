@@ -11,7 +11,7 @@
               method="Post">
             <input type="hidden" name="_token" value="{{ csrf_token() }}">
             <input  type="hidden" name="id" id="id_delete">
-            <input  type="submit" value="Delete" class="btn btn-default">
+            <input  type="submit" value="Delete" class="btn btn-default delete-record">
 
         </form>
     </div>
@@ -62,7 +62,7 @@
 
                                 <select class="form-control" name="parent" id="parent">
                                     <option value="0">Root</option>
-                                    <?php getAllCategory($categories) ?>
+                                    <?php echo $categories; ?>
                                 </select>
                             </div>
                         </div>
@@ -76,7 +76,7 @@
             <form class="form-horizontal form-row-seperated" action="{{ URL::action('CategoryController@update') }}"
                   method="Post">
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                <input  type="hidden" name="id" id="id_edit">
+                <input type="hidden" name="id" id="id_edit">
                 <div class="portlet">
                     <div class="portlet-title">
                         <div class="caption">
@@ -112,7 +112,7 @@
 
                                 <select class="form-control" name="parent" id="parent_edit">
                                     <option value="0">Root</option>
-                                    <?php getAllCategory($categories) ?>
+                                    <?php echo $categories; ?>
                                 </select>
                             </div>
                         </div>
@@ -216,7 +216,6 @@
             $('#id_edit').val(r[0]);
 
             //for form delete
-
             $('#id_delete').val(r[0]);
         });
 

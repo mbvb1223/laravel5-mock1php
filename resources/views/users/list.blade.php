@@ -14,7 +14,7 @@
                 </div>
                 <div class="actions">
                     <a href="{{ URL::action('UsersController@create') }}" class="btn default yellow-stripe">
-                         <i class="fa fa-plus"></i>
+                        <i class="fa fa-plus"></i>
                          <span class="hidden-480">
                             <?php echo Lang::get('messages.create_new'); ?>
                          </span>
@@ -41,40 +41,32 @@
         </div>
     </div>
 </div>
-    @stop
-    @section('js')
+@stop
+@section('js')
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-bootgrid/1.2.0/jquery.bootgrid.fa.min.js "></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-bootgrid/1.2.0/jquery.bootgrid.min.js"></script>
-    @stop
-    @section('jscode')
-    <script>
-        jQuery(document).ready(function() {
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-bootgrid/1.2.0/jquery.bootgrid.fa.min.js "></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-bootgrid/1.2.0/jquery.bootgrid.min.js"></script>
+@stop
+@section('jscode')
+<script>
+    jQuery(document).ready(function() {
 
-            $("#grid-data-api").bootgrid({
-                ajax: true,
-                post: function ()
-                {
-                    /* To accumulate custom parameter with the request object */
-                    return {
-                        _token: "{{csrf_token()}}"
-                    };
-                },
-                url: "{{url('admin/users/getDataAjax')}}"
+        $("#grid-data-api").bootgrid({
+            ajax: true,
+            post: function ()
+            {
+                /* To accumulate custom parameter with the request object */
+                return {
+                    _token: "{{csrf_token()}}"
+                };
+            },
+            url: "{{url('admin/users/getDataAjax')}}"
 
 
-            });
+        });
+    })
 
-            $('.delete-record').delegate('click' ,function () {
+</script>
 
-                alert('khisxss');
-                //if (!confirm("Do you want to delete?")) {
-                //}
-
-            });
-        })
-
-    </script>
-
-    @stop
+@stop
 

@@ -30,7 +30,7 @@ class UserRequest extends Request {
             'repassword'=>'required|same:password',
             'email'=>'required|unique:users',
             'phone'=>'required',
-            'avatar'=>'required|mimes:jpeg,bmp,png,jpg|max:55000',
+            'avatar'=>'required|image|max:2000',
             'status'=>'required',
             'role_id'=>'required',
         ];

@@ -1,9 +1,8 @@
 <div class="header">
     <div class="container">
-        <a class="site-logo" href="shop-index.html"><img src="<?php echo url("/"); ?>/../theme/assets/frontend/layout/img/logos/logo-shop-red.png" alt="Metronic Shop UI"></a>
+        <a class="site-logo" href="<?php echo url("/"); ?>"><img src="<?php echo url("/"); ?>/../theme/assets/frontend/layout/img/logos/logo-shop-red.png" alt="Metronic Shop UI"></a>
 
         <a href="javascript:void(0);" class="mobi-toggler"><i class="fa fa-bars"></i></a>
-
         <!-- BEGIN CART -->
         <div class="top-cart-block">
             <div class="top-cart-info">

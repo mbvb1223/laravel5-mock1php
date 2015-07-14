@@ -1,0 +1,81 @@
+$(document).ready(function() {
+	//##### send add record Ajax request to response.php #########
+	$("#FormSubmit").click(function (e) {
+			e.preventDefault();
+			if($("#contentText").val()==='')
+			{
+				alert("Please enter some text!");
+				return false;
+			}
+			
+			$("#FormSubmit").hide(); //hide submit button
+			$("#LoadingImage").show(); //show loading image
+			
+		 	var myID_Tacgia = $("#contentText").val(); //build a post data structure
+			var myID_Sach = $('#sach').val();
+			var myDatas = { 'myID_Tacgia': myID_Tacgia , 'myID_Sach': myID_Sach};
+			jQuery.ajax({
+			type: "POST", // HTTP method POST or GET
+			url: "../file/response.php", //Where to make Ajax calls
+			dataType:"text", // Data type, HTML, json etc.
+			data:myDatas, //Form variables
+			success:function(response){
+				$("#responds").append(response);
+				$("#contentText").val(''); //empty text field on successful
+				$("#FormSubmit").show(); //show submit button
+				$("#LoadingImage").hide(); //hide loading image
+
+			},
+			error:function (xhr, ajaxOptions, thrownError){
+				$("#FormSubmit").show(); //show submit button
+				$("#LoadingImage").hide(); //hide loading image
+				alert(thrownError);
+			}
+			});
+	});
+
+	//##### Send delete Ajax request to response.php #########
+	$("body").on("click", "#responds .del_button", function(e) {
+		 e.preventDefault();
+		 var clickedID = this.id.split('-'); //Split ID string (Split works as PHP explode)
+		 var DbNumberID = clickedID[1]; //and get number from array
+		 var myData = 'recordToDelete='+ DbNumberID; //build a post data structure
+		 
+		$('#item_'+DbNumberID).addClass( "sel" ); //change background of this element by adding class
+		$('#item_'+DbNumberID).remove();
+			
+	});
+	$("#Gia_bia").keyup(function()
+	{	var giamgia=$("#Gia_bia").val();
+		$("#Gia_ban").val(giamgia);
+		});
+
+	$("#Giam_gia").change(function(){
+		
+		var ID_giamgia=$("#Giam_gia").val();
+		var myDatas = { 'ID_giamgia': ID_giamgia};
+		jQuery.ajax({
+			type: "POST", // HTTP method POST or GET
+			url: "../file/giamgia.php", //Where to make Ajax calls
+			dataType:"json", // Data type, HTML, json etc.
+			data:myDatas, //Form variables
+			success: function(data){
+			$.each(data, function(i, val) {
+				
+						
+						var giabia=$("#Gia_bia").val();
+						var gtg = val.Gia_tri_giam;
+						var sotiengiam= giabia*gtg;
+						var giaban=giabia-sotiengiam;
+						$("#Gia_ban").val(giaban);
+						
+			
+				}
+				);
+				
+			}
+		});
+		
+		});
+		
+});

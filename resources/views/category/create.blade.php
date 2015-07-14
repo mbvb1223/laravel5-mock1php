@@ -40,7 +40,7 @@
 
                         <select class="form-control" name="parent" >
                             <option value="0">Root</option>
-                            <?php  getAllCategory($categories) ?>
+                            <?php echo $categories; ?>
                         </select>
                         </div>
                     </div>

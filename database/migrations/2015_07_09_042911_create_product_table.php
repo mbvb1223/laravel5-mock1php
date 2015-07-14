@@ -16,11 +16,17 @@ class CreateProductTable extends Migration
             $table->increments('id');
             $table->string('key_product')->unique();
             $table->string('name_product');
+            $table->string('price');
+            $table->string('cost');
+            $table->string('image');
+            $table->text('information');
 
+            $table->string('category_id');
+            $table->integer('selloff_id');
             $table->integer('style_id');
             $table->integer('madein_id');
-            $table->integer('chatlieu_id');
-            $table->integer('docao_id');
+            $table->integer('material_id');
+            $table->integer('height_id');
             $table->timestamps();
         });
     }

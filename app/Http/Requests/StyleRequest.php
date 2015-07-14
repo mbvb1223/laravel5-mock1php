@@ -4,7 +4,6 @@
  */
 namespace App\Http\Requests;
 
-use App\Http\Requests\Request;
 use Lang;
 
 class StyleRequest extends Request {
@@ -27,7 +26,7 @@ class StyleRequest extends Request {
     public function rules()
     {
         return [
-            'style_name'=>'required',
+            'style_name'=>'required|unique:style',
 
         ];
     }

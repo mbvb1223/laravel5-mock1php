@@ -63,7 +63,7 @@
                 </ul>
             </li>
             <!--Product-->
-            <li <?php if ($class_name == "CategoryController") echo 'class="start active open"'; ?>>
+            <li <?php if ($class_name == "CategoryController"|| $class_name == "MaterialController") echo 'class="start active open"'; ?>>
                 <a href="javascript:;">
                     <i class="icon-user"></i>
                     <span class="title">Product - Shoes</span>
@@ -73,6 +73,18 @@
                     <li <?php if ($action_name == "index") echo 'class="active"'; ?>>
                         <a href="{{ URL::action('StyleController@index') }}">
                             List/Create Style</a>
+                    </li>
+                    <li <?php if ($action_name == "index") echo 'class="active"'; ?>>
+                        <a href="{{ URL::action('MadeinController@index') }}">
+                            List/Create Countries</a>
+                    </li>
+                    <li <?php if ($action_name == "index") echo 'class="active"'; ?>>
+                        <a href="{{ URL::action('MaterialController@index') }}">
+                            List/Create Material</a>
+                    </li>
+                    <li <?php if ($action_name == "index") echo 'class="active"'; ?>>
+                        <a href="{{ URL::action('HeightController@index') }}">
+                            List/Create Height</a>
                     </li>
 
 

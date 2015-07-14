@@ -27,7 +27,7 @@ class MadeinRequest extends Request {
     public function rules()
     {
         return [
-            'madein_name'=>'required',
+            'madein_name'=>'required|unique:madein',
         ];
     }
 

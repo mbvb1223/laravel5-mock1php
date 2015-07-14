@@ -2,7 +2,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
 use App\Http\Requests\UserEditRequest;
 use Illuminate\Http\Request;
@@ -32,9 +31,7 @@ class UsersController extends Controller
             'class_name' => $class_name,
             'action_name' => $action_name,
         ));
-        $this->afterFilter(function () {
-            // something
-        });
+
     }
 
     public function index()
@@ -76,7 +73,6 @@ class UsersController extends Controller
     public function getDataAjax(Request $request)
     {
         $dataRequest = $request->all();
-
         $pageCurrent = $dataRequest['current'];
         $limit = $dataRequest['rowCount'];
         $offset = ($pageCurrent - 1) * $limit;
@@ -92,6 +88,22 @@ class UsersController extends Controller
         # Render field action
         foreach ($result['rows'] as $k => $item) {
             $result['rows'][$k]['action'] = create_field_action('admin/users', $item->id);
+        }
+
+        //Show Name Roles to List User
+        $arrayIdToNameRoles = $this->arrayIdToNameRoles();
+        foreach ($result['rows'] as $k => $item) {
+            $id =  $result['rows'][$k]['role_id'];
+            $result['rows'][$k]['role_id'] = $arrayIdToNameRoles[$id];
+        }
+
+        //Show Status
+        foreach ($result['rows'] as $k => $item) {
+            if( $result['rows'][$k]['status'] == "1") {
+                $result['rows'][$k]['status'] = "Active";
+            }elseif( $result['rows'][$k]['status'] == "0") {
+                $result['rows'][$k]['status'] = "Inctive";
+            }
         }
 
         $data['current'] = $pageCurrent;
@@ -139,7 +151,6 @@ class UsersController extends Controller
     public function update(UserEditRequest $request, $id)
     {
         $allRequest = $request->all();
-
         $model = Users::find($id);
 
         $avatar = Input::file('avatar');
@@ -192,6 +203,18 @@ class UsersController extends Controller
         }
         Auth::logout();
         return redirect('auth/login')->withSuccess(Lang::get('messages.active_successful'));
+    }
+
+    protected  function arrayIdToNameRoles(){
+        $roles = Roles::all()->toArray();
+        if($roles == null){
+            return null;
+        }
+        $newArray = array();
+            foreach($roles as $roles){
+                $newArray[$roles['id']] = $roles['rolename'];
+            }
+        return $newArray;
     }
 
 }
