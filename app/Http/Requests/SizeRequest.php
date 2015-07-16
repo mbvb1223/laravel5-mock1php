@@ -1,11 +1,9 @@
 <?php
-/**
- * Request for Role
- */
+
 namespace App\Http\Requests;
 use Lang;
 
-class HeightRequest extends Request {
+class SizeRequest extends Request {
 
     /**
      * Determine if the user is authorized to make this request.
@@ -25,7 +23,7 @@ class HeightRequest extends Request {
     public function rules()
     {
         return [
-            'height_value'=>'required|unique:height|integer|min:1|max:100',
+            'size_value'=>'required|integer|min:20|max:60|unique:size,size_value,'.$this->get('id'),
         ];
     }
 

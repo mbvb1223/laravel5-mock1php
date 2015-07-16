@@ -159,7 +159,7 @@ class DatabaseSeeder extends Seeder
          * For Size
          */
         for ($i = 35; $i < 45; $i++) {
-            Color::create([
+            Size::create([
                 "size_value" => $i,
             ]);
 

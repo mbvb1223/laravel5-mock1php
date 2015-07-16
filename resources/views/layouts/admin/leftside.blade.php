@@ -71,6 +71,10 @@
                 </a>
                 <ul class="sub-menu">
                     <li <?php if ($action_name == "index") echo 'class="active"'; ?>>
+                        <a href="{{ URL::action('ProductController@index') }}">
+                            List/Create Product</a>
+                    </li>
+                    <li <?php if ($action_name == "index") echo 'class="active"'; ?>>
                         <a href="{{ URL::action('StyleController@index') }}">
                             List/Create Style</a>
                     </li>
@@ -86,11 +90,41 @@
                         <a href="{{ URL::action('HeightController@index') }}">
                             List/Create Height</a>
                     </li>
+                    <li <?php if ($action_name == "index") echo 'class="active"'; ?>>
+                        <a href="{{ URL::action('SizeController@index') }}">
+                            List/Create Size</a>
+                    </li>
+                    <li <?php if ($action_name == "index") echo 'class="active"'; ?>>
+                        <a href="{{ URL::action('ColorController@index') }}">
+                            List/Create Color</a>
+                    </li>
 
 
                 </ul>
             </li>
             <!--End Product-->
+            <!--User-->
+            <li <?php if ($class_name == "UsersController") echo 'class="start active open"'; ?>>
+                <a href="javascript:;">
+                    <i class="icon-user"></i>
+                    <span class="title">Invoice Import</span>
+                    <span class="arrow "></span>
+                </a>
+                <ul class="sub-menu">
+                    <li <?php if ($action_name == "index") echo 'class="active"'; ?>>
+                        <a href="{{ URL::action('UsersController@index') }}">
+                            List Invoice</a>
+                    </li>
+                    <li <?php if ($action_name == "create") echo 'class="active"'; ?>>
+                        <a href="{{ URL::action('UsersController@create') }}">
+                            Create Invoice</a>
+                    </li>
+
+                </ul>
+            </li>
+            <!--End User-->
+
+            <!--User-->
             <li <?php if ($class_name == "UsersController") echo 'class="start active open"'; ?>>
                 <a href="javascript:;">
                     <i class="icon-user"></i>
@@ -109,6 +143,7 @@
 
                 </ul>
             </li>
+            <!--End User-->
             <!--Roles-->
             <li <?php if ($class_name == "RolesController") echo 'class="start active open"'; ?>>
                 <a href="javascript:;">

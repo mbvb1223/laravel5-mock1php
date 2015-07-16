@@ -15,17 +15,14 @@ class PermissionController extends Controller
 {
     public function __construct()
     {
-        $title = 'Dashboard - Permission';
-        $class_name = substr(__CLASS__, 21);
+        $title       = 'Dashboard - Permission';
+        $class_name  = substr(__CLASS__, 21);
         $action_name = substr(strrchr(Route::currentRouteAction(), "@"), 1);
         View::share(array(
-            'title' => $title,
-            'class_name' => $class_name,
+            'title'       => $title,
+            'class_name'  => $class_name,
             'action_name' => $action_name,
         ));
-        $this->afterFilter(function () {
-            // something
-        });
     }
 
     /**
@@ -42,7 +39,7 @@ class PermissionController extends Controller
         }
         foreach ($routeCollection as $value) {
             $allRoutes[] = $value->getPath();
-            $routes = array_unique($allRoutes);
+            $routes      = array_unique($allRoutes);
         }
         // Get all rocord in table permission in database
         $permissions = Permission::all()->toArray();
@@ -60,8 +57,8 @@ class PermissionController extends Controller
         //Get all Roles
         $roles = Roles::all();
         return view("permission.list")->with([
-            'routes' => $routes,
-            'roles' => $roles,
+            'routes'                  => $routes,
+            'roles'                   => $roles,
             'routesInTablePermission' => $routesInTablePermission,
         ]);
     }
@@ -93,8 +90,7 @@ class PermissionController extends Controller
         $models = new Permission();
         //dd($dataSubmit);
 
-        foreach($dataSubmits as $dataSubmit)
-        {
+        foreach ($dataSubmits as $dataSubmit) {
             $dataSave[] = array('route' => $dataSubmit);
         }
 

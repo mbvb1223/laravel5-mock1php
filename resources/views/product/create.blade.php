@@ -16,8 +16,8 @@
                                 class="fa fa-angle-left"></i> <?php echo Lang::get('messages.list_product'); ?></a>
                         <button class="btn default" type="reset"><i
                                 class="fa fa-reply"></i><?php echo Lang::get('messages.reset'); ?></button>
-                        <button class="btn green" type="submit"><i
-                                class="fa fa-check"></i> <?php echo Lang::get('messages.create'); ?></button>
+                        <button class="btn green" type="submit">
+                            <i class="fa fa-check"></i> <?php echo Lang::get('messages.create'); ?></button>
                     </div>
                 </div>
                 <div class="portlet-body col-xs-12 col-sm-8">
@@ -40,6 +40,17 @@
                             <input type="text" class="form-control" name="name_product"
                                    id="name_product"
                                    placeholder="<?php echo Lang::get('messages.name_product'); ?>"
+                                   required="required"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="price_import"
+                               class="col-sm-3 control-label"><?php echo Lang::get('messages.price_import'); ?></label>
+
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" name="price_import"
+                                   id="price_import"
+                                   placeholder="<?php echo Lang::get('messages.price_import'); ?>"
                                    required="required"/>
                         </div>
                     </div>

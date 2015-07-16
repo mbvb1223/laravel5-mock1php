@@ -1,11 +1,9 @@
 <?php
-/**
- * Request for Role
- */
+
 namespace App\Http\Requests;
 use Lang;
 
-class HeightRequest extends Request {
+class ColorRequest extends Request {
 
     /**
      * Determine if the user is authorized to make this request.
@@ -25,14 +23,14 @@ class HeightRequest extends Request {
     public function rules()
     {
         return [
-            'height_value'=>'required|unique:height|integer|min:1|max:100',
+            'color_name'=>'required||unique:color,color_name,'.$this->get('id'),
         ];
     }
 
     public function attributes()
     {
         return[
-            'height_value' => Lang::get('messages.height_value'),
+            'color_name' => Lang::get('messages.color_name'),
 
         ];
 

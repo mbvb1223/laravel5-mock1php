@@ -82,7 +82,7 @@ class HeightController extends Controller
          *
          */
         if($result== null) {
-            return redirect()->action('heightController@index')->withErrors(Lang::get('messages.no_id'));
+            return redirect()->action('HeightController@index')->withErrors(Lang::get('messages.no_id'));
         }
 
         /**

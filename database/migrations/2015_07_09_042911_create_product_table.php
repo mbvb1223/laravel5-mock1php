@@ -16,8 +16,9 @@ class CreateProductTable extends Migration
             $table->increments('id');
             $table->string('key_product')->unique();
             $table->string('name_product');
-            $table->string('price');
-            $table->string('cost');
+            $table->integer('price_import');
+            $table->integer('price');
+            $table->integer('cost');
             $table->string('image');
             $table->text('information');
 

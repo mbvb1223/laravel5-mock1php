@@ -15,8 +15,8 @@ class CreateInvoiceImportTable extends Migration
         Schema::create('invoice_import', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id');
+            $table->bigInteger('total_price');
             $table->text('information');
-            $table->float('total_price');
             $table->timestamps();
         });
     }

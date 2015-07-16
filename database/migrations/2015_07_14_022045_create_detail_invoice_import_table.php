@@ -18,6 +18,7 @@ class CreateDetailInvoiceImportTable extends Migration
             $table->integer('color_id');
             $table->integer('size_id');
             $table->integer('number');
+            $table->integer('price_import');
             $table->integer('invoice_import_id');
             $table->timestamps();
         });

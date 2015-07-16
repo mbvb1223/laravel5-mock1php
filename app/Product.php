@@ -9,7 +9,7 @@ class Product extends Model
 {
     protected $guarded = ['id'];
     protected $table = 'product';
-    public $properties = array('id', 'key_product', 'name_product', 'price', 'cost', 'image',
+    public $properties = array('id', 'key_product', 'name_product','price_import', 'price', 'cost', 'image',
         'information', 'category_id', 'selloff_id', 'style_id', 'madein_id',
         'material_id', 'height_id', 'created_at', 'updated_at');
     public $timestamps = true;
@@ -77,13 +77,19 @@ class Product extends Model
         return $arrayFromIdToValueOfSelloff;
     }
 
+    public static function mapProductIdToInformationProduct(){
+        $products = Product::all()->toArray();
 
-    /**
-     * Log the given user ID into the application.
-     *
-     * @param  mixed $id
-     * @param  bool $remember
-     * @return \Illuminate\Contracts\Auth\Authenticatable
-     */
+        if($products == null){
+            return null;
+        }
+        foreach($products as $product){
+            $mapProductIdToInformationProduct[$product['id']] = $product;
+        }
+        return $mapProductIdToInformationProduct;
+    }
+
+
+
 }
 

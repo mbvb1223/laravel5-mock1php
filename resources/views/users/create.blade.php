@@ -24,7 +24,7 @@
                         </div>
                     </div>
                     <div class="portlet-body col-xs-12 col-sm-8">
-                        <div class=" form-group">
+                        <div class="form-group">
                             <label for="username"
                                    class="col-sm-2 control-label"><?php echo Lang::get('messages.users_username'); ?></label>
 

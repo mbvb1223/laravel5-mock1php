@@ -112,6 +112,43 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('admin/product/update', 'ProductController@update');
     Route::get('admin/product/{id}/del', 'ProductController@destroy');
 
+    /**
+     * Size CONTROLLERS
+     */
+    Route::any('admin/size/getDataAjax', 'SizeController@getDataAjax');
+    Route::get('admin/size', 'SizeController@index');
+    Route::get('admin/size/create', 'SizeController@create');
+    Route::post('admin/size', 'SizeController@store');
+    Route::get('admin/size/{id}/edit', 'SizeController@edit');
+    Route::post('admin/size/update', 'SizeController@update');
+    Route::get('admin/size/{id}/del', 'SizeController@destroy');
+
+    /**
+     * Color CONTROLLERS
+     */
+    Route::any('admin/color/getDataAjax', 'ColorController@getDataAjax');
+    Route::get('admin/color', 'ColorController@index');
+    Route::get('admin/color/create', 'ColorController@create');
+    Route::post('admin/color', 'ColorController@store');
+    Route::get('admin/color/{id}/edit', 'ColorController@edit');
+    Route::post('admin/color/update', 'ColorController@update');
+    Route::get('admin/color/{id}/del', 'ColorController@destroy');
+
+    /**
+     * Invoice Import CONTROLLERS
+     */
+    Route::any('admin/invoiceimport/getDataAjax', 'InvoiceImportController@getDataAjax');
+    Route::get('admin/invoiceimport', 'InvoiceImportController@index');
+    Route::get('admin/invoiceimport/import', 'InvoiceImportController@import');
+    Route::post('admin/invoiceimport', 'InvoiceImportController@store');
+    Route::get('admin/invoiceimport/view', 'InvoiceImportController@view');
+    Route::post('admin/invoiceimport/update', 'InvoiceImportController@update');
+    Route::get('admin/invoiceimport/delete/{id}', 'InvoiceImportController@delete');
+    Route::get('admin/invoiceimport/checkout', 'InvoiceImportController@checkout');
+    Route::post('admin/invoiceimport/checkout', 'InvoiceImportController@checkoutpost');
+    Route::get('admin/invoiceimport/test', 'InvoiceImportController@test');
+    Route::get('admin/invoiceimport/test2', 'InvoiceImportController@test2');
+
 
     Route::get('admin/home', 'HomeController@index');
     Route::get('home', 'HomeController@index');
