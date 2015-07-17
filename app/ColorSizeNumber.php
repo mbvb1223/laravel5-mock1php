@@ -10,7 +10,7 @@ class ColorSizeNumber extends Model {
     public $properties = array('id','product_id','color_id','size_id','number','created_at','updated_at');
     public $timestamps = true;
 
-    public static function arrayWithKeyAsColorSizeNumber(){
+    public function arrayWithKeyAsColorSizeNumber(){
         $objColorSizeNumber = ColorSizeNumber::all()->toArray();
 
         if($objColorSizeNumber == null){

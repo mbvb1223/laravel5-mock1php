@@ -1,8 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\ColorSizeNumber;
-use App\Detailinvoiceimport;
 use App\Http\Requests;
 use App\Invoiceimport;
 use Illuminate\Http\Request;
@@ -66,7 +64,7 @@ class InvoiceImportController extends Controller
         $allRequest = $request->all();
         //Check Input Tag Number In Invoice Import Empty
         $inputNumber           = $allRequest['mapSizeToNumber'];
-        $checkInputNumberEmpty = CheckEmptyInputTagNumberInInvoiceImport($inputNumber);
+        $checkInputNumberEmpty = checkEmptyInputTagNumberInInvoiceImport($inputNumber);
         if ($checkInputNumberEmpty == true) {
             return redirect()->action('InvoiceImportController@import')->withErrors(Lang::get('messages.no_product_in_cart'));
         }
@@ -85,7 +83,7 @@ class InvoiceImportController extends Controller
             return redirect()->action('InvoiceImportController@import')->withErrors(Lang::get('messages.color_not_isset_in_database'));
         }
 
-        $sessionCart = Session::get('cart');
+        $sessionCart      = Session::get('cart');
         $objInvoiceImport = new Invoiceimport();
         $objInvoiceImport->saveProductToSessionCart($sessionCart, $allRequest);
 
@@ -96,12 +94,11 @@ class InvoiceImportController extends Controller
     //Form View Cart
     public function view()
     {
-
         $sessionCart = Session::get('cart');
         if (empty($sessionCart)) {
             return redirect()->action('InvoiceImportController@index')->withErrors(Lang::get('messages.no_product_in_cart'));
         }
-
+        //dd($sessionCart);
         $objInvoiceImport          = new Invoiceimport();
         $convertAndSortSessionCart = convertAndSortByKeySessionCart($sessionCart);
         $resultView                = $objInvoiceImport->getViewCartInvoiceImport($convertAndSortSessionCart);
@@ -118,40 +115,43 @@ class InvoiceImportController extends Controller
     //Update Number for SessionCart in Form ViewCart
     public function update(Request $request)
     {
-        $allRequest     = $request->all();
-        $sessionCart    = Session::get('cart');
-        $mapKeyToNumber = $allRequest['mapKeyToNumber'];
+        $allRequest  = $request->all();
+        $sessionCart = Session::get('cart');
 
-        foreach ($mapKeyToNumber as $key => $number) {
-            if ($number == 0) {
-                unset($sessionCart[$key]);
-                continue;
-            }
-            $sessionCart[$key]['number'] = $number;
+        if (empty($sessionCart)) {
+            return redirect()->action('InvoiceImportController@index')->withErrors(Lang::get('messages.cart_empty'));
         }
-        Session::put('cart', $sessionCart);
+
+        $objInvoiceImport = new Invoiceimport();
+        $objInvoiceImport->updateNumberForSessionCart($sessionCart, $allRequest);
         return redirect()->action('InvoiceImportController@view')
-            ->withSuccess(Lang::get('messages.create_success'));
+            ->withSuccess(Lang::get('messages.update_success'));
     }
 
+    //Delete Item Product in SessionCart
     public function delete($id)
     {
         $sessionCart = Session::get('cart');
+
+        if (empty($sessionCart)) {
+            return redirect()->action('InvoiceImportController@index')->withErrors(Lang::get('messages.cart_empty'));
+        }
         if (!array_key_exists($id, $sessionCart)) {
             return redirect()->action('InvoiceImportController@view')->withErrors(Lang::get('messages.this_product_not_isset_in_session'));
         }
 
-        Session::forget('cart.'.$id);
+        Session::forget('cart.' . $id);
         return redirect()->action('InvoiceImportController@view')
             ->withSuccess(Lang::get('messages.delete_success'));
     }
 
-
-
-
-    public function checkout(Request $request)
+    //Form view checkout
+    public function checkout()
     {
-        $sessionCart               = Session::get('cart');
+        $sessionCart = Session::get('cart');
+        if (empty($sessionCart)) {
+            return redirect()->action('InvoiceImportController@index')->withErrors(Lang::get('messages.cart_empty'));
+        }
         $objInvoiceImport          = new Invoiceimport();
         $convertAndSortSessionCart = convertAndSortByKeySessionCart($sessionCart);
         $resultView                = $objInvoiceImport->getViewCartInvoiceImport($convertAndSortSessionCart);
@@ -167,106 +167,36 @@ class InvoiceImportController extends Controller
 
     }
 
+    //Submit Checkout
     public function checkoutpost(Request $request)
     {
-        $sessionCart               = Session::get('cart');
+        $allRequest  = $request->all();
+        $sessionCart = Session::get('cart');
+
+        if (empty($sessionCart)) {
+            return redirect()->action('InvoiceImportController@index')->withErrors(Lang::get('messages.cart_empty'));
+        }
+
         $convertAndSortSessionCart = convertAndSortByKeySessionCart($sessionCart);
-        $sessionUser               = Session::get('user');
-        $allRequest                = $request->all();
 
-        $userId                = $sessionUser['id'];
-        $allRequest['user_id'] = $userId;
-
-        //Insert to Invoice Import
+        //Insert SessionCart to Table Invoice_import
         $objInvoiceImport = new Invoiceimport();
-        autoAssignDataToProperty($objInvoiceImport, $allRequest);
-        $objInvoiceImport->save();
-        $idLastOfInvoiceImport = $objInvoiceImport->id;
+        $objInvoiceImport->saveSessionCartToTableInvoiceImport($allRequest);
 
-        //Insert to Detail Invoice Import
-        $mapProductIdToInformationProduct = Product::mapProductIdToInformationProduct();
-        $dateTimeCreatedAndUpdated        = new \DateTime();
-        foreach ($convertAndSortSessionCart as $itemCart) {
-            $idProduct                              = $itemCart['product_id'];
-            $price_import                           = $mapProductIdToInformationProduct[$idProduct]['price_import'];
-            $dataInsertToTableDetailInvoiceImport[] = array(
-                'product_id'        => $itemCart['product_id'],
-                'color_id'          => $itemCart['color_id'],
-                'size_id'           => $itemCart['size_id'],
-                'number'            => $itemCart['number'],
-                'price_import'      => $price_import,
-                'invoice_import_id' => $idLastOfInvoiceImport,
-                'created_at'        => $dateTimeCreatedAndUpdated,
-                'updated_at'        => $dateTimeCreatedAndUpdated
-            );
-        }
-        $objDetailInvoiceImport = new Detailinvoiceimport();
-        $objDetailInvoiceImport->insert($dataInsertToTableDetailInvoiceImport);
-        /**
-         * INSERT TO SIZE-COLOR-NUMBER TABLE
-         */
-        $arrayWithKeyAsColorSizeNumber = ColorSizeNumber::arrayWithKeyAsColorSizeNumber(); // array[colorid|sizeid|number|]=>info
-        $objColorSizeNumber            = new ColorSizeNumber();
+        //Insert to Table Detail_invoice Import
+        $objInvoiceImport->saveSessionCartToTableDetailInvoiceImport($convertAndSortSessionCart);
 
-        if ($arrayWithKeyAsColorSizeNumber == null) {
-            foreach ($convertAndSortSessionCart as $itemCart) {
-                $dataInsertToTableDetailInvoiceImport = array(
-                    'product_id' => $itemCart['product_id'],
-                    'color_id'   => $itemCart['color_id'],
-                    'size_id'    => $itemCart['size_id'],
-                    'number'     => $itemCart['number'],
-                    'created_at' => $dateTimeCreatedAndUpdated,
-                    'updated_at' => $dateTimeCreatedAndUpdated
-                );
-                $objColorSizeNumber->insert($dataInsertToTableDetailInvoiceImport);
+        //Insert to Table color_size_number
+        $objInvoiceImport->saveSessionCartToTableColorSizeNumber($convertAndSortSessionCart);
 
-            }
-        } else {
-            foreach ($convertAndSortSessionCart as $itemCart) {
-                $key = $itemCart['key'];
-                if (array_key_exists($key, $arrayWithKeyAsColorSizeNumber)) {
-                    $id                  = $arrayWithKeyAsColorSizeNumber[$key]['id'];
-                    $ColorSizeNumberbyId = ColorSizeNumber::find($id);
+        //Forget SessionCart
+        Session::forget('cart');
 
-                    $oldNumber     = $ColorSizeNumberbyId->number;
-                    $currentNumber = $itemCart['number'];
-                    $newNumber     = $currentNumber + $oldNumber;
-
-                    $ColorSizeNumberbyId->number = $newNumber;
-                    $ColorSizeNumberbyId->save();
-
-
-                } else {
-                    $dataInsertToTableDetailInvoiceImport = array(
-                        'product_id' => $itemCart['product_id'],
-                        'color_id'   => $itemCart['color_id'],
-                        'size_id'    => $itemCart['size_id'],
-                        'number'     => $itemCart['number'],
-                        'created_at' => $dateTimeCreatedAndUpdated,
-                        'updated_at' => $dateTimeCreatedAndUpdated
-                    );
-                    $objColorSizeNumber->insert($dataInsertToTableDetailInvoiceImport);
-
-                }
-
-            }
-        }
-
-
-        return redirect()->action('InvoiceImportController@checkoutpost')
+        return redirect()->action('InvoiceImportController@index')
             ->withSuccess(Lang::get('messages.create_success'));
 
     }
 
-    public function destroy($id)
-    {
-        $result = Color::find($id);
-        if ($result == null) {
-            return redirect()->action('ColorController@index')->withErrors(Lang::get('messages.no_id'));
-        }
-        $result->delete();
-        return redirect_success('ColorController@index', Lang::get('messages.delete_success'));
-    }
 
     public function test()
     {
@@ -276,8 +206,10 @@ class InvoiceImportController extends Controller
 
     public function test2()
     {
-
-        Session::forget('cart');
+        if (Session::has('cart')) {
+            Session::forget('cart');
+            return redirect_success('FrontendController@cart', Lang::get('messages.delete_success'));
+        }
     }
 
 

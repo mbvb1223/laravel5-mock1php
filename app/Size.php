@@ -49,6 +49,17 @@ class Size extends Model {
         return ['total'=> $total, 'rows'=>$rows];
     }
 
+    public static function mapIdSizeToInformationSize(){
+        $sizes = self::all()->toArray();
+        if($sizes == null){
+            return null;
+        }
+        foreach($sizes as $size){
+            $mapIdSizeToInformationSize[$size['id']] = $size;
+        }
+        return $mapIdSizeToInformationSize;
+    }
+
 
 }
 

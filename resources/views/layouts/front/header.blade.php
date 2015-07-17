@@ -137,6 +137,7 @@
                 <!-- END TOP SEARCH -->
             </ul>
         </div>
+        @include('layouts.front.notification')
         <!-- END NAVIGATION -->
     </div>
 </div>

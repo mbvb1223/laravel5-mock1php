@@ -171,7 +171,25 @@ Route::get('user/active/{id}/{key}', 'UsersController@active');
  */
 
 Route::get('/', 'FrontendController@index');
-Route::get('cart', 'FrontendController@cart');
-Route::get('cart/update/{id}', 'FrontendController@addcart');
-Route::get('cart/del/{id}', 'FrontendController@destroy');
-Route::get('cart/deleteall', 'FrontendController@deleteall');
+Route::get('order', 'FrontendController@order');
+
+Route::get('order/update/{id}', 'FrontendController@addorder');
+Route::get('order/del/{id}', 'FrontendController@destroy');
+Route::get('order/deleteall', 'FrontendController@deleteall');
+
+/**
+ * Product Item
+ */
+Route::get('product/{id}', 'FrontendController@product');
+
+/**
+ * Order Product
+ */
+Route::get('product/{id}', 'FrontendController@product');
+Route::post('cart/addproduct', 'FrontendController@addorder');
+Route::get('cart/view', 'FrontendController@vieworder');
+Route::get('cart/delete/{id}', 'FrontendController@deletecartitem');
+Route::post('cart/update', 'FrontendController@updateorder');
+
+Route::get('test', 'FrontendController@test');
+Route::get('test2', 'FrontendController@test2');

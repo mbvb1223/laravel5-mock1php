@@ -78,7 +78,7 @@ class Product extends Model
     }
 
     public static function mapProductIdToInformationProduct(){
-        $products = Product::all()->toArray();
+        $products = self::all()->toArray();
 
         if($products == null){
             return null;

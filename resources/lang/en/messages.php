@@ -8,6 +8,11 @@
  */
 return [
     /**
+     * Frontend Controller
+     */
+    'not_found_product'                 => 'Not Found Product',
+    'add_product_to_cart_successful' => 'Add product to cart successful',
+    /**
      * Global massage
      */
     'create_success'                    => "Create success",
@@ -143,10 +148,11 @@ return [
     'color_not_isset_in_database'       => 'Color Not isset In Database',
     'import_success'                    => 'Import Product To Cart Successful',
     'this_product_not_isset_in_session' => 'This Product Not Isset In Session',
-    'import_product'=>'Import Product',
-    'import'=>'Import',
-    'view_cart'=>'View Cart',
-    'confirm_invoice'=>'Confirm',
+    'import_product'                    => 'Import Product',
+    'import'                            => 'Import',
+    'view_cart'                         => 'View Cart',
+    'confirm_invoice'                   => 'Confirm',
+    'cart_empty'                        => 'Cart Empty',
 
 
     /**

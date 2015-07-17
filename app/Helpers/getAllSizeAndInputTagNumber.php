@@ -20,7 +20,7 @@ function getAllSizeAndInputTagNumber($dataArray)
         $result .= "</td>";
 
         $result .= "<td class='text-center'>";
-        $result .= "<input type='number' name='mapSizeToNumber[$value[id]]' class='form-control'>";
+        $result .= "<input type='number' min='0' name='mapSizeToNumber[$value[id]]' class='form-control'>";
         $result .= "</td>";
 
 

@@ -4,10 +4,12 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use DB;
-class Material extends Model {
+
+class Material extends Model
+{
     protected $guarded = ['id'];
     protected $table = 'material';
-    public $properties = array('id','material_name','created_at','updated_at');
+    public $properties = array('id', 'material_name', 'created_at', 'updated_at');
     public $timestamps = true;
 
 
@@ -18,35 +20,35 @@ class Material extends Model {
      * @return mixed
      */
 
-    public function getDataForPaginationAjax($dataRequest,$config){
+    public function getDataForPaginationAjax($dataRequest, $config)
+    {
         // Config sort
-        $sortBy = 'id';
+        $sortBy    = 'id';
         $sortOrder = 'asc';
-        if(isset($dataRequest['sort'])) {
-            $sort = $dataRequest['sort'];
-            $sortColum = ['id','material_name','created_at','updated_at'];
-            $sortBy = (in_array(key($sort), $sortColum)) ? key($sort) : 'id';
+        if (isset($dataRequest['sort'])) {
+            $sort      = $dataRequest['sort'];
+            $sortColum = ['id', 'material_name', 'created_at', 'updated_at'];
+            $sortBy    = (in_array(key($sort), $sortColum)) ? key($sort) : 'id';
             $sortOrder = current($sort);
         }
 
-        $query = $this->where('id', 'LIKE', '%'.$dataRequest['searchPhrase'].'%')
-            ->orWhere('material_name', 'LIKE', '%'.$dataRequest['searchPhrase'].'%')
-            ->orWhere('created_at', 'LIKE', '%'.$dataRequest['searchPhrase'].'%')
-            ->orWhere('updated_at', 'LIKE', '%'.$dataRequest['searchPhrase'].'%')
-        ;
+        $query         = $this->where('id', 'LIKE', '%' . $dataRequest['searchPhrase'] . '%')
+            ->orWhere('material_name', 'LIKE', '%' . $dataRequest['searchPhrase'] . '%')
+            ->orWhere('created_at', 'LIKE', '%' . $dataRequest['searchPhrase'] . '%')
+            ->orWhere('updated_at', 'LIKE', '%' . $dataRequest['searchPhrase'] . '%');
         $queryGetTotal = $query;
-        $total = $queryGetTotal->count();
+        $total         = $queryGetTotal->count();
 
-        if($config['limit']== -1){
+        if ($config['limit'] == -1) {
             $rows = $query->orderBy($sortBy, $sortOrder)
-                          ->get();
-        }else {
+                ->get();
+        } else {
             $rows = $query->orderBy($sortBy, $sortOrder)
                 ->skip($config['offset'])
                 ->take($config['limit'])
                 ->get();
         }
-        return ['total'=> $total, 'rows'=>$rows];
+        return ['total' => $total, 'rows' => $rows];
     }
 
 

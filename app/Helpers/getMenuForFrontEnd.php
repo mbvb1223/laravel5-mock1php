@@ -51,9 +51,7 @@ function callMenu($menuConvert, $parent=0, &$result){
 
         }
     }
-//    if($parent==0){
-//        $result.= "</li>";
-//    }
+
 }
 
 //function callMenu($menuConvert, $parent=0, &$result){

@@ -28,7 +28,7 @@ class Invoiceimport extends Model
             if (!array_key_exists($keyProduct, $mapProductIdToInformationProduct)) {
                 continue;
             }
-            $nameProduct        = $mapProductIdToInformationProduct["$keyProduct"]['name_product'];
+            $nameProduct        = strip_tags($mapProductIdToInformationProduct["$keyProduct"]['name_product']);
             $priceImportProduct = $mapProductIdToInformationProduct["$keyProduct"]['price_import'];
             $numberProduct      = $value['number'];
             $priceForItem       = $priceImportProduct * $numberProduct;
@@ -38,29 +38,29 @@ class Invoiceimport extends Model
 
             $resultCart .= "<tr>";
 
-                $resultCart .= "<td>";
-                $resultCart .= $nameProduct;
-                $resultCart .= "</td>";
+            $resultCart .= "<td>";
+            $resultCart .=  $nameProduct;
+            $resultCart .= "</td>";
 
-                $resultCart .= "<td>";
-                $resultCart .= $colorName . " - " . $sizeValue;
-                $resultCart .= "</td>";
+            $resultCart .= "<td>";
+            $resultCart .= $colorName . " - " . $sizeValue;
+            $resultCart .= "</td>";
 
-                $resultCart .= "<td>";
-                $resultCart .= "<input class='text-center' id='number' type='number' name='mapKeyToNumber[$k]' value='" . $numberProduct . "' >";
-                $resultCart .= "</td>";
+            $resultCart .= "<td>";
+            $resultCart .= "<input class='text-center' id='number' type='number' min='0' name='mapKeyToNumber[$keyOfCart]' value='" . $numberProduct . "' >";
+            $resultCart .= "</td>";
 
-                $resultCart .= "<td>";
-                $resultCart .= $priceImportProduct;
-                $resultCart .= "</td>";
+            $resultCart .= "<td>";
+            $resultCart .= $priceImportProduct;
+            $resultCart .= "</td>";
 
-                $resultCart .= "<td>";
-                $resultCart .= $priceForItem;
-                $resultCart .= "</td>";
+            $resultCart .= "<td>";
+            $resultCart .= $priceForItem;
+            $resultCart .= "</td>";
 
-                $resultCart .= "<td>";
-                $resultCart .= "<a class='del-goods' href='" . action('InvoiceImportController@delete', array('id' => $keyOfCart)) . "'>&nbsp;</a>";
-                $resultCart .= "</td>";
+            $resultCart .= "<td>";
+            $resultCart .= "<a class='del-goods' href='" . action('InvoiceImportController@delete', array('id' => $keyOfCart)) . "'>&nbsp;</a>";
+            $resultCart .= "</td>";
 
             $resultCart .= "</tr>";
 
@@ -68,7 +68,7 @@ class Invoiceimport extends Model
         }
         $resultButton .= "
                             <ul>
-                                <li><strong class='price'><input name='total_price' value='Total: " . $totalPrice . "' readonly/></strong></li>
+                                <li><strong class='price'>Total: <input name='total_price' value='" . $totalPrice . "' readonly/></strong></li>
                             </ul>
                         ";
 
@@ -152,7 +152,121 @@ class Invoiceimport extends Model
         return $mapProductIdToInformationProduct;
     }
 
+    public function updateNumberForSessionCart($sessionCart, $allRequest)
+    {
+        $mapKeyToNumber = $allRequest['mapKeyToNumber'];
 
+        if (empty($mapKeyToNumber)) {
+            return redirect()->action('InvoiceImportController@view');
+        }
+
+        foreach ($mapKeyToNumber as $key => $number) {
+            if ($number == 0) {
+                unset($sessionCart[$key]);
+                continue;
+            }
+            $sessionCart[$key]['number'] = $number;
+        }
+        Session::put('cart', $sessionCart);
+
+    }
+
+    public function saveSessionCartToTableInvoiceImport($allRequest)
+    {
+        $sessionUser           = Session::get('user');
+        $userId                = $sessionUser['id'];
+        $allRequest['user_id'] = $userId;
+
+        autoAssignDataToProperty($this, $allRequest);
+        self::save();
+
+    }
+
+    public function saveSessionCartToTableDetailInvoiceImport($convertAndSortSessionCart)
+    {
+        $idLastOfInvoiceImport = $this->id;
+
+        $mapProductIdToInformationProduct = Product::mapProductIdToInformationProduct();
+        $dateTimeCreatedAndUpdated        = new \DateTime();
+        foreach ($convertAndSortSessionCart as $itemCart) {
+            $idProduct                              = $itemCart['product_id'];
+            $price_import                           = $mapProductIdToInformationProduct[$idProduct]['price_import'];
+            $dataInsertToTableDetailInvoiceImport[] = array(
+                'product_id'        => $itemCart['product_id'],
+                'color_id'          => $itemCart['color_id'],
+                'size_id'           => $itemCart['size_id'],
+                'number'            => $itemCart['number'],
+                'price_import'      => $price_import,
+                'invoice_import_id' => $idLastOfInvoiceImport,
+                'created_at'        => $dateTimeCreatedAndUpdated,
+                'updated_at'        => $dateTimeCreatedAndUpdated
+            );
+        }
+        $objDetailInvoiceImport = new Detailinvoiceimport();
+        $objDetailInvoiceImport->insert($dataInsertToTableDetailInvoiceImport);
+
+    }
+
+    public function saveSessionCartToTableColorSizeNumber($convertAndSortSessionCart)
+    {
+        $dateTimeCreatedAndUpdated     = new \DateTime();
+        // array[colorid|sizeid|number|]=>info record in Table color_size_number
+        $objColorSizeNumber            = new ColorSizeNumber();
+        $arrayWithKeyAsColorSizeNumber = $objColorSizeNumber->arrayWithKeyAsColorSizeNumber();
+
+        //if table color_size_number empty, insert SessionCart
+        if ($arrayWithKeyAsColorSizeNumber == null) {
+            foreach ($convertAndSortSessionCart as $itemCart) {
+                $dataInsertToTableDetailInvoiceImport = array(
+                    'product_id' => $itemCart['product_id'],
+                    'color_id'   => $itemCart['color_id'],
+                    'size_id'    => $itemCart['size_id'],
+                    'number'     => $itemCart['number'],
+                    'created_at' => $dateTimeCreatedAndUpdated,
+                    'updated_at' => $dateTimeCreatedAndUpdated
+                );
+                $objColorSizeNumber->insert($dataInsertToTableDetailInvoiceImport);
+
+            }
+        } else {
+            //if table color_size_number NOT empty
+            foreach ($convertAndSortSessionCart as $itemCart) {
+                /**
+                 * check isset product (color,size,number) in Table color_size_number
+                 * if isset then newNumber = oldNumber + currentNumber
+                 */
+
+                $keyOfSessionCart = $itemCart['key'];
+                if (array_key_exists($keyOfSessionCart, $arrayWithKeyAsColorSizeNumber)) {
+                    $id                  = $arrayWithKeyAsColorSizeNumber[$keyOfSessionCart]['id'];
+                    $objColorSizeNumberbyId = ColorSizeNumber::find($id);
+
+                    $oldNumber     = $objColorSizeNumberbyId->number;
+                    $currentNumber = $itemCart['number'];
+                    $newNumber     = $currentNumber + $oldNumber;
+
+                    $objColorSizeNumberbyId->number = $newNumber;
+                    $objColorSizeNumberbyId->save();
+                } else {
+                    /**
+                     * check isset product (color,size,number) in Table color_size_number
+                     * if Not isset then add new record
+                     */
+                    $dataInsertToTableDetailInvoiceImport = array(
+                        'product_id' => $itemCart['product_id'],
+                        'color_id'   => $itemCart['color_id'],
+                        'size_id'    => $itemCart['size_id'],
+                        'number'     => $itemCart['number'],
+                        'created_at' => $dateTimeCreatedAndUpdated,
+                        'updated_at' => $dateTimeCreatedAndUpdated
+                    );
+                    $objColorSizeNumber->insert($dataInsertToTableDetailInvoiceImport);
+
+                }
+
+            }
+        }
+    }
 }
 
 

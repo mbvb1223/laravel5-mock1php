@@ -1,1 +1,8 @@
 /* here you can put your own css to customize and override the theme */
+.alert-notification {
+    position: fixed !important;
+    right: 30px;
+    top: 120px;
+    z-index: 1000;
+    width: 400px;
+}

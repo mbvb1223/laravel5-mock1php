@@ -49,6 +49,26 @@ class Color extends Model {
         return ['total'=> $total, 'rows'=>$rows];
     }
 
+    public function mapIdToInfoColor(){
+        $allColor = self::all();
+        $newArray = null;
+        foreach($allColor as $color){
+            $newArray[$color['id']] = $color;
+        }
+        return $newArray;
+    }
+
+    public static function mapIdColorToInformationColor(){
+        $colors = self::all()->toArray();
+
+        if($colors == null){
+            return null;
+        }
+        foreach($colors as $color){
+            $mapIdColorToInformationColor[$color['id']] = $color;
+        }
+        return $mapIdColorToInformationColor;
+    }
 
 }
 

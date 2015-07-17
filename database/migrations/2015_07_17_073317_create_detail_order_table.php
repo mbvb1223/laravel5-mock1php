@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateDetailInvoiceImportTable extends Migration
+class CreateDetailOrderTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,14 +12,16 @@ class CreateDetailInvoiceImportTable extends Migration
      */
     public function up()
     {
-        Schema::create('detail_invoice_import', function (Blueprint $table) {
+        Schema::create('detail_order', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('product_id');
             $table->integer('color_id');
             $table->integer('size_id');
             $table->integer('number');
             $table->bigInteger('price_import');
-            $table->integer('invoice_import_id');
+            $table->bigInteger('price');
+            $table->bigInteger('cost');
+            $table->integer('order_id');
             $table->timestamps();
         });
     }
@@ -31,6 +33,6 @@ class CreateDetailInvoiceImportTable extends Migration
      */
     public function down()
     {
-        Schema::drop('detail_invoice_import');
+        Schema::drop('detail_order');
     }
 }

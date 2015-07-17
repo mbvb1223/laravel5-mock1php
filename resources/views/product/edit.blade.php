@@ -49,6 +49,18 @@
                         </div>
                         <div class="form-group">
                             <label for="price"
+                                   class="col-sm-3 control-label"><?php echo Lang::get('messages.price_import'); ?></label>
+
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" name="price_import"
+                                       id="price"
+                                       value="{{ old('price_import', $result['price_import'])}}"
+                                       placeholder="<?php echo Lang::get('messages.price_import'); ?>"
+                                       required="required"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="price"
                                    class="col-sm-3 control-label"><?php echo Lang::get('messages.price'); ?></label>
 
                             <div class="col-sm-9">

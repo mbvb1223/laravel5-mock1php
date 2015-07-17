@@ -102,7 +102,7 @@ class ProductController extends Controller
     {
         //Get all Request
         $allRequest = $request->all();
-
+        dd($allRequest);
         //Convert Money From String To Value
         $allRequest['price_import'] = convertStringToValueOfMoney($allRequest['price_import']);
         $allRequest['price'] = convertStringToValueOfMoney($allRequest['price']);

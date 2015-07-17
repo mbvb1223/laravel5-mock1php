@@ -16,7 +16,7 @@
                                 class="fa fa-angle-left"></i> <?php echo Lang::get('messages.list_product'); ?></a>
                         <button class="btn default" type="reset"><i
                                 class="fa fa-reply"></i><?php echo Lang::get('messages.reset'); ?></button>
-                        <button class="btn green" type="submit">
+                        <button class="btn green" type="submit" id="submit">
                             <i class="fa fa-check"></i> <?php echo Lang::get('messages.create'); ?></button>
                     </div>
                 </div>
