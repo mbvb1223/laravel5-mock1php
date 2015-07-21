@@ -25,7 +25,7 @@ class HeightRequest extends Request {
     public function rules()
     {
         return [
-            'height_value'=>'required|unique:height|integer|min:1|max:100',
+            'height_value'=>'required|integer|min:1|max:100|unique:height,height_value,'.$this->get('id'),
         ];
     }
 

@@ -11,22 +11,18 @@ use Route;
 
 class HeightController extends Controller
 {
-
-
     public function __construct()
     {
-        $title = 'Dashboard - Height';
-        $class_name= substr(__CLASS__,21);
-        $action_name=substr(strrchr(Route::currentRouteAction(),"@"),1);
+        $title       = 'Dashboard - Height';
+        $class_name  = substr(__CLASS__, 21);
+        $action_name = substr(strrchr(Route::currentRouteAction(), "@"), 1);
         View::share(array(
-            'title'=> $title,
-            'class_name'=> $class_name,
-            'action_name'=> $action_name,
+            'title'       => $title,
+            'class_name'  => $class_name,
+            'action_name' => $action_name,
         ));
-        $this->afterFilter(function() {
-            // something
-        });
     }
+
     public function index()
     {
         return view('height.list');
@@ -37,14 +33,14 @@ class HeightController extends Controller
         return view('height.create');
     }
 
-
     public function store(HeightRequest $request)
     {
-        $model=new Height();
-        autoAssignDataToProperty($model,$request->all());
-        $model->save();
+        $allRequest = $request->all();
+        $objHeight  = new Height();
+        autoAssignDataToProperty($objHeight, $allRequest);
+        $objHeight->save();
         return redirect()->action('HeightController@create')
-                         ->withSuccess(Lang::get('messages.create_success'));
+            ->withSuccess(Lang::get('messages.create_success'));
     }
 
     public function getDataAjax(Request $request)
@@ -52,66 +48,67 @@ class HeightController extends Controller
         $dataRequest = $request->all();
 
         $pageCurrent = $dataRequest['current'];
-        $limit = $dataRequest['rowCount'];
-        $offset = ($pageCurrent -1)*$limit;
+        $limit       = $dataRequest['rowCount'];
+        $offset      = ($pageCurrent - 1) * $limit;
 
         $config = array(
-            'limit'=>$limit,
-            'offset'=>$offset,
+            'limit'  => $limit,
+            'offset' => $offset,
         );
 
-        $model = new Height;
-        $result = $model->getDataForPaginationAjax($dataRequest,$config);
+        $model  = new Height;
+        $result = $model->getDataForPaginationAjax($dataRequest, $config);
 
         # Render field action
         foreach ($result['rows'] as $k => $item) {
             $result['rows'][$k]['action'] = create_field_action('admin/height', $item->id);
         }
 
-        $data['current'] = $pageCurrent;
+        $data['current']  = $pageCurrent;
         $data['rowCount'] = $limit;
-        $data['total'] = $result['total'];
-        $data['rows'] = $result['rows'];
-        $data['_token'] = csrf_token();
+        $data['total']    = $result['total'];
+        $data['rows']     = $result['rows'];
+        $data['_token']   = csrf_token();
         die(json_encode($data));
     }
+
     public function edit($id)
     {
-        $result = height::find($id);
-        /**
-         *
-         */
-        if($result== null) {
+        $objHeight      = new Height;
+        $dataHeightById = $objHeight->find($id);
+
+        if ($dataHeightById == null) {
             return redirect()->action('HeightController@index')->withErrors(Lang::get('messages.no_id'));
         }
 
-        /**
-         * Show view
-         */
-        return view('height.edit', compact('result'));
+        return view('height.edit')->with('dataHeightById', $dataHeightById);;
     }
 
     public function update(HeightRequest $request, $id)
     {
-        $allRequest = $request->all();
-        $model = Height::find($id);
+        $allRequest     = $request->all();
+        $objHeight      = new Height();
+        $dataHeightById = $objHeight->find($id);
 
-        if($model== null) {
+        if ($dataHeightById == null) {
             return redirect()->action('HeightController@index')->withErrors(Lang::get('messages.no_id'));
         }
-        autoAssignDataToProperty($model,$allRequest);
-        $model->save();
+        autoAssignDataToProperty($dataHeightById, $allRequest);
+        $dataHeightById->save();
         return redirect()->action('HeightController@index')->withSuccess(Lang::get('messages.update_success'));
     }
 
     public function destroy($id)
     {
-        $result = Height::find($id);
-        if($result == null){
+        $objHeight      = new Height();
+        $dataHeightById = $objHeight->find($id);
+
+        if ($dataHeightById == null) {
             return redirect()->action('HeightController@index')->withErrors(Lang::get('messages.no_id'));
         }
-        $result->delete();
-        return redirect_success('HeightController@index',Lang::get('messages.delete_success'));
+
+        $dataHeightById->delete();
+        return redirect_success('HeightController@index', Lang::get('messages.delete_success'));
     }
 
 }

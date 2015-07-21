@@ -49,7 +49,7 @@ Route::group(['middleware' => 'auth'], function () {
      * Category CONTROLLERS
      */
     Route::get('admin/category', 'CategoryController@index');
-    Route::get('admin/category/getJsonData', 'CategoryController@getJsonData');
+    Route::get('admin/category/getDataForJstree', 'CategoryController@getDataForJstree');
     Route::post('admin/category', 'CategoryController@store');
     Route::get('admin/category/create', 'CategoryController@create');
 
@@ -161,6 +161,14 @@ Route::controllers([
     'password' => 'Auth\PasswordController',
 ]);
 
+//alias for routes
+/*
+ get( '/account-register' , [
+    'as' => 'auth.register' ,
+    'uses' => 'Auth\AuthController@getRegister'
+] );
+*/
+
 Route::get('front-end', 'TestController@index');
 //Route::get('auth/notification','NotificationController@index');
 Route::get('user/active/{id}/{key}', 'UsersController@active');
@@ -177,11 +185,10 @@ Route::get('order/update/{id}', 'FrontendController@addorder');
 Route::get('order/del/{id}', 'FrontendController@destroy');
 Route::get('order/deleteall', 'FrontendController@deleteall');
 
-/**
- * Product Item
- */
+//show info product
 Route::get('product/{id}', 'FrontendController@product');
-
+//
+Route::get('category/{id}', 'FrontendController@showProductByCategory');
 /**
  * Order Product
  */
@@ -190,6 +197,9 @@ Route::post('cart/addproduct', 'FrontendController@addorder');
 Route::get('cart/view', 'FrontendController@vieworder');
 Route::get('cart/delete/{id}', 'FrontendController@deletecartitem');
 Route::post('cart/update', 'FrontendController@updateorder');
+Route::get('cart/checkout', 'FrontendController@checkout');
+Route::post('cart/checkout', 'FrontendController@submitcheckout');
 
 Route::get('test', 'FrontendController@test');
 Route::get('test2', 'FrontendController@test2');
+

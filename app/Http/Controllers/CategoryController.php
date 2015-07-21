@@ -14,12 +14,8 @@ use Mail;
 
 class CategoryController extends Controller
 {
-
     public function __construct()
     {
-        /**
-         * SET title, class_name, action_name
-         */
         $title       = 'Dashboard - Category';
         $class_name  = substr(__CLASS__, 21);
         $action_name = substr(strrchr(Route::currentRouteAction(), "@"), 1);
@@ -28,71 +24,75 @@ class CategoryController extends Controller
             'class_name'  => $class_name,
             'action_name' => $action_name,
         ));
-
     }
 
     public function index()
     {
-        $categories = Category::all()->toArray();
-        $result     = null;
-        getAllCategory($categories, $parent = 0, $text = "", $select = 0, $result);
+        $allCategory = Category::all()->toArray();
 
-        return View::make('category.list', ['categories' => $result]);
-    }
-
-    public function getJsonData()
-    {
-        $categories = Category::all();
-        foreach ($categories as $category) {
-            if ($category['parent'] == 0) {
-                $category['parent'] = "#";
-            }
-            $newCategoryConvert[] = array('id'     => $category['id'],
-                                          'parent' => $category['parent'],
-                                          'text'   => $category['category_name'],
-            );
-
+        if (empty($allCategory)) {
+            return redirect()->action('HomeController@index')
+                ->withErrors(Lang::get('messages.table_category_empty'));
         }
 
-        return $newCategoryConvert;
+        $getAllCategoryForSelectTag = null;
+        getAllCategoryForSelectTag($allCategory, $parent = 0, $text = "", $select = 0, $getAllCategoryForSelectTag);
+
+        return View::make('category.list', ['getAllCategoryForSelectTag' => $getAllCategoryForSelectTag]);
+    }
+
+    public function getDataForJstree()
+    {
+        $objCategory                 = new Category();
+        $arrayDataConvertedForJstree = $objCategory->getDataForJstree();
+        return $arrayDataConvertedForJstree;
     }
 
     public function create()
     {
-        $categories = Category::all()->toArray();
-        $result     = null;
-        getAllCategory($categories, $parent = 0, $text = "", $select = 0, $result);
+        $allCategory = Category::all()->toArray();
+
+        $getAllCategoryForSelectTag = null;
+        getAllCategoryForSelectTag($allCategory, $parent = 0, $text = "", $select = 0, $getAllCategoryForSelectTag);
 
         return view('category.create')->with([
-            "categories" => $result,
+            "getAllCategoryForSelectTag" => $getAllCategoryForSelectTag,
 
         ]);
-
     }
 
     public function update(CategoryRequest $request)
     {
-        $allRequest = $request->all();
-        $model      = Category::find($allRequest['id']);
+        $allRequest             = $request->all();
+        $idCategoryNeedToUpdate = $allRequest['id'];
 
-        autoAssignDataToProperty($model, $request->all());
-        $model->save();
+        $objCategory      = new Category();
+        $dataCategoryById = $objCategory->find($idCategoryNeedToUpdate);
+        autoAssignDataToProperty($dataCategoryById, $allRequest);
+        $dataCategoryById->save();
+
         return redirect()->action('CategoryController@index')->withSuccess(Lang::get('messages.update_success'));
-
-
     }
 
     public function delete(Request $request)
     {
-        $allRequest = $request->all();
-        $model      = Category::find($allRequest['id']);
-        if ($model == null) {
+        $allRequest             = $request->all();
+        $idCategoryNeedToDelete = $allRequest['id'];
+
+        $objCategory      = new Category();
+        $dataCategoryById = $objCategory->find($idCategoryNeedToDelete);
+
+        if (empty($dataCategoryById)) {
             return redirect()->action('CategoryController@index')->withErrors(Lang::get('messages.no_id'));
         }
-        if (Category::where('parent', $model->id)->count() != 0) {
+
+        $checkChildren = $objCategory->where('parent', $dataCategoryById->id)->count();
+        if ($checkChildren != 0) {
             return redirect()->action('CategoryController@index')->withErrors(Lang::get('messages.has_childrent'));
         }
-        $model->delete();
+
+        $dataCategoryById->delete();
+
         return redirect()->action('CategoryController@index')->withSuccess(Lang::get('messages.delete_success'));
 
 
@@ -100,20 +100,13 @@ class CategoryController extends Controller
 
     public function store(CategoryRequest $request)
     {
-        $model = new Category();
-        autoAssignDataToProperty($model, $request->all());
-        $model->save();
+        $objCategory = new Category();
+        autoAssignDataToProperty($objCategory, $request->all());
+        $objCategory->save();
         return redirect()->action('CategoryController@index')
             ->withSuccess(Lang::get('messages.create_success'));
     }
 
-//    public function test()
-//    {
-//        $categories = Category::all()->toArray();
-//        $data       = array();
-//        getAllCategoryTest($categories, $data);
-//        dd($data);
-//    }
 
 }
 

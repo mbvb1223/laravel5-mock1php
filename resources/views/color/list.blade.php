@@ -36,16 +36,14 @@
         </div>
     </div>
 </div>
-    @stop
-    @section('js')
-
+@stop
+@section('js')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-bootgrid/1.2.0/jquery.bootgrid.fa.min.js "></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-bootgrid/1.2.0/jquery.bootgrid.min.js"></script>
-    @stop
+@stop
     @section('jscode')
     <script>
         jQuery(document).ready(function() {
-
             $("#grid-data-api").bootgrid({
                 ajax: true,
                 post: function ()
@@ -56,12 +54,8 @@
                     };
                 },
                 url: "{{url('admin/color/getDataAjax')}}"
-
-
             });
         })
-
     </script>
-
-    @stop
+@stop
 

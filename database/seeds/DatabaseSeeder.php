@@ -48,6 +48,7 @@ class DatabaseSeeder extends Seeder
                 "email"          => $faker->email,
                 "password"       => $faker->password,
                 "username"       => $faker->userName,
+                "yourname"       => $faker->lastName,
                 "phone"          => $faker->phoneNumber,
                 "status"         => 0,
                 "role_id"        => $faker->numberBetween(1, 3),
@@ -56,74 +57,6 @@ class DatabaseSeeder extends Seeder
             ]);
 
         }
-
-        /**
-         * For Height
-         */
-        for ($i = 20; $i < 50; $i++) {
-            Height::create([
-                "height_value" => $i,
-
-            ]);
-
-        }
-
-        /**
-         * For Selloff
-         */
-        for ($i = 1; $i < 99; $i++) {
-            Selloff::create([
-                "selloff_value" => $i,
-
-            ]);
-
-        }
-
-        /**
-         * For MadeIn
-         */
-        for ($i = 20; $i < 50; $i++) {
-            Madein::create([
-                "madein_name" => $faker->country,
-
-            ]);
-
-        }
-        /**
-         * For MadeIn
-         */
-        for ($i = 1; $i < 5; $i++) {
-            Style::create([
-                "style_name" => $faker->city,
-
-            ]);
-
-        }
-
-        /**
-         * For Material
-         */
-        for ($i = 1; $i < 50; $i++) {
-            Material::create([
-                "material_name" => $faker->company,
-
-            ]);
-
-        }
-
-
-        /**
-         * For Roles
-         */
-        Roles::create([
-            "rolename" => "Administrator",
-        ]);
-        Roles::create([
-            "rolename" => "Moderator",
-        ]);
-        Roles::create([
-            "rolename" => "Member",
-        ]);
 
         /**
          * For Catetory
@@ -145,25 +78,7 @@ class DatabaseSeeder extends Seeder
             'parent'        => 2,
         ]);
 
-        /**
-         * For Color
-         */
-        for ($i = 0; $i < 7; $i++) {
-            Color::create([
-                "color_name" => $faker->colorName,
-            ]);
 
-        }
-
-        /**
-         * For Size
-         */
-        for ($i = 35; $i < 45; $i++) {
-            Size::create([
-                "size_value" => $i,
-            ]);
-
-        }
 
 
     }

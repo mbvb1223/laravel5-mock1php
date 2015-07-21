@@ -1,73 +1,102 @@
-@extends('auth.layouts.master')
+@extends('layouts.front.master')
 @section('content')
-<div class="content">
-<div class="row">
-    <div class="col-md-12">
-        <form class="form-horizontal form-row-seperated" action="{{ url('/auth/login') }}"
-              method="Post" enctype="multipart/form-data" accept="image/*">
-            <input type="hidden" name="_token" value="{{ csrf_token() }}">
-
-            <div class="portlet">
-                <div class="portlet-title">
-                    <div class="caption">
-                        <i class="fa fa-shopping-cart"></i><?php echo Lang::get('messages.login_user'); ?>
-                    </div>
-                    <div class="actions btn-set">
-                        <button class="btn default" type="reset"><i
-                                class="fa fa-reply"></i><?php echo Lang::get('messages.reset'); ?></button>
-                        <button class="btn green" type="submit"><i
-                                class="fa fa-check"></i> <?php echo Lang::get('messages.login_user'); ?></button>
-                    </div>
+    <div class="main">
+        <div class="container">
+            <ul class="breadcrumb">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="#">Pages</a></li>
+                <li class="active">Login</li>
+            </ul>
+            <!-- BEGIN SIDEBAR & CONTENT -->
+            <div class="row margin-bottom-40">
+                <!-- BEGIN SIDEBAR -->
+                <div class="sidebar col-md-3 col-sm-3">
+                    <ul class="list-group margin-bottom-25 sidebar-menu">
+                        <li class="list-group-item clearfix"><a href="#"><i class="fa fa-angle-right"></i> Login/Register</a></li>
+                        <li class="list-group-item clearfix"><a href="#"><i class="fa fa-angle-right"></i> Restore Password</a></li>
+                        <li class="list-group-item clearfix"><a href="#"><i class="fa fa-angle-right"></i> My account</a></li>
+                        <li class="list-group-item clearfix"><a href="#"><i class="fa fa-angle-right"></i> Address book</a></li>
+                        <li class="list-group-item clearfix"><a href="#"><i class="fa fa-angle-right"></i> Wish list</a></li>
+                        <li class="list-group-item clearfix"><a href="#"><i class="fa fa-angle-right"></i> Returns</a></li>
+                        <li class="list-group-item clearfix"><a href="#"><i class="fa fa-angle-right"></i> Newsletter</a></li>
+                    </ul>
                 </div>
-                <div class="portlet-body col-xs-12 col-sm-12">
-                    <div class=" form-group">
-                        <label for="username"
-                               class="col-sm-2 control-label"><?php echo Lang::get('messages.users_username'); ?></label>
+                <!-- END SIDEBAR -->
 
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" name="username"
-                                   value="{{ old('username')}}" id="username"
-                                   placeholder="<?php echo Lang::get('messages.users_username'); ?>"
-                                   required="required"/>
+                <!-- BEGIN CONTENT -->
+                <div class="col-md-9 col-sm-9">
+                    <h1>Login</h1>
+                    <div class="content-form-page">
+                        <div class="row">
+                            <div class="col-md-7 col-sm-7">
+                                <form class="form-horizontal form-row-seperated" action="{{ action('\App\Http\Controllers\Auth\AuthController@postLogin') }}"
+                                      method="Post" enctype="multipart/form-data" >
+                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                    <div class=" form-group">
+                                        <label for="username"
+                                               class="col-lg-4 control-label"><?php echo Lang::get('messages.users_username'); ?></label>
+
+                                        <div class="col-lg-8">
+                                            <input type="text" class="form-control" name="username"
+                                                   value="{{ old('username')}}" id="username"
+                                                   placeholder="<?php echo Lang::get('messages.users_username'); ?>"
+                                                   required="required"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="password"
+                                               class="col-lg-4 control-label"><?php echo Lang::get('messages.users_password'); ?></label>
+
+                                        <div class="col-lg-8">
+                                            <input type="password" class="form-control" name="password"
+                                                   id="password"
+                                                   placeholder="<?php echo Lang::get('messages.users_password'); ?>"
+                                                   required="required"/>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-8 col-md-offset-4 padding-left-0">
+                                            <a href="page-forgotton-password.html">Forget Password?</a>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-8 col-md-offset-4 padding-left-0 padding-top-20">
+                                            <button type="submit" class="btn btn-primary">Login</button>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-8 col-md-offset-4 padding-left-0 padding-top-10 padding-right-30">
+                                            <hr>
+                                            <div class="login-socio">
+                                                <p class="text-muted">or login using:</p>
+                                                <ul class="social-icons">
+                                                    <li><a href="#" data-original-title="facebook" class="facebook" title="facebook"></a></li>
+                                                    <li><a href="#" data-original-title="Twitter" class="twitter" title="Twitter"></a></li>
+                                                    <li><a href="#" data-original-title="Google Plus" class="googleplus" title="Google Plus"></a></li>
+                                                    <li><a href="#" data-original-title="Linkedin" class="linkedin" title="LinkedIn"></a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="col-md-4 col-sm-4 pull-right">
+                                <div class="form-info">
+                                    <h2><em>Important</em> Information</h2>
+                                    <p>Duis autem vel eum iriure at dolor vulputate velit esse vel molestie at dolore.</p>
+
+                                    <button type="button" class="btn btn-default">More details</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="password"
-                               class="col-sm-2 control-label"><?php echo Lang::get('messages.users_password'); ?></label>
-
-                        <div class="col-sm-10">
-                            <input type="password" class="form-control" name="password"
-                                   id="password"
-                                   placeholder="<?php echo Lang::get('messages.users_password'); ?>"
-                                   required="required"/>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="remember"
-                               class="col-sm-2 control-label"><?php echo Lang::get('messages.users_remeber'); ?></label>
-
-                        <div class="col-sm-10 padding-top-10px">
-                            <input type="checkbox" class="form-control" name="remember"
-                                   id="remember" />
-                        </div>
-                    </div>
-
                 </div>
-                <div class="porlet-body-right col-xs-12 col-sm-3">
-                    <img id="output" class="img-responsive"/>
-                </div>
-        </form>
+                <!-- END CONTENT -->
+            </div>
+            <!-- END SIDEBAR & CONTENT -->
+        </div>
     </div>
-</div>
-</div>
+
 @stop
 
-@section('js')
-
-<script>
-    var loadFile = function (event) {
-        var output = document.getElementById('output');
-        output.src = URL.createObjectURL(event.target.files[0]);
-    };
-</script>
-@stop

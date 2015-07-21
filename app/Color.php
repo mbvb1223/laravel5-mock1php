@@ -4,67 +4,93 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use DB;
-class Color extends Model {
+
+class Color extends Model
+{
     protected $guarded = ['id'];
     protected $table = 'color';
-    public $properties = array('id','color_name','created_at','updated_at');
+    public $properties = array('id', 'color_name', 'created_at', 'updated_at');
     public $timestamps = true;
 
 
     /**
      * getData for pagination using ajax bootgrid
-     * @param $dataRequest
+     * @param $allRequest
      * @param $config
      * @return mixed
      */
 
-    public function getDataForPaginationAjax($dataRequest,$config){
+    public function getDataForPaginationAjax($allRequest)
+    {
+        $pageCurrent = $allRequest['current'];
+        $limit       = $allRequest['rowCount'];
+        $offset      = ($pageCurrent - 1) * $limit;
+
+        $config = array(
+            'limit'  => $limit,
+            'offset' => $offset,
+        );
+
         // Config sort
-        $sortBy = 'id';
+        $sortBy    = 'id';
         $sortOrder = 'asc';
-        if(isset($dataRequest['sort'])) {
-            $sort = $dataRequest['sort'];
-            $sortColum = ['id','color_name','created_at','updated_at'];
-            $sortBy = (in_array(key($sort), $sortColum)) ? key($sort) : 'id';
+
+        if (isset($allRequest['sort'])) {
+            $sort      = $allRequest['sort'];
+            $sortColum = ['id', 'color_name', 'created_at', 'updated_at'];
+            $sortBy    = (in_array(key($sort), $sortColum)) ? key($sort) : 'id';
             $sortOrder = current($sort);
         }
 
-        $query = $this->where('id', 'LIKE', '%'.$dataRequest['searchPhrase'].'%')
-            ->orWhere('color_name', 'LIKE', '%'.$dataRequest['searchPhrase'].'%')
-            ->orWhere('created_at', 'LIKE', '%'.$dataRequest['searchPhrase'].'%')
-            ->orWhere('updated_at', 'LIKE', '%'.$dataRequest['searchPhrase'].'%')
-        ;
-        $queryGetTotal = $query;
-        $total = $queryGetTotal->count();
+        $query         = $this->where('id', 'LIKE', '%' . $allRequest['searchPhrase'] . '%')
+            ->orWhere('color_name', 'LIKE', '%' . $allRequest['searchPhrase'] . '%')
+            ->orWhere('created_at', 'LIKE', '%' . $allRequest['searchPhrase'] . '%')
+            ->orWhere('updated_at', 'LIKE', '%' . $allRequest['searchPhrase'] . '%');
 
-        if($config['limit']== -1){
+        $queryGetTotal = $query;
+        $total         = $queryGetTotal->count();
+
+        if ($config['limit'] == -1) {
             $rows = $query->orderBy($sortBy, $sortOrder)
-                          ->get();
-        }else {
+                ->get();
+        } else {
             $rows = $query->orderBy($sortBy, $sortOrder)
                 ->skip($config['offset'])
                 ->take($config['limit'])
                 ->get();
         }
-        return ['total'=> $total, 'rows'=>$rows];
+
+        # Render field action
+        foreach ($rows as $k => $item) {
+            $rows[$k]['action'] = create_field_action('admin/color', $item->id);
+        }
+
+        $data['current']  = $pageCurrent;
+        $data['rowCount'] = $limit;
+        $data['total']    = $total;
+        $data['rows']     = $rows;
+        $data['_token']   = csrf_token();
+        return json_encode($data);
     }
 
-    public function mapIdToInfoColor(){
+    public function mapIdToInfoColor()
+    {
         $allColor = self::all();
         $newArray = null;
-        foreach($allColor as $color){
+        foreach ($allColor as $color) {
             $newArray[$color['id']] = $color;
         }
         return $newArray;
     }
 
-    public static function mapIdColorToInformationColor(){
+    public static function mapIdColorToInformationColor()
+    {
         $colors = self::all()->toArray();
 
-        if($colors == null){
+        if ($colors == null) {
             return null;
         }
-        foreach($colors as $color){
+        foreach ($colors as $color) {
             $mapIdColorToInformationColor[$color['id']] = $color;
         }
         return $mapIdColorToInformationColor;

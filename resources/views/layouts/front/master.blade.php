@@ -111,6 +111,7 @@ License: You must have a valid license purchased only from themeforest (the abov
 <!-- Load javascripts at bottom, this will reduce page load time -->
 @include('layouts.front.footerjs')
 <!-- END PAGE LEVEL JAVASCRIPTS -->
+@yield('jscode')
 </body>
 <!-- END BODY -->
 </html>

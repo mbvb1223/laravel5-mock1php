@@ -1,12 +1,12 @@
 <?php
 /**
- * @param $dataArrayCategory
+ * @param array $dataArrayCategory
  * @param int $parent
  * @param string $text
  * @param int $select
  * @return string
  */
-function getAllCategory($dataArrayCategory, $parent = 0, $text = "", $select = 0, &$result)
+function getAllCategoryForSelectTag($dataArrayCategory, $parent = 0, $text = "", $select = 0, &$result)
 {
     foreach ($dataArrayCategory as $k => $value) {
         if ($value['parent'] == $parent) {
@@ -17,7 +17,7 @@ function getAllCategory($dataArrayCategory, $parent = 0, $text = "", $select = 0
                 $result .= "<option value='" . $value['id'] . "'>" . $text . $value['category_name'] . "</option>";
             }
             unset($dataArrayCategory[$k]);
-            getAllCategory($dataArrayCategory, $id, $text . "--", $select, $result);
+            getAllCategoryForSelectTag($dataArrayCategory, $id, $text . "--", $select, $result);
         }
     }
 

@@ -11,7 +11,8 @@ return [
      * Frontend Controller
      */
     'not_found_product'                 => 'Not Found Product',
-    'add_product_to_cart_successful' => 'Add product to cart successful',
+    'add_product_to_cart_successful'    => 'Add product to cart successful',
+    'order_successful'                  => 'Order successful',
     /**
      * Global massage
      */
@@ -49,6 +50,9 @@ return [
     'users_phone'                       => 'Phone',
     'users_avatar'                      => 'Avatar',
     'users_status'                      => 'Status',
+    'users_address'                     => 'Address',
+    'users_city'                        => 'City',
+    'users_region'                      => 'Region',
     'users_rolename'                    => 'Role',
     'users_keyactive'                   => 'Keyactive',
     'users_remember_token'              => 'Remember token',
@@ -170,15 +174,19 @@ return [
     'no_active'                         => 'This account need to active, please check your email for this action',
     'active_successful'                 => 'This account is active',
     'warning'                           => 'Warning',
+    'login_false'                       => 'Login fail',
+    'login_success'                     => 'Login success',
 
 
     /**
      * For Category
      */
+
     'category_parent'                   => 'Parent',
     'category_name'                     => 'Category Name',
     'list_category'                     => 'List Category',
     'create_category'                   => 'Create Category',
     'edit_category'                     => 'Edit Category',
-    'has_childrent'                     => 'You must delete childrent category',
+    'has_childrent'                     => 'You need to delete childrent category',
+    'table_category_empty'              => 'Table category empty',
 ];

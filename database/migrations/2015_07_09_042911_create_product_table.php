@@ -16,12 +16,12 @@ class CreateProductTable extends Migration
             $table->increments('id');
             $table->string('key_product')->unique();
             $table->string('name_product');
+            $table->integer('status');
             $table->bigInteger('price_import');
             $table->bigInteger('price');
             $table->bigInteger('cost');
             $table->string('image');
             $table->text('information');
-
             $table->string('category_id');
             $table->integer('selloff_id');
             $table->integer('style_id');

@@ -11,8 +11,6 @@ use Route;
 
 class ColorController extends Controller
 {
-
-
     public function __construct()
     {
         $title       = 'Dashboard - Color';
@@ -23,9 +21,6 @@ class ColorController extends Controller
             'class_name'  => $class_name,
             'action_name' => $action_name,
         ));
-        $this->afterFilter(function () {
-            // something
-        });
     }
 
     public function index()
@@ -38,82 +33,61 @@ class ColorController extends Controller
         return view('color.create');
     }
 
-
     public function store(ColorRequest $request)
     {
-        $model = new Color();
-        autoAssignDataToProperty($model, $request->all());
-        $model->save();
+        $allRequest = $request->all();
+        $objColor   = new Color();
+        autoAssignDataToProperty($objColor, $allRequest);
+        $objColor->save();
         return redirect()->action('ColorController@create')
             ->withSuccess(Lang::get('messages.create_success'));
     }
 
     public function getDataAjax(Request $request)
     {
-        $dataRequest = $request->all();
+        $allRequest               = $request->all();
+        $objColor                 = new Color;
+        $getDataForPaginationAjax = $objColor->getDataForPaginationAjax($allRequest);
 
-        $pageCurrent = $dataRequest['current'];
-        $limit       = $dataRequest['rowCount'];
-        $offset      = ($pageCurrent - 1) * $limit;
-
-        $config = array(
-            'limit'  => $limit,
-            'offset' => $offset,
-        );
-
-        $model  = new Color;
-        $result = $model->getDataForPaginationAjax($dataRequest, $config);
-
-        # Render field action
-        foreach ($result['rows'] as $k => $item) {
-            $result['rows'][$k]['action'] = create_field_action('admin/color', $item->id);
-        }
-
-        $data['current']  = $pageCurrent;
-        $data['rowCount'] = $limit;
-        $data['total']    = $result['total'];
-        $data['rows']     = $result['rows'];
-        $data['_token']   = csrf_token();
-        die(json_encode($data));
+        return $getDataForPaginationAjax;
     }
 
     public function edit($id)
     {
-        $result = Color::find($id);
-        /**
-         *
-         */
-        if ($result == null) {
+        $objColor     = new Color;
+        $dataColorById = $objColor->find($id);
+
+        if ($dataColorById == null) {
             return redirect()->action('ColorController@index')->withErrors(Lang::get('messages.no_id'));
         }
 
-        /**
-         * Show view
-         */
-        return view('color.edit', compact('result'));
+        return view('color.edit')->with('dataColorById',$dataColorById);
     }
 
     public function update(ColorRequest $request)
     {
-        $allRequest = $request->all();
-        $id         = $allRequest['id'];
-        $model      = Color::find($id);
+        $allRequest   = $request->all();
+        $id           = $allRequest['id'];
+        $objColor     = new Color;
+        $getColorById = $objColor->find($id);
 
-        if ($model == null) {
+        if ($getColorById == null) {
             return redirect()->action('ColorController@index')->withErrors(Lang::get('messages.no_id'));
         }
-        autoAssignDataToProperty($model, $allRequest);
-        $model->save();
+        autoAssignDataToProperty($getColorById, $allRequest);
+        $getColorById->save();
         return redirect()->action('ColorController@index')->withSuccess(Lang::get('messages.update_success'));
     }
 
     public function destroy($id)
     {
-        $result = Color::find($id);
-        if ($result == null) {
+        $objColor     = new Color;
+        $getColorById = $objColor->find($id);
+
+        if ($getColorById == null) {
             return redirect()->action('ColorController@index')->withErrors(Lang::get('messages.no_id'));
         }
-        $result->delete();
+        $getColorById->delete();
         return redirect_success('ColorController@index', Lang::get('messages.delete_success'));
     }
 

@@ -30,9 +30,13 @@ $(document).ready(function () {
         }
 
     });
+
+
 });
 
-
-/**
- * Created by pckhien on 7/5/15.
- */
+function confirmDelete()
+{
+    if (!confirm("Do you want to delete?")) {
+        return false;
+    }
+}

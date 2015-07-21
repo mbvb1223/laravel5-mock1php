@@ -24,10 +24,11 @@ class Authen
 
     public static function checkLoginToBackEnd() {
         //check role == member
-        if(Session::get('user')['role_id'] == Users::MEMBER) {
-            return false;
+        $roleUser = Session::get('user')['role_id'];
+        if($roleUser == Users::ADMIN ||$roleUser==Users::MOD ) {
+            return true;
         }
-        return true;
+        return false;
     }
     public static function checkStatus() {
         //check role == member

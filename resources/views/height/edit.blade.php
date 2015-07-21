@@ -2,8 +2,9 @@
 @section('content')
 <div class="row">
     <div class="col-md-12">
-        <form class="form-horizontal form-row-seperated" action="{{ URL::action('HeightController@update', $result->id) }}" method="Post">
+        <form class="form-horizontal form-row-seperated" action="{{ URL::action('HeightController@update', $dataHeightById->id) }}" method="Post">
             <input type="hidden" name="_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="id" id="id" value="{{ old('id', $dataHeightById['id'])}}">
             <input type="hidden" name="_method" value="PUT">
             <div class="portlet">
                 <div class="portlet-title">
@@ -21,7 +22,7 @@
                     <div class="form-group">
                         <label for=height_value" class="col-sm-2 control-label"><?php echo Lang::get('messages.height_value'); ?></label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" required="required"  name="height_value" value="{{ old('height_value', $result['height_value'])}}" id="height_value" placeholder="<?php echo Lang::get('messages.height_value'); ?>">
+                            <input type="text" class="form-control" required="required"  name="height_value" value="{{ old('height_value', $dataHeightById['height_value'])}}" id="height_value" placeholder="<?php echo Lang::get('messages.height_value'); ?>">
                         </div>
                     </div>
                 </div>

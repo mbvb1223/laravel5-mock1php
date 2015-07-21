@@ -37,7 +37,7 @@ function autoAssignDataToProperty($model, $data)
 
 function create_field_action($controller, $id) {
     return '<a href="'.asset($controller.'/'.$id.'/edit').'"><i class="glyphicon glyphicon-edit"></i></a>
-            <a class="delete-record" href="'.asset($controller.'/'.$id.'/del').'"><i class="glyphicon glyphicon-remove"></i></a>';
+            <a onclick="return confirmDelete();"class="delete-record" href="'.asset($controller.'/'.$id.'/del').'"><i class="glyphicon glyphicon-remove"></i></a>';
 }
 function del_action($controller, $id) {
     return '<a  href="'.asset($controller.'/'.$id.'/del').'"><i class="glyphicon glyphicon-remove"></i></a>';

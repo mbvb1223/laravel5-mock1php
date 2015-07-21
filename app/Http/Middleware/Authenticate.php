@@ -7,6 +7,7 @@ use Illuminate\Contracts\Auth\Guard;
 use App\libraries\Authen;
 use Lang;
 use View;
+
 class Authenticate
 {
     /**
@@ -45,11 +46,11 @@ class Authenticate
                 return redirect()->guest('auth/login');
             }
         }
-        if(Authen::checkStatus()==false){
-            return redirect()->action('TestController@index')->withErrors(Lang::get('messages.no_active'));
+        if (Authen::checkStatus() == false) {
+            return redirect()->action('FrontendController@index')->withErrors(Lang::get('messages.no_active'));
         }
-        if(Authen::checkLoginToBackEnd() == false){
-            return redirect()->action('TestController@index')->withErrors(Lang::get('messages.do_not_permission'));
+        if (Authen::checkLoginToBackEnd() == false) {
+            return redirect()->action('FrontendController@index')->withErrors(Lang::get('messages.do_not_permission'));
         }
         if (Authen::checkPermission() == false) {
             return view('errors.disable');

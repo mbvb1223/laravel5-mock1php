@@ -1,64 +1,62 @@
-<div class='goods-page'>
-    <div class='goods-data clearfix'>
-        <div class='table-wrapper-responsive'>
-            <table summary='Shopping cart'>
-                <tr>
-                    <th class='goods-page-image'>Image</th>
-                    <th class='goods-page-description'>Description</th>
-                    <th class='goods-page-quantity'>Quantity</th>
-                    <th class='goods-page-price'>Unit price</th>
-                    <th class='goods-page-total' colspan='2'>Total</th>
-                </tr>
-                <?php foreach($sessionOrder as $sessionOrder) : ?>
-                    <tr>
-                        <td class='goods-page-image'>
-                            <a href='#'><img src='../../assets/frontend/pages/img/products/model4.jpg' alt='Berry Lace Dress'></a>
-                        </td>
-                        <td class='goods-page-description'>
-                            <h3><a href='#'><?php echo $sessionOrder['product_id']; ?></a></h3>
-                            <p><strong>Style</strong><?php echo $sessionOrder['color_id']; ?></p>
-                            <em>More info is here</em>
-                        </td>
-                        <td class='goods-page-quantity'>
-                            <div class='product-quantity'>
-                                <input id='product-quantity2' type='text' value='<?php echo $sessionOrder['number']; ?>' readonly class='form-control input-sm'>
-                            </div>
-                        </td>
-                        <td class='goods-page-price'>
-                            <strong><span>$</span><?php echo $sessionOrder['size_id']; ?></strong>
-                        </td>
-                        <td class='goods-page-total'>
-                            <strong><span>$</span><?php echo ($sessionOrder['number']*$sessionOrder['size_id']); ?></strong>
-                        </td>
-                        <td class='del-goods-col'>
-                            <a class='del-goods' href='<?php echo url('cart').'/del/$sessionOrder[size_id]' ;?>'>&nbsp;</a>
-                        </td>
-                    </tr>
-
-                <?php endforeach; ?>
-
-            </table>
-        </div>
-
-        <div class='shopping-total'>
-            <ul>
-                <li>
-                    <em>Sub total</em>
-                    <strong class='price'><span>$</span>47.00</strong>
-                </li>
-                <li>
-                    <em>Shipping cost</em>
-                    <strong class='price'><span>$</span>3.00</strong>
-                </li>
-                <li class='shopping-total-price'>
-                    <em>Total</em>
-                    <strong class='price'><span>$</span>50.00</strong>
-                </li>
-            </ul>
+<div id='checkout' class='panel panel-default'>
+    <div class='panel-heading'>
+        <h2 class='panel-title'>
+            <a data-toggle='collapse' data-parent='#checkout-page' href='#checkout-content' class='accordion-toggle'>
+                Step 1: Checkout Options
+            </a>
+        </h2>
+    </div>
+    <div id='checkout-content' class='panel-collapse collapse in'>
+        <div class='panel-body row'>
+            <div class='col-md-6 col-sm-6'>
+                <h3>New Customer</h3>
+                <p>Checkout Options:</p>
+                <div class='radio-list'>
+                    <label>
+                        <input type='radio' name='account'  value='register'> Register Account
+                    </label>
+                    <label>
+                        <input type='radio' name='account'  value='guest'> Guest Checkout
+                    </label>
+                </div>
+                <p>By creating an account you will be able to shop faster, be up to date on an order's status, and keep track of the orders you have previously made.</p>
+                <button class='btn btn-primary' type='submit' data-toggle='collapse' data-parent='#checkout-page' data-target='#payment-address-content'>Continue</button>
+            </div>
+            <div class='col-md-6 col-sm-6'>
+                <h3>Returning Customer</h3>
+                <p>I am a returning customer.</p>
+                <form role='form' action='{{ action('\App\Http\Controllers\Auth\AuthController@postLoginToBuy') }}' method='post'>
+                    <input type='hidden' name='_token' value='{{ csrf_token() }}'>
+                    <div class='form-group'>
+                        <label for='email-login'>E-Mail</label>
+                        <input type='text' class='form-control' name='username'
+                               value='{{ old('username')}}' id='username'
+                               placeholder='<?php echo Lang::get('messages.users_username'); ?>'
+                               required='required'/>
+                    </div>
+                    <div class='form-group'>
+                        <label for='password-login'>Password</label>
+                        <input type='password' class='form-control' name='password'
+                               id='password'
+                               placeholder='<?php echo Lang::get('messages.users_password'); ?>'
+                               required='required'/>
+                    </div>
+                    <a href='#'>Forgotten Password?</a>
+                    <div class='padding-top-20'>
+                        <button class='btn btn-primary' type='submit'>Login</button>
+                    </div>
+                    <hr>
+                    <div class='login-socio'>
+                        <p class='text-muted'>or login using:</p>
+                        <ul class='social-icons'>
+                            <li><a href='#' data-original-title='facebook' class='facebook' title='facebook'></a></li>
+                            <li><a href='#' data-original-title='Twitter' class='twitter' title='Twitter'></a></li>
+                            <li><a href='#' data-original-title='Google Plus' class='googleplus' title='Google Plus'></a></li>
+                            <li><a href='#' data-original-title='Linkedin' class='linkedin' title='LinkedIn'></a></li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-    <button class='btn btn-default' type='button'><a href='<?php echo url('/'); ?>'> Continue shopping </a> <i class='fa fa-shopping-cart'></i></button>
-
-    <button class='btn btn-primary' type='submit'>Checkout <i class='fa fa-check'></i></button>
-    <a class='btn btn-default' style='margin-left: 10px;' href='<?php echo url('cart/deleteall');?>'>Delete cart </a>
 </div>

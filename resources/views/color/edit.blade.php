@@ -2,9 +2,9 @@
 @section('content')
 <div class="row">
     <div class="col-md-12">
-        <form class="form-horizontal form-row-seperated" action="{{ URL::action('ColorController@update', $result->id) }}" method="Post">
+        <form class="form-horizontal form-row-seperated" action="{{ URL::action('ColorController@update', $dataColorById->id) }}" method="Post">
             <input type="hidden" name="_token" value="{{ csrf_token() }}">
-            <input type="hidden" name="id" id="id" value="{{ old('id', $result['id'])}}">
+            <input type="hidden" name="id" id="id" value="{{ old('id', $dataColorById['id'])}}">
             <div class="portlet">
                 <div class="portlet-title">
                     <div class="caption">
@@ -37,7 +37,7 @@
                         </label>
                         <div class="col-sm-8">
                             <input type="text" class="form-control" required="required"
-                                   name="color_name" value="{{ old('color_name', $result['color_name'])}}"
+                                   name="color_name" value="{{ old('color_name', $dataColorById['color_name'])}}"
                                    id="color_name" placeholder="<?php echo Lang::get('messages.color_name'); ?>">
                         </div>
                     </div>

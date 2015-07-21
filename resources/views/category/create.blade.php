@@ -25,7 +25,6 @@
                         <label for="category_name"
                                class="col-sm-2 control-label"><?php echo Lang::get('messages.category_name'); ?>
                         </label>
-
                         <div class="col-sm-8">
                             <input type="text" class="form-control" name="category_name" value="{{ old('category_name', '')}}"
                                    id="category_name" placeholder="<?php echo Lang::get('messages.category_name'); ?>">
@@ -40,7 +39,7 @@
 
                         <select class="form-control" name="parent" >
                             <option value="0">Root</option>
-                            <?php echo $categories; ?>
+                            <?php echo $getAllCategoryForSelectTag; ?>
                         </select>
                         </div>
                     </div>

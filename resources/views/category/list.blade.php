@@ -3,7 +3,6 @@
 <link href="<?php echo url("/"); ?>/../theme/assets/global/css/jstreestyle.css" rel="stylesheet" type="text/css"/>
 @stop
 
-
 @section('content')
 <div class="row">
     <div class="col-xs-12" style="padding-bottom: 5px;">
@@ -62,7 +61,7 @@
 
                                 <select class="form-control" name="parent" id="parent">
                                     <option value="0">Root</option>
-                                    <?php echo $categories; ?>
+                                    <?php echo $getAllCategoryForSelectTag; ?>
                                 </select>
                             </div>
                         </div>
@@ -112,7 +111,7 @@
 
                                 <select class="form-control" name="parent" id="parent_edit">
                                     <option value="0">Root</option>
-                                    <?php echo $categories; ?>
+                                    <?php echo $getAllCategoryForSelectTag; ?>
                                 </select>
                             </div>
                         </div>
@@ -123,12 +122,6 @@
         </div>
     </div>
 
-    <!--    <form class="form-horizontal form-row-seperated" action="{{ URL::action('CategoryController@store') }}"-->
-    <!--          method="Post" enctype="multipart/form-data" accept="image/*">-->
-    <!--        <input type="hidden" name="_token" value="{{ csrf_token() }}">-->
-    <!--        <button id="jstree2" type="submit">ok</button>-->
-    <!--        <input type="text" name="data" id="data" hidden/>-->
-    <!--    </form>-->
 
 </div>
 
@@ -145,7 +138,7 @@
         $.ajax({
             async: true,
             type: "GET",
-            url: "{{action('CategoryController@getJsonData')}}",
+            url: "{{action('CategoryController@getDataForJstree')}}",
             dataType: "json",
 
             success: function (json) {

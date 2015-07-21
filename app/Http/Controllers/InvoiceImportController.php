@@ -60,7 +60,6 @@ class InvoiceImportController extends Controller
     //Save Product to Session
     public function store(ImportInvoiceRequest $request)
     {
-
         $allRequest = $request->all();
         //Check Input Tag Number In Invoice Import Empty
         $inputNumber           = $allRequest['mapSizeToNumber'];
