@@ -13,14 +13,74 @@ class Order extends Model
 {
     protected $guarded = ['id'];
     protected $table = 'order';
-    public $properties = array('id', 'user_id', 'status', 'total_price_import', 'total_price', 'total_cost', 'information', 'created_at', 'updated_at');
+    public $properties = array('id', 'user_id', 'status','token', 'total_price_import',
+        'total_price', 'total_cost', 'information', 'created_at', 'updated_at');
     public $timestamps = true;
 
-    const SENDING = 0;
+    const PENDING = 0;
     const DELEVERY = 1;
     const OK = 2;
     const CANCEL = 3;
 
+    /**
+     * For BackEnd
+     */
+    public function getDataForPaginationAjax($allRequest)
+    {
+        $pageCurrent = $allRequest['current'];
+        $limit       = $allRequest['rowCount'];
+        $offset      = ($pageCurrent - 1) * $limit;
+
+        // Config sort
+        $sortBy    = 'id';
+        $sortOrder = 'asc';
+
+        if (isset($allRequest['sort'])) {
+            $sort      = $allRequest['sort'];
+            $sortColum = ['id', 'user_id', 'status','token',
+                'total_price_import', 'total_price', 'total_cost',
+                'information', 'created_at', 'updated_at'];
+            $sortBy    = (in_array(key($sort), $sortColum)) ? key($sort) : 'id';
+            $sortOrder = current($sort);
+        }
+
+        $query = $this->where(function($query) use ($allRequest) {
+                            $query->where('id', 'LIKE', '%' . $allRequest['searchPhrase'] . '%')
+                                ->orWhere('user_id', 'LIKE', '%' . $allRequest['searchPhrase'] . '%')
+                                ->orWhere('status', 'LIKE', '%' . $allRequest['searchPhrase'] . '%')
+                                ->orWhere('total_cost', 'LIKE', '%' . $allRequest['searchPhrase'] . '%')
+                                ->orWhere('created_at', 'LIKE', '%' . $allRequest['searchPhrase'] . '%');
+        });
+
+        $queryGetTotal = $query;
+        $total         = $queryGetTotal->count();
+
+        if ($limit == -1) {
+            $rows = $query->orderBy($sortBy, $sortOrder)
+                ->get();
+        } else {
+            $rows = $query->orderBy($sortBy, $sortOrder)
+                ->skip($offset)
+                ->take($limit)
+                ->get();
+        }
+
+        // Render field action
+        foreach ($rows as $k => $item) {
+            $rows[$k]['action'] = create_field_action('admin/order', $item->id);
+        }
+
+        $data['current']  = intval($pageCurrent);
+        $data['rowCount'] = intval($limit);
+        $data['total']    = intval($total);
+        $data['rows']     = $rows;
+        $data['_token']   = csrf_token();
+        return json_encode($data);
+    }
+
+    /**
+     * For FrontEnd
+     */
     public function getViewForCartInFrontEnd($sessionOrder)
     {
         if ($sessionOrder == null) {
@@ -149,7 +209,7 @@ class Order extends Model
             $totalPrice += $priceProduct;
             $totalPriceImport += $priceImportProduct;
 
-            $statusOrder = self::SENDING;
+            $statusOrder = self::PENDING;
         }
         $this->user_id            = $idUser;
         $this->total_cost         = $totalCost;
@@ -332,6 +392,7 @@ class Order extends Model
 </div>";
         return $result;
     }
+
     public function getViewInfoUserAndAddressForCheckoutIfNotLogin()
     {
         $infoUser = array();

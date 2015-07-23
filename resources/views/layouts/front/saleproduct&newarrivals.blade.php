@@ -4,7 +4,8 @@
         <h2>New Arrivals</h2>
         <div class="owl-carousel owl-carousel5">
 
-           <?php foreach($products as $product): ?>
+           <?php foreach($newProducts as $itemProduct): ?>
+            <?php $linkToProduct = change_alias($itemProduct['name_product'])."-".$itemProduct['id'];?>
                <div>
                    <div class="product-item">
                        <div class="pi-img-wrapper">
@@ -14,9 +15,9 @@
                                <a href="#product-pop-up" class="btn btn-default fancybox-fast-view">View</a>
                            </div>
                        </div>
-                       <h3><a href="shop-item.html"><?php echo $product['name_product'] ?></a></h3>
-                       <div class="pi-price"><?php echo $product['price'] ?></div>
-                       <a href="<?php echo url("cart")."/update/". $product['id'];?>" class="btn btn-default add2cart">Add to cart</a>
+                       <h3><a href="shop-item.html"><?php echo $itemProduct['name_product'] ?></a></h3>
+                       <div class="pi-price"><?php echo $itemProduct['price'] ?></div>
+                       <a href="{{action('FrontendController@product',$linkToProduct)}}"  class="btn btn-default add2cart">Detail</a>
                        <div class="sticker sticker-sale"></div>
                    </div>
                </div>

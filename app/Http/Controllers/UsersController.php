@@ -106,9 +106,9 @@ class UsersController extends Controller
             }
         }
 
-        $data['current'] = $pageCurrent;
-        $data['rowCount'] = $limit;
-        $data['total'] = $result['total'];
+        $data['current']  = intval($pageCurrent);
+        $data['rowCount'] = intval($limit);
+        $data['total']    = intval($result['total']);
         $data['rows'] = $result['rows'];
         $data['_token'] = csrf_token();
         die(json_encode($data));

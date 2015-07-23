@@ -5,7 +5,7 @@
             <form class="form-horizontal form-row-seperated" action="{{ URL::action('ProductController@update') }}"
                   method="Post" enctype="multipart/form-data">
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                <input type="hidden" name="id" id="id_edit" value="{{ old('id', $result['id'])}}">
+                <input type="hidden" name="id" id="id_edit" value="{{ old('id', $getProductById['id'])}}">
 
                 <div class="portlet">
                     <div class="portlet-title">
@@ -30,7 +30,7 @@
 
                             <div class="col-sm-9">
                                 <input type="text" class="form-control" name="key_product"
-                                       value="{{ old('key_product', $result['key_product'])}}" id="key_product"
+                                       value="{{ old('key_product', $getProductById['key_product'])}}" id="key_product"
                                        placeholder="<?php echo Lang::get('messages.key_product'); ?>"
                                        required="required"/>
                             </div>
@@ -42,19 +42,40 @@
                             <div class="col-sm-9">
                                 <input type="text" class="form-control" name="name_product"
                                        id="name_product"
-                                       value="{{ old('name_product', $result['name_product'])}}"
+                                       value="{{ old('name_product', $getProductById['name_product'])}}"
                                        placeholder="<?php echo Lang::get('messages.name_product'); ?>"
                                        required="required"/>
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label for="status"
+                                   class="col-sm-3 control-label"><?php echo Lang::get('messages.status'); ?></label>
+
+                            <div class="col-sm-9">
+                                <select name="status" id="status" class="form-control">
+                                    <?php echo $getViewAllStatusForProduct ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="image"
+                                   class="col-sm-3 control-label"><?php echo Lang::get('messages.image_product'); ?></label>
+                            <div class="col-sm-9">
+                                <input type="file" class="form-control" name="image" id="image"
+                                       onchange="loadFile(event)"/>
+                            </div>
+                        </div>
+
+                        <hr />
+
                         <div class="form-group">
                             <label for="price"
                                    class="col-sm-3 control-label"><?php echo Lang::get('messages.price_import'); ?></label>
 
                             <div class="col-sm-9">
                                 <input type="text" class="form-control" name="price_import"
-                                       id="price"
-                                       value="{{ old('price_import', $result['price_import'])}}"
+                                       id="price_import"
+                                       value="{{ old('price_import', $getProductById['price_import'])}}"
                                        placeholder="<?php echo Lang::get('messages.price_import'); ?>"
                                        required="required"/>
                             </div>
@@ -66,7 +87,7 @@
                             <div class="col-sm-9">
                                 <input type="text" class="form-control" name="price"
                                        id="price"
-                                       value="{{ old('price', $result['price'])}}"
+                                       value="{{ old('price', $getProductById['price'])}}"
                                        placeholder="<?php echo Lang::get('messages.price'); ?>"
                                        required="required"/>
                             </div>
@@ -78,8 +99,7 @@
 
                             <div class="col-sm-9">
                                 <select class="form-control" name="selloff_id" id="selloff_id" required="required">
-                                    <option value="0">None</option>
-                                    <?php echo $allOptionOfSelloff; ?>
+                                    <?php echo $getViewAllSellOffForSelectTag; ?>
                                 </select>
                                 <input hidden value="{{json_encode($arrayFromIdToValueOfSelloff)}}"
                                        id="arrayFromIdToValueOfSelloff"/>
@@ -92,19 +112,13 @@
                             <div class="col-sm-9">
                                 <input type="text" class="form-control" name="cost"
                                        id="cost"
-                                       value="{{ old('cost', $result['cost'])}}"
+                                       value="{{ old('cost', $getProductById['cost'])}}"
                                        placeholder="<?php echo Lang::get('messages.cost'); ?>"
                                        required="required" readonly/>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label for="image"
-                                   class="col-sm-3 control-label"><?php echo Lang::get('messages.image_product'); ?></label>
-                            <div class="col-sm-9">
-                                <input type="file" class="form-control" name="image" id="image"
-                                       onchange="loadFile(event)"/>
-                            </div>
-                        </div>
+
+                        <hr />
 
                         <div class="form-group">
                             <label for="style_id" class="col-sm-3 control-label">
@@ -113,7 +127,7 @@
 
                             <div class="col-sm-9">
                                 <select class="form-control" name="category_id" id="category_id" required="required">
-                                    <?php echo $allOptionOfCategory; ?>
+                                    <?php echo $getViewAllCategoryForSelectTag; ?>
                                 </select>
                             </div>
                         </div>
@@ -124,7 +138,7 @@
 
                             <div class="col-sm-9">
                                 <select class="form-control" name="style_id" id="style_id" required="required">
-                                    <?php echo $allOptionOfStyle;?>
+                                    <?php echo $getViewAllStyleForSelectTag;?>
                                 </select>
                             </div>
                         </div>
@@ -134,7 +148,7 @@
 
                             <div class="col-sm-9">
                                 <select class="form-control" name="madein_id" id="madein_id" required="required">
-                                    <?php echo $allOptionOfMadein; ?>
+                                    <?php echo $getViewAllMadeInForSelectTag; ?>
                                 </select>
                             </div>
                         </div>
@@ -144,7 +158,7 @@
 
                             <div class="col-sm-9">
                                 <select class="form-control" name="material_id" id="material_id" required="required">
-                                    <?php echo $allOptionOfMaterial; ?>
+                                    <?php echo $getViewAllMaterialForSelectTag; ?>
                                 </select>
                             </div>
                         </div>
@@ -154,7 +168,7 @@
 
                             <div class="col-sm-9">
                                 <select class="form-control" name="height_id" id="height_id" required="required">
-                                    <?php echo $allOptionOfHeight; ?>
+                                    <?php echo $getViewAllHeightForSelectTag; ?>
                                 </select>
                             </div>
                         </div>
@@ -163,8 +177,8 @@
                     </div>
                     <div class="porlet-body-right col-xs-12 col-sm-3">
                         <img id="output" class="img-responsive"
-                        <?php if (isset($result['image'])) {
-                            echo "src='/public/upload/product/" . "$result[image]'";
+                        <?php if (isset($getProductById['image'])) {
+                            echo "src='/upload/product/" . "$getProductById[image]'";
                         } ?>/>
                     </div>
                     <div class="col-xs-12">
@@ -174,7 +188,7 @@
 
                             <div class="col-sm-10">
                                 <textarea name="information"
-                                          id="information">{{ old('information', $result['information'])}}</textarea>
+                                          id="information">{{ old('information', $getProductById['information'])}}</textarea>
                             </div>
                         </div>
                     </div>

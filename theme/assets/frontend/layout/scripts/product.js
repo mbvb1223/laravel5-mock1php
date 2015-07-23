@@ -46,11 +46,6 @@ $(document).ready(function () {
     $("#price").number(true);
     $("#cost").number(true);
 
-    $('#submit').on('click',function(){
-        alert('ssssssss');
-        flase;
-        var val = $('#price_import').val();
-        $('#price_import').text( val !== '' ? val : '(empty)' );
-    });
+
 
 });

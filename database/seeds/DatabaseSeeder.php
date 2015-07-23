@@ -11,7 +11,9 @@ use App\Material;
 use App\Category;
 use App\Color;
 use App\Size;
-
+use App\City;
+use App\Region;
+use App\Product;
 
 class DatabaseSeeder extends Seeder
 {
@@ -59,6 +61,120 @@ class DatabaseSeeder extends Seeder
         }
 
         /**
+         * For Product
+         */
+        for ($i = 0; $i < 50; $i++) {
+            Product::create([
+                "key_product"  => $faker->creditCardNumber,
+                "name_product" => $faker->streetName,
+                "status"       => $faker->numberBetween(0, 2),
+                "price_import" => $faker->numberBetween(10, 30),
+                "price"        => $faker->numberBetween(40, 80),
+                "cost"         => $faker->numberBetween(31, 39),
+                "image"        => $faker->numberBetween(1, 10) . ".jpg",
+                "information"  => $faker->text,
+                "category_id"  => $faker->numberBetween(1, 7),
+                "selloff_id"   => $faker->numberBetween(1, 5),
+                "style_id"     => $faker->numberBetween(1, 7),
+                "madein_id"    => $faker->numberBetween(1, 6),
+                "material_id"  => $faker->numberBetween(1, 4),
+                "height_id"    => $faker->numberBetween(1, 8),
+
+            ]);
+
+        }
+
+        /**
+         * For Height
+         */
+        for ($i = 20; $i < 50; $i++) {
+            Height::create([
+                "height_value" => $i,
+
+            ]);
+
+        }
+
+        /**
+         * For Selloff
+         */
+        for ($i = 1; $i < 99; $i++) {
+            Selloff::create([
+                "selloff_value" => $i,
+
+            ]);
+
+        }
+
+        /**
+         * For MadeIn
+         */
+        for ($i = 20; $i < 50; $i++) {
+            Madein::create([
+                "madein_name" => $faker->country,
+
+            ]);
+
+        }
+        /**
+         * For MadeIn
+         */
+        for ($i = 1; $i < 10; $i++) {
+            Style::create([
+                "style_name" => $faker->name,
+
+            ]);
+
+        }
+        /**
+         * For City
+         */
+        for ($i = 1; $i < 10; $i++) {
+            City::create([
+                "name_city" => $faker->city,
+
+            ]);
+
+        }
+
+        /**
+         * For Region
+         */
+        for ($i = 1; $i < 20; $i++) {
+            Region::create([
+                "name_region" => $faker->company,
+                "city_id"     => $faker->numberBetween(1, 10),
+
+            ]);
+
+        }
+
+        /**
+         * For Material
+         */
+        for ($i = 1; $i < 50; $i++) {
+            Material::create([
+                "material_name" => $faker->company,
+
+            ]);
+
+        }
+
+
+        /**
+         * For Roles
+         */
+        Roles::create([
+            "rolename" => "Administrator",
+        ]);
+        Roles::create([
+            "rolename" => "Moderator",
+        ]);
+        Roles::create([
+            "rolename" => "Member",
+        ]);
+
+        /**
          * For Catetory
          */
         Category::create([
@@ -77,8 +193,38 @@ class DatabaseSeeder extends Seeder
             "category_name" => "Giay kute",
             'parent'        => 2,
         ]);
+        Category::create([
+            "category_name" => "Giay nana",
+            'parent'        => 1,
+        ]);
+        Category::create([
+            "category_name" => "Giay xixi",
+            'parent'        => 1,
+        ]);
+        Category::create([
+            "category_name" => "Giay Hihi",
+            'parent'        => 1,
+        ]);
 
+        /**
+         * For Color
+         */
+        for ($i = 0; $i < 7; $i++) {
+            Color::create([
+                "color_name" => $faker->colorName,
+            ]);
 
+        }
+
+        /**
+         * For Size
+         */
+        for ($i = 35; $i < 45; $i++) {
+            Size::create([
+                "size_value" => $i,
+            ]);
+
+        }
 
 
     }
@@ -110,4 +256,5 @@ class UsersTableSeeder extends Seeder
     }
 
 }
+
 

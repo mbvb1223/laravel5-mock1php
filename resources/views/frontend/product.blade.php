@@ -3,56 +3,13 @@
 @section('content')
     <div class="main">
         <div class="container">
-            <ul class="breadcrumb">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="">Store</a></li>
-                <li class="active">Cool green dress with red bell</li>
-            </ul>
+
             <!-- BEGIN SIDEBAR & CONTENT -->
             <div class="row margin-bottom-40">
                 <!-- BEGIN SIDEBAR -->
                 <div class="sidebar col-md-3 col-sm-5">
                     <ul class="list-group margin-bottom-25 sidebar-menu">
-                        <li class="list-group-item clearfix"><a href="shop-product-list.html"><i class="fa fa-angle-right"></i> Ladies</a></li>
-                        <li class="list-group-item clearfix dropdown active">
-                            <a href="shop-product-list.html" class="collapsed">
-                                <i class="fa fa-angle-right"></i>
-                                Mens
-
-                            </a>
-                            <ul class="dropdown-menu" style="display:block;">
-                                <li class="list-group-item dropdown clearfix active">
-                                    <a href="shop-product-list.html" class="collapsed"><i class="fa fa-angle-right"></i> Shoes </a>
-                                    <ul class="dropdown-menu" style="display:block;">
-                                        <li class="list-group-item dropdown clearfix">
-                                            <a href="shop-product-list.html"><i class="fa fa-angle-right"></i> Classic </a>
-                                            <ul class="dropdown-menu">
-                                                <li><a href="shop-product-list.html"><i class="fa fa-angle-right"></i> Classic 1</a></li>
-                                                <li><a href="shop-product-list.html"><i class="fa fa-angle-right"></i> Classic 2</a></li>
-                                            </ul>
-                                        </li>
-                                        <li class="list-group-item dropdown clearfix active">
-                                            <a href="shop-product-list.html" class="collapsed"><i class="fa fa-angle-right"></i> Sport  </a>
-                                            <ul class="dropdown-menu" style="display:block;">
-                                                <li class="active"><a href="shop-product-list.html"><i class="fa fa-angle-right"></i> Sport 1</a></li>
-                                                <li><a href="shop-product-list.html"><i class="fa fa-angle-right"></i> Sport 2</a></li>
-                                            </ul>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li><a href="shop-product-list.html"><i class="fa fa-angle-right"></i> Trainers</a></li>
-                                <li><a href="shop-product-list.html"><i class="fa fa-angle-right"></i> Jeans</a></li>
-                                <li><a href="shop-product-list.html"><i class="fa fa-angle-right"></i> Chinos</a></li>
-                                <li><a href="shop-product-list.html"><i class="fa fa-angle-right"></i> T-Shirts</a></li>
-                            </ul>
-                        </li>
-                        <li class="list-group-item clearfix"><a href="shop-product-list.html"><i class="fa fa-angle-right"></i> Kids</a></li>
-                        <li class="list-group-item clearfix"><a href="shop-product-list.html"><i class="fa fa-angle-right"></i> Accessories</a></li>
-                        <li class="list-group-item clearfix"><a href="shop-product-list.html"><i class="fa fa-angle-right"></i> Sports</a></li>
-                        <li class="list-group-item clearfix"><a href="shop-product-list.html"><i class="fa fa-angle-right"></i> Brands</a></li>
-                        <li class="list-group-item clearfix"><a href="shop-product-list.html"><i class="fa fa-angle-right"></i> Electronics</a></li>
-                        <li class="list-group-item clearfix"><a href="shop-product-list.html"><i class="fa fa-angle-right"></i> Home &amp; Garden</a></li>
-                        <li class="list-group-item clearfix"><a href="shop-product-list.html"><i class="fa fa-angle-right"></i> Custom Link</a></li>
+                        <?php echo $sidebar; ?>
                     </ul>
 
                     <div class="sidebar-products clearfix">
@@ -101,7 +58,7 @@
                                         <em>$<span>{{ $product['price'] }} </span></em>
                                     </div>
                                     <div class="availability">
-                                        Availability: <strong>In Stock</strong>
+                                        Availability: <strong style="color:red;"><?php echo $vailability;?></strong>
                                     </div>
                                 </div>
 
@@ -109,16 +66,13 @@
                                     <div class="pull-left">
                                         <label class="control-label">Color:</label>
                                         <select class="form-control input-sm" id="color_id" name="color_id">
-                                            <?php foreach($getColorForThisProduct as $color) :?>
-                                                <option value="<?php echo $color; ?>"><?php echo $mapIdToInfoColor[$color]['color_name'] ?></option>
-                                            <?php endforeach;?>
-
+                                           <?php echo $getViewColorForSelectTag;?>
                                         </select>
                                     </div>
                                     <div class="pull-left">
                                         <label class="control-label">Size:</label>
                                         <select class="form-control input-sm" id="size_id" name="size_id">
-
+                                            <?php echo $getViewSizeForSelectTag;?>
                                         </select>
                                     </div>
                                 </div>
@@ -344,26 +298,29 @@
     <script>
         jQuery(document).ready(function() {
             var getSizeFromColorForThisProduct = <?php echo json_encode($getSizeFromColorForThisProduct);?>;
-            var color_id = $("#color_id").val();
-            var sizes = getSizeFromColorForThisProduct[color_id];
-            var option = '';
-            var i = 0;
-            for(; i< sizes.length;){
-                option += '<option value="' + sizes[i] +'">'+ sizes[i] +'</option>';
-                i++;
-            }
-            $("#size_id").html(option);
-            $("#color_id").change(function(){
+            var mapIdSizeToInformationSize = <?php echo json_encode($mapIdSizeToInformationSize);?>;
+            if(getSizeFromColorForThisProduct != null){
                 var color_id = $("#color_id").val();
                 var sizes = getSizeFromColorForThisProduct[color_id];
                 var option = '';
                 var i = 0;
                 for(; i< sizes.length;){
-                    option += '<option value="' + sizes[i] +'">'+ sizes[i] +'</option>';
+                    option += '<option value="' + sizes[i] +'">'+ mapIdSizeToInformationSize[sizes[i]]['size_value'] +'</option>';
                     i++;
                 }
                 $("#size_id").html(option);
-            });
+                $("#color_id").change(function(){
+                    var color_id = $("#color_id").val();
+                    var sizes = getSizeFromColorForThisProduct[color_id];
+                    var option = '';
+                    var i = 0;
+                    for(; i< sizes.length;){
+                        option += '<option value="' + sizes[i] +'">'+ mapIdSizeToInformationSize[sizes[i]]['size_value'] +'</option>';
+                        i++;
+                    }
+                    $("#size_id").html(option);
+                });
+            }
         })
 
     </script>

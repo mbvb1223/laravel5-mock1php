@@ -44,6 +44,26 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label for="status"
+                               class="col-sm-3 control-label"><?php echo Lang::get('messages.status'); ?></label>
+
+                        <div class="col-sm-9">
+                            <select name="status" id="status" class="form-control">
+                                <?php echo $getViewAllStatusForProduct ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="image"
+                               class="col-sm-3 control-label"><?php echo Lang::get('messages.image_product'); ?></label>
+
+                        <div class="col-sm-9">
+                            <input type="file" class="form-control" name="image" id="image" required="required"
+                                   onchange="loadFile(event)"/>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="form-group">
                         <label for="price_import"
                                class="col-sm-3 control-label"><?php echo Lang::get('messages.price_import'); ?></label>
 
@@ -71,10 +91,7 @@
                         </label>
                         <div class="col-sm-9">
                             <select class="form-control" name="selloff_id" id="selloff_id" required="required">
-                                <option value="0">None</option>
-                                <?php foreach($allSelloff as $selloff) : ?>
-                                <option value="{{$selloff['id']}}"> {{$selloff['selloff_value']}}</option>
-                                <?php endforeach; ?>
+                               <?php echo $getViewAllSellOffForSelectTag; ?>
                             </select>
                             <input hidden value="{{json_encode($arrayFromIdToValueOfSelloff)}}" id="arrayFromIdToValueOfSelloff"/>
                         </div>
@@ -91,15 +108,8 @@
 
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="image"
-                               class="col-sm-3 control-label"><?php echo Lang::get('messages.image_product'); ?></label>
 
-                        <div class="col-sm-9">
-                            <input type="file" class="form-control" name="image" id="image" required="required"
-                                   onchange="loadFile(event)"/>
-                        </div>
-                    </div>
+                    <hr />
 
                     <div class="form-group">
                         <label for="style_id" class="col-sm-3 control-label">
@@ -107,7 +117,7 @@
                         </label>
                         <div class="col-sm-9">
                             <select class="form-control" name="category_id" id="category_id" required="required">
-                            <?php echo $allOptionOfCategory; ?>
+                            <?php echo $getViewAllCategoryForSelectTag; ?>
                             </select>
                         </div>
                     </div>
@@ -117,9 +127,7 @@
                         </label>
                         <div class="col-sm-9">
                             <select class="form-control" name="style_id" id="style_id" required="required">
-                                <?php foreach($allStyle as $style) : ?>
-                                    <option value="{{$style['id']}}"> {{$style['style_name']}}</option>
-                                <?php endforeach; ?>
+                             <?php echo $getViewAllStyleForSelectTag; ?>
                           </select>
                         </div>
                     </div>
@@ -128,9 +136,7 @@
                             <?php echo Lang::get('messages.madein'); ?></label>
                         <div class="col-sm-9">
                             <select class="form-control" name="madein_id" id="madein_id" required="required">
-                                <?php foreach($allMadein as $madein) : ?>
-                                <option value="{{$madein['id']}}"> {{$madein['madein_name']}}</option>
-                                <?php endforeach; ?>
+                               <?php echo $getViewAllMadeInForSelectTag; ?>
                             </select>
                         </div>
                     </div>
@@ -139,9 +145,8 @@
                             <?php echo Lang::get('messages.material'); ?></label>
                         <div class="col-sm-9">
                             <select class="form-control" name="material_id" id="material_id" required="required">
-                                <?php foreach($allMaterial as $material) : ?>
-                                    <option value="{{$material['id']}}"> {{$material['material_name']}}</option>
-                                <?php endforeach; ?>
+                               <?php echo $getViewAllMaterialForSelectTag; ?>
+
                             </select>
                         </div>
                     </div>
@@ -150,14 +155,15 @@
                             <?php echo Lang::get('messages.height'); ?></label>
                         <div class="col-sm-9">
                             <select class="form-control" name="height_id" id="height_id" required="required">
-                                <?php foreach($allHeight as $height) : ?>
-                                    <option value="{{$height['id']}}"> {{$height['height_value']}}</option>
-                                <?php endforeach; ?>
+                                <?php echo $getViewAllHeightForSelectTag; ?>
                             </select>
                         </div>
                     </div>
 
 
+                </div>
+                <div class="porlet-body-right col-xs-12 col-sm-3">
+                    <img id="output" class="img-responsive"/>
                 </div>
                 <div class="col-xs-12">
                     <div class="form-group">
@@ -168,9 +174,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="porlet-body-right col-xs-12 col-sm-3">
-                    <img id="output" class="img-responsive"/>
-                </div>
+            </div>
         </form>
     </div>
 
@@ -201,7 +205,6 @@
 
             }
     );
-
 
 </script>
 @stop

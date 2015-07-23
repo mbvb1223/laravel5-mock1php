@@ -49,6 +49,20 @@ class Madein extends Model {
         return ['total'=> $total, 'rows'=>$rows];
     }
 
+    public static function getViewAllMadeInForSelectTag($idSelected = 0)
+    {
+        $all = self::all()->toArray();
+        $result   = null;
+        foreach ($all as $item) {
+            if ($idSelected != 0 && $item['id'] == $idSelected) {
+                $result .= "<option value='" . $item['id'] . "' selected='selected'> $item[madein_name] </option> ";
+            } else {
+                $result .= "<option value='" . $item['id'] . "'> $item[madein_name] </option> ";
+            }
+        }
+        return $result;
+    }
+
 
 }
 

@@ -19,6 +19,7 @@ class CreateOrderTable extends Migration
             $table->bigInteger('total_cost');
             $table->bigInteger('total_price');
             $table->bigInteger('total_price_import');
+            $table->string('token');
             $table->text('information');
             $table->timestamps();
         });

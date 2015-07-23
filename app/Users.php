@@ -64,12 +64,15 @@ class Users extends Model
     }
 
 
-    /**
-     * Log the given user ID into the application.
-     *
-     * @param  mixed $id
-     * @param  bool $remember
-     * @return \Illuminate\Contracts\Auth\Authenticatable
-     */
+    public static function mapIdUserToInfoUser(){
+        $all = self::all()->toArray();
+        if($all == null){
+            return null;
+        }
+        foreach($all as $item){
+            $mapIdUserToInfoUser[$item['id']] = $item;
+        }
+        return $mapIdUserToInfoUser;
+    }
 }
 

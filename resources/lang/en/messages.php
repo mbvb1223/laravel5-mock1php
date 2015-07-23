@@ -13,6 +13,22 @@ return [
     'not_found_product'                 => 'Not Found Product',
     'add_product_to_cart_successful'    => 'Add product to cart successful',
     'order_successful'                  => 'Order successful',
+    'id_product_not_isset'              => 'Id product not isset',
+    'not_in_stock'                      => 'Not in stock',
+    'in_stock'                          => 'In stock',
+    'no_id_order'                       => 'No id order in database',
+
+    /**
+     * Order Controller
+     */
+    'order_name'                        => 'Name',
+    'order_status'                      => 'Status',
+    'order_successful'                  => 'Order successful',
+    'order_cost'                        => 'Total cost',
+    'not_in_stock'                      => 'Not in stock',
+    'in_stock'                          => 'In stock',
+
+
     /**
      * Global massage
      */
@@ -122,6 +138,7 @@ return [
     'information'                       => 'Information',
     'edit_product'                      => 'Edit Product',
     'price_import'                      => 'Price Import',
+    'status'                            => 'Status',
 
     /**
      * For Size

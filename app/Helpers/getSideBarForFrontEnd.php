@@ -26,13 +26,12 @@ function getSideBarForFrontEnd($menuConvert, $parent = 0, &$result, $display="")
                 $changeAliasNamCategory = change_alias($value['category_name']);
                 $linkCategory = $changeAliasNamCategory."-".$value['id'];
                 if(isset($menuConvert[$value['id']])){
-
-                    $result.= "  <li class='list-group-item dropdown clearfix'>";
+                    $result.= "<li class='list-group-item dropdown clearfix'>";
                     $result.=  "<a href='".action('FrontendController@showProductByCategory',$linkCategory)."'><i class='fa fa fa-bars'></i>". $value['category_name']. "</a>";
                     getSideBarForFrontEnd($menuConvert, $id, $result);
                     $result.= "</li>";
                 }else{
-                    $result.= "<li class='list-group-item  clearfix'>";
+                    $result.= "<li class='list-group-item clearfix'>";
                     $result.=  "<a href='".action('FrontendController@showProductByCategory',$linkCategory)."'><i class='fa fa-minus'></i>". $value['category_name']. "</a>";
                     getSideBarForFrontEnd($menuConvert, $id, $result);
                     $result.= "</li>";

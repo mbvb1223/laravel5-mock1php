@@ -9,7 +9,7 @@
         <!-- END SALE PRODUCT & NEW ARRIVALS -->
 
         <!-- BEGIN SIDEBAR & CONTENT -->
-        @include('layouts.front.sidebar')
+        @include('layouts.front.sidebarAndContent')
         <!-- END SIDEBAR & CONTENT -->
 
         <!-- BEGIN TWO PRODUCTS  -->

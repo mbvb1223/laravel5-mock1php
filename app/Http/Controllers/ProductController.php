@@ -40,60 +40,35 @@ class ProductController extends Controller
 
     public function create()
     {
+        $objProduct                 = new Product();
+        $getViewAllStatusForProduct = $objProduct->getViewAllStatusForProduct();
 
-        /**
-         * Get all Category for Options of Select (Category)
-         * @return string
-         */
-        $categories          = Category::all()->toArray();
-        $allOptionOfCategory = null;
-        getAllCategory($categories, $parent = 0, $text = "", $select = 0, $allOptionOfCategory);
+        $categories                     = Category::all()->toArray();
+        $getViewAllCategoryForSelectTag = null;
+        getAllCategoryForSelectTag($categories, $parent = 0, $text = "", $select = 0, $getViewAllCategoryForSelectTag);
 
-        /**
-         * Get all Style for Option of Select (Style)
-         * @return array
-         */
-        $allStyle = Style::all()->toArray();
+        $getViewAllStyleForSelectTag    = Style::getViewAllStyleForSelectTag();
 
-        /**
-         * Get all Madein for Option of Select (Made in)
-         * @return array
-         */
-        $allMadein = Madein::all()->toArray();
+        $getViewAllMadeInForSelectTag   = Madein::getViewAllMadeInForSelectTag();
 
-        /**
-         * Get all Material for Option of Select (Material)
-         * @return array
-         */
-        $allMaterial = Material::all()->toArray();
+        $getViewAllMaterialForSelectTag = Material::getViewAllMaterialForSelectTag();
 
-        /**
-         * Get all Height for Option of Select (Height)
-         * @return array
-         */
-        $allHeight = Height::all()->toArray();
+        $getViewAllHeightForSelectTag   = Height::getViewAllHeightForSelectTag();
 
-        /**
-         * Get all Selloff for Option of Select (Selloff)
-         * @return array
-         */
-        $allSelloff = Selloff::all()->toArray();
+        $getViewAllSellOffForSelectTag  = Selloff::getViewAllSellOffForSelectTag();
 
-        /**
-         * array Selloff[$key]=>$value ($key = Selloff['id'] ; $value = Selloff['selloff_value'])
-         * @return array
-         */
-        $arrayFromIdToValueOfSelloff = Product::arrayFromIdToValueOfSelloff();
+        $arrayFromIdToValueOfSelloff    = Product::arrayFromIdToValueOfSelloff();
 
 
         return view("product.create")->with([
-            'allOptionOfCategory'         => $allOptionOfCategory,
-            'allStyle'                    => $allStyle,
-            'allMadein'                   => $allMadein,
-            'allMaterial'                 => $allMaterial,
-            'allHeight'                   => $allHeight,
-            'allSelloff'                  => $allSelloff,
-            'arrayFromIdToValueOfSelloff' => $arrayFromIdToValueOfSelloff,
+            'getViewAllStatusForProduct'     => $getViewAllStatusForProduct,
+            'getViewAllCategoryForSelectTag' => $getViewAllCategoryForSelectTag,
+            'getViewAllStyleForSelectTag'    => $getViewAllStyleForSelectTag,
+            'getViewAllMadeInForSelectTag'   => $getViewAllMadeInForSelectTag,
+            'getViewAllMaterialForSelectTag' => $getViewAllMaterialForSelectTag,
+            'getViewAllHeightForSelectTag'   => $getViewAllHeightForSelectTag,
+            'getViewAllSellOffForSelectTag'  => $getViewAllSellOffForSelectTag,
+            'arrayFromIdToValueOfSelloff'    => $arrayFromIdToValueOfSelloff,
         ]);
     }
 
@@ -102,199 +77,118 @@ class ProductController extends Controller
     {
         //Get all Request
         $allRequest = $request->all();
-        dd($allRequest);
+
+        //Upload file to public/upload/product
+        $fileName = UploadImage::uploadImageProduct('image');
+
         //Convert Money From String To Value
         $allRequest['price_import'] = convertStringToValueOfMoney($allRequest['price_import']);
-        $allRequest['price'] = convertStringToValueOfMoney($allRequest['price']);
-        $allRequest['cost'] = convertStringToValueOfMoney($allRequest['cost']);
-
-        //Upload file to public/product
-        $fileName = UploadImage::uploadImageProduct('image');
+        $allRequest['price']        = convertStringToValueOfMoney($allRequest['price']);
+        $allRequest['cost']         = convertStringToValueOfMoney($allRequest['cost']);
         //Assign name for image product
         $allRequest['image'] = $fileName;
 
-        $model = new Product();
-        autoAssignDataToProperty($model, $allRequest);
-        $model->save();
+        $objProduct = new Product();
+        autoAssignDataToProperty($objProduct, $allRequest);
+        $objProduct->save();
+
         return redirect()->action('ProductController@create')
             ->withSuccess(Lang::get('messages.create_success'));
     }
 
     public function getDataAjax(Request $request)
     {
-        $dataRequest = $request->all();
+        $allRequest               = $request->all();
 
-        $pageCurrent = $dataRequest['current'];
-        $limit       = $dataRequest['rowCount'];
-        $offset      = ($pageCurrent - 1) * $limit;
+        $objProduct                 = new Product();
+        $getDataForPaginationAjax = $objProduct->getDataForPaginationAjax($allRequest);
 
-        $config = array(
-            'limit'  => $limit,
-            'offset' => $offset,
-        );
-
-        $model  = new Product();
-        $result = $model->getDataForPaginationAjax($dataRequest, $config);
-
-        # Render field action
-        foreach ($result['rows'] as $k => $item) {
-            $result['rows'][$k]['action'] = create_field_action('admin/product', $item->id);
-        }
-
-        $data['current']  = $pageCurrent;
-        $data['rowCount'] = $limit;
-        $data['total']    = $result['total'];
-        $data['rows']     = $result['rows'];
-        $data['_token']   = csrf_token();
-        die(json_encode($data));
+        return $getDataForPaginationAjax;
     }
 
     public function edit($id)
     {
-        $result = Product::find($id);
-        /**
-         * Check ID product in Database
-         */
-        if ($result == null) {
+        $objProduct     = new Product();
+        $getProductById = $objProduct->find($id);
+
+        if ($getProductById == null) {
             return redirect()->action('ProductController@index')->withErrors(Lang::get('messages.no_id'));
         }
+        $idSelectedOfStatus         = $getProductById['status'];
+        $getViewAllStatusForProduct = $objProduct->getViewAllStatusForProduct($idSelectedOfStatus);
 
-        /**
-         * Get all Category for Options of Select (Category)
-         * @return string
-         */
-        $iDSelectedCategory  = $result['category_id'];
-        $categories          = Category::all()->toArray();
-        $allOptionOfCategory = null;
-        getAllCategory($categories, $parent = 0, $text = "", $iDSelectedCategory, $allOptionOfCategory);
+        $idSelectedOfCategory           = $getProductById['category_id'];
+        $categories                     = Category::all()->toArray();
+        $getViewAllCategoryForSelectTag = null;
+        getAllCategoryForSelectTag($categories, $parent = 0, $text = "", $idSelectedOfCategory, $getViewAllCategoryForSelectTag);
 
-        /**
-         * Get all Style for Option of Select (Style)
-         * @return array
-         */
-        $allStyle         = Style::all()->toArray();
-        $iDSelectedStyle  = $result['style_id'];
-        $allOptionOfStyle = null;
-        getAllStyle($allStyle, $iDSelectedStyle, $allOptionOfStyle);
+        $idSelectedOfStyle           = $getProductById['style_id'];
+        $getViewAllStyleForSelectTag = Style::getViewAllStyleForSelectTag($idSelectedOfStyle);
 
-        /**
-         * Get all Madein for Option of Select (Made in)
-         * @return array
-         */
-        $allMadein         = Madein::all()->toArray();
-        $iDSelectedMadein  = $result['madein_id'];
-        $allOptionOfMadein = null;
-        getAllMadein($allMadein, $iDSelectedMadein, $allOptionOfMadein);
+        $idSelectedOfMadein           = $getProductById['madein_id'];
+        $getViewAllMadeInForSelectTag = Madein::getViewAllMadeInForSelectTag($idSelectedOfMadein);
 
-        /**
-         * Get all Material for Option of Select (Material)
-         * @return array
-         */
-        $allMaterial         = Material::all()->toArray();
-        $iDSelectedMaterial  = $result['material_id'];
-        $allOptionOfMaterial = null;
-        getAllMaterial($allMaterial, $iDSelectedMaterial, $allOptionOfMaterial);
+        $idSelectedOfMaterial           = $getProductById['material_id'];
+        $getViewAllMaterialForSelectTag = Material::getViewAllMaterialForSelectTag($idSelectedOfMaterial);
 
-        /**
-         * Get all Height for Option of Select (Height)
-         * @return array
-         */
-        $allHeight         = Height::all()->toArray();
-        $iDSelectedHeight  = $result['height_id'];
-        $allOptionOfHeight = null;
-        getAllHeight($allHeight, $iDSelectedHeight, $allOptionOfHeight);
+        $idSelectedOfHeight           = $getProductById['height_id'];
+        $getViewAllHeightForSelectTag = Height::getViewAllHeightForSelectTag($idSelectedOfHeight);
 
-        /**
-         * Get all Selloff for Option of Select (Selloff)
-         * @return array
-         */
-        $allSelloff = Selloff::all()->toArray();
-        $iDSelectedSelloff  = $result['selloff_id'];
-        $allOptionOfSelloff = null;
-        getAllSelloff($allSelloff, $iDSelectedSelloff, $allOptionOfSelloff);
+        $idSelectedOfSellOff           = $getProductById['selloff_id'];
+        $getViewAllSellOffForSelectTag = Selloff::getViewAllSellOffForSelectTag($idSelectedOfSellOff);
 
-        /**
-         * array Selloff[$key]=>$value ($key = Selloff['id'] ; $value = Selloff['selloff_value'])
-         * @return array
-         */
         $arrayFromIdToValueOfSelloff = Product::arrayFromIdToValueOfSelloff();
 
 
-        /**
-         * Show view
-         */
-        return view('product.edit', compact('result'))->with([
-            'allOptionOfCategory'         => $allOptionOfCategory,
-            'allStyle'                    => $allStyle,
-            'allMadein'                   => $allMadein,
-            'allMaterial'                 => $allMaterial,
-            'allHeight'                   => $allHeight,
-            'allSelloff'                  => $allSelloff,
-            'arrayFromIdToValueOfSelloff' => $arrayFromIdToValueOfSelloff,
-            'allOptionOfStyle'            => $allOptionOfStyle,
-            'allOptionOfMadein'           => $allOptionOfMadein,
-            'allOptionOfMaterial'         => $allOptionOfMaterial,
-            'allOptionOfHeight'           => $allOptionOfHeight,
-            'allOptionOfSelloff' => $allOptionOfSelloff,
+        return view('product.edit')->with([
+            'getProductById'                 => $getProductById,
+            'getViewAllStatusForProduct'     => $getViewAllStatusForProduct,
+            'arrayFromIdToValueOfSelloff'    => $arrayFromIdToValueOfSelloff,
+            'getViewAllCategoryForSelectTag' => $getViewAllCategoryForSelectTag,
+            'getViewAllStyleForSelectTag'    => $getViewAllStyleForSelectTag,
+            'getViewAllMadeInForSelectTag'   => $getViewAllMadeInForSelectTag,
+            'getViewAllMaterialForSelectTag' => $getViewAllMaterialForSelectTag,
+            'getViewAllHeightForSelectTag'   => $getViewAllHeightForSelectTag,
+            'getViewAllSellOffForSelectTag'  => $getViewAllSellOffForSelectTag,
         ]);
     }
 
     public function update(ProductRequest $request)
     {
-        $allRequest = $request->all();
-        $id = $allRequest['id'];
-        $result      = Product::find($id);
-        if ($result == null) {
+        $allRequest     = $request->all();
+        $idProduct      = $allRequest['id'];
+        $objProduct     = new Product();
+        $getProductByid = $objProduct->find($idProduct);
+
+        if ($getProductByid == null) {
             return redirect()->action('ProductController@index')->withErrors(Lang::get('messages.no_id'));
         }
-        $image = Input::file('image');
-        //If don't upload image
-        if ($image == null) {
-            unset($allRequest['image']);
-        } else {
+        //Convert Money From String To Value
+        $allRequest['price_import'] = convertStringToValueOfMoney($allRequest['price_import']);
+        $allRequest['price']        = convertStringToValueOfMoney($allRequest['price']);
+        $allRequest['cost']         = convertStringToValueOfMoney($allRequest['cost']);
 
-            //If upload image -> delete old image
-            $fileNameDelete = "upload/product/".$result['image'];
-            if (\File::exists($fileNameDelete)) {
-                \File::delete($fileNameDelete);
-            }
-            //If upload image -> upload new image
-            if (Input::file('image')->isValid()) {
-                $destinationPath = "upload/product";
-                $fileName = change_alias($image->getClientOriginalName()) . time() . "." . $image->getClientOriginalExtension();
-                Input::file('image')->move($destinationPath, $fileName);
-            }
-            //Assign name for image
-            $allRequest['image'] = $fileName;
-        }
-        autoAssignDataToProperty($result, $allRequest);
-        $result->save();
-        return redirect()->action('ProductController@index')->withSuccess(Lang::get('messages.update_success'));
+        $nameInputUploadImageProduct = 'image';
+        $NameFileImageNeedToDelete   = $getProductByid['image'];
+        $newAllRequest               = UploadImage:: uploadNewImageAndDeleteOldImageProduct($nameInputUploadImageProduct, $allRequest, $NameFileImageNeedToDelete);
+        autoAssignDataToProperty($getProductByid, $newAllRequest);
+        $getProductByid->save();
+
+        return redirect()->action('ProductController@edit', $idProduct)->withSuccess(Lang::get('messages.update_success'));
     }
 
     public function destroy($id)
     {
-        $result = Roles::find($id);
-        if ($result == null) {
-            return redirect()->action('RolesController@index')->withErrors(Lang::get('messages.no_id'));
-        }
-        $result->delete();
-        return redirect_success('RolesController@index', Lang::get('messages.delete_success'));
-    }
+        $objProduct     = new Product();
+        $getProductById = $objProduct->find($id);
 
-    protected function arrayFromIdToNameOfStyle()
-    {
-        $allStyle = Style::all()->toArray();
-        if ($allStyle == null) {
-            return null;
+        if ($getProductById == null) {
+            return redirect()->action('ProductController@index')->withErrors(Lang::get('messages.no_id'));
         }
-        $returnNewArrayOfAllStyle = array();
-        foreach ($allStyle as $Style) {
-            $returnNewArrayOfAllStyle[$Style['id']] = $Style['style_name'];
-        }
-        return $returnNewArrayOfAllStyle;
+        $getProductById->status = Product::STATUS_DELETE;
+        $getProductById->save();
+        return redirect_success('ProductController@index', Lang::get('messages.delete_success'));
     }
-
 
 }
 

@@ -6,11 +6,13 @@ use App\Color;
 use App\ColorSizeNumber;
 use App\Order;
 use App\Region;
+use App\Size;
 use App\User;
 use App\Users;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
+use Illuminate\Support\Facades\Cache;
 use App\Product;
 use App\Category;
 use Lang;
@@ -50,8 +52,7 @@ class FrontendController extends Controller
             $menuConvert = null;
         }
         Callmenu($menuConvert, $parent, $topMenu);
-        $sidebar = "";
-        getSideBarForFrontEnd($menuConvert, $parent, $sidebar);
+        getSideBarForFrontEnd($menuConvert, $parent, $sidebar, $display = "");
         View::share(array(
             "menu"    => $topMenu,
             "sidebar" => $sidebar
@@ -61,40 +62,70 @@ class FrontendController extends Controller
 
     public function index()
     {
-        $products = Product::all()->toArray();
+        //get new product
+        $objProduct  = new Product();
+        $newProducts = $objProduct->skip(0)->take(7)->orderBy('id', 'desc')->get()->toArray();
+
+        //get product for content
+        $objCategory = new Category();
+        //get all childrent for MEN
+        $getAnyIdChildrentFromIdCategoryMen = null;
+        $idCategory                         = Category::MEN;
+        $allCategory                        = $objCategory->all()->toArray();
+        $objCategory->getAnyIdChildrentFromIdCategory($idCategory, $allCategory, $getAnyIdChildrentFromIdCategoryMen);
+
+        if (empty($getAnyIdChildrentFromIdCategoryMen)) {
+            return;
+        } else {
+            $flat = 0;
+            foreach ($getAnyIdChildrentFromIdCategoryMen as $category_id) {
+                $productForMen = $objProduct->where('category_id', $category_id)->orderBy('id', 'desc')->take(2)->get();
+                if (empty($productForMen)) {
+                    continue;
+                }
+                $allProductForMen[] = $productForMen->toArray();
+                $flat++;
+                if ($flat == 10) {
+                    break;
+                }
+            }
+            foreach($allProductForMen as $products){
+                foreach ($products as $product){
+                    $newArray[] = $product;
+                }
+            }
+        }
 
         return view('frontend.index')->with([
-            "products" => $products,
+            "newProducts"      => $newProducts,
+            "allProductForMen" => $newArray,
         ]);
     }
 
-    public function showProductByCategory($stringid){
+    public function showProductByCategory($stringid)
+    {
+        //get Id category
         $arrayStringId = explode('-', $stringid);
-        $idCategory     = intval(array_pop($arrayStringId));
+        $idCategory    = intval(array_pop($arrayStringId));
 
         $objCategory = new Category();
-        $allcategory = $objCategory->all()->toArray();
 
-        if(empty($allcategory)){
-            return redirect()->action('FrontendController@index')->withErrors(Lang::get('messages.table_category_empty'));
-        }
-
-        $arrayCategoryWithMapIdToInfoCatgory = $objCategory->mapIdCategoryToInfoCategory();
-
-        if(!array_key_exists($idCategory,$arrayCategoryWithMapIdToInfoCatgory)){
+        //check id isset in database
+        $checkIdCategoryIssetInTable = $objCategory->find($idCategory);
+        if (empty($checkIdCategoryIssetInTable)) {
             return redirect()->action('FrontendController@index')->withErrors(Lang::get('messages.no_id'));
         }
 
-        $objProduct = new Product();
-        $dataProductByIdCategory = $objProduct->where('category_id',$idCategory)->paginate(1);
+        //get any id category parent
+        $allCategory = $objCategory->all()->toArray();
 
-        //Dua vao model & check empty data
+        $getAnyIdParentFromIdProduct[] = $idCategory;
 
-//        if(empty($dataProductByIdCategory)){
-//            dd($dataProductByIdCategory);
-//        }
-//        var_dump($dataProductByIdCategory);
-//        echo "co"; die();
+        $objCategory->getAnyIdParentFromIdCategory($idCategory, $allCategory, $getAnyIdParentFromIdProduct);
+
+
+        $objProduct              = new Product();
+        $dataProductByIdCategory = $objProduct->where('category_id', $idCategory)->paginate(10);
 
 
         return view('frontend.category')->with([
@@ -105,40 +136,46 @@ class FrontendController extends Controller
 
     public function product($stringid)
     {
-        $arrayStringId = explode('-', $stringid);
-        $idProduct     = intval(array_pop($arrayStringId));
+        $idProduct = convertStringUrlToId($stringid);
 
-        $product = Product::find($idProduct);
-        if (empty($product)) {
-            return;
+        $getProductById = Product::find($idProduct);
+        if (empty($getProductById)) {
+            return redirect()->action('FrontendController@index')->withErrors(Lang::get('messages.id_product_not_isset'));
         }
-        $product   = $product->toArray();
-        $idProduct = $product['id'];
 
+        $getProductById = $getProductById->toArray();
 
+        //check product in table color_size_number (check product in warehouse)
         $colorSizeNumber                  = new ColorSizeNumber();
         $getProductInTableColorSizeNumber = $colorSizeNumber->where('product_id', $idProduct)
-            ->where('number', '>', 0)->get()->toArray();
+                                                     ->where('number', '>', 0)->get()->toArray();
 
         if ($getProductInTableColorSizeNumber == null) {
-            return "x";
+            $getViewColorForSelectTag       = Color::getViewAllColorForSelectTag();
+            $getViewSizeForSelectTag        = Size::getViewAllSizeForSelectTag();
+            $getSizeFromColorForThisProduct = null;
+            $mapIdSizeToInformationSize     = null;
+            $vailability = Lang::get('messages.not_in_stock');
+
         } else {
             foreach ($getProductInTableColorSizeNumber as $color) {
-
                 $getSizeFromColorForThisProduct[$color['color_id']][] = $color['size_id'];
-
             }
+            $getColorForThisProduct     = array_keys($getSizeFromColorForThisProduct);
+            $getViewColorForSelectTag   = Color::getViewColorForSelectTag($getColorForThisProduct);
+            $getViewSizeForSelectTag    = null;
+            $mapIdSizeToInformationSize = Size::mapIdSizeToInformationSize();
+            $vailability = Lang::get('messages.in_stock');
         }
-        $getColorForThisProduct = array_keys($getSizeFromColorForThisProduct);
-        $objColor               = new Color();
-        $mapIdToInfoColor       = $objColor->mapIdToInfoColor();
 
 
         return view('frontend.product')->with([
-            "product"                        => $product,
-            'getColorForThisProduct'         => $getColorForThisProduct,
-            'mapIdToInfoColor'               => $mapIdToInfoColor,
+            "product"                        => $getProductById,
+            'getViewColorForSelectTag'       => $getViewColorForSelectTag,
             'getSizeFromColorForThisProduct' => $getSizeFromColorForThisProduct,
+            'getViewSizeForSelectTag'        => $getViewSizeForSelectTag,
+            'mapIdSizeToInformationSize'     => $mapIdSizeToInformationSize,
+            'vailability'=>$vailability,
         ]);
     }
 
@@ -320,8 +357,8 @@ class FrontendController extends Controller
                 'address'   => $allRequest['address'],
             );
 
-            $objUser = new Users();
-            $idUser = $objUser->insertGetId($dataUserForInsertToDatabase);
+            $objUser             = new Users();
+            $idUser              = $objUser->insertGetId($dataUserForInsertToDatabase);
             $informationForOrder = $allRequest['information'];
             //Insert to Order
             //insert to table order
@@ -343,6 +380,11 @@ class FrontendController extends Controller
 
     }
 
+    public function contact(){
+        return view('frontend.contact')->with([
+
+        ]);
+    }
     public function deleteall()
     {
         if (Session::has('order')) {

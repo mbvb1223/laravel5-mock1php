@@ -1,7 +1,6 @@
 @extends('layouts.admin.master')
 @section('css')
 <link href="<?php echo url("/"); ?>/../theme/assets/global/css/jquery.bootgird.min.css" rel="stylesheet" type="text/css"/>
-
 @stop
 
 
@@ -14,7 +13,7 @@
                     <i class="fa fa-shopping-cart"></i><?php echo Lang::get('messages.list_users'); ?>
                 </div>
                 <div class="actions">
-                    <a href="{{ URL::action('ProductController@create') }}" class="btn default yellow-stripe">
+                    <a href="{{ URL::action('UsersController@create') }}" class="btn default yellow-stripe">
                         <i class="fa fa-plus"></i>
                          <span class="hidden-480">
                             <?php echo Lang::get('messages.create_new'); ?>
@@ -23,16 +22,17 @@
                 </div>
             </div>
             <div class="portlet-body">
+                <select name="st" id="st">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                </select>
                 <table id="grid-data-api" class="table table-condensed table-hover table-striped">
                     <thead>
                     <tr>
-                        <th data-column-id="key_product"><?php echo Lang::get('messages.key_product'); ?></th>
-                        <th data-column-id="name_product"><?php echo Lang::get('messages.name_product'); ?></th>
-                        <th data-column-id="style_id"><?php echo Lang::get('messages.style'); ?></th>
-                        <th data-column-id="madein_id"><?php echo Lang::get('messages.madein'); ?></th>
-                        <th data-column-id="material_id"><?php echo Lang::get('messages.material'); ?></th>
-                        <th data-column-id="height_id"><?php echo Lang::get('messages.height'); ?></th>
-                        <th data-column-id="created_at"><?php echo Lang::get('messages.created_at'); ?></th>
+                        <th data-column-id="user_id"><?php echo Lang::get('messages.order_name'); ?></th>
+                        <th data-column-id="status"><?php echo Lang::get('messages.order_status'); ?></th>
+                        <th data-column-id="total_cost"><?php echo Lang::get('messages.order_cost'); ?></th>
+                        <th data-column-id="created_at"><?php echo Lang::get('messages.users_created_at'); ?></th>
                         <th data-column-id="action"><?php echo Lang::get('messages.action'); ?></th>
                     </tr>
                     </thead>
@@ -43,24 +43,24 @@
 </div>
 @stop
 @section('js')
-<script src="<?php echo url("/"); ?>/../theme/assets/admin/layout/scripts/jquery.bootgrid.min.js" type="text/javascript"></script>
-<script src="<?php echo url("/"); ?>/../theme/assets/admin/layout/scripts/jquery.bootgrid.fa.min.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-bootgrid/1.2.0/jquery.bootgrid.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-bootgrid/1.2.0/jquery.bootgrid.fa.min.js "></script>
 
 @stop
 @section('jscode')
 <script>
     jQuery(document).ready(function() {
-
         $("#grid-data-api").bootgrid({
             ajax: true,
+
             post: function ()
             {
                 /* To accumulate custom parameter with the request object */
                 return {
-                    _token: "{{csrf_token()}}"
+                    _token: "{{csrf_token()}}",
                 };
             },
-            url: "{{url('admin/product/getDataAjax')}}"
+            url: "{{url('admin/order/getDataAjax')}}"
 
 
         });

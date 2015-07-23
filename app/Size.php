@@ -60,6 +60,20 @@ class Size extends Model {
         return $mapIdSizeToInformationSize;
     }
 
+    public static function getViewAllSizeForSelectTag($idSelected = 0)
+    {
+        $all = self::all()->toArray();
+        $result   = null;
+        foreach ($all as $item) {
+            if ($idSelected != 0 && $item['id'] == $idSelected) {
+                $result .= "<option value='" . $item['id'] . "' selected='selected'> $item[size_value] </option> ";
+            } else {
+                $result .= "<option value='" . $item['id'] . "'> $item[size_value] </option> ";
+            }
+        }
+        return $result;
+    }
+
 
 }
 

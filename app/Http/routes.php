@@ -16,6 +16,15 @@ Route::get('/index', function () {
 });
 
 Route::group(['middleware' => 'auth'], function () {
+
+    /**
+     * Order CONTROLLERS
+     */
+    Route::any('admin/order/getDataAjax', 'OrderController@getDataAjax');
+    Route::get('admin/order', 'OrderController@index');
+    Route::get('admin/order/{id}/edit', 'OrderController@edit');
+    Route::post('admin/order/update', 'OrderController@update');
+
     /**
      * Users CONTROLLERS
      */
@@ -187,8 +196,13 @@ Route::get('order/deleteall', 'FrontendController@deleteall');
 
 //show info product
 Route::get('product/{id}', 'FrontendController@product');
-//
+
+//show product by category
 Route::get('category/{id}', 'FrontendController@showProductByCategory');
+
+//contact in frontend
+Route::get('contact', 'FrontendController@contact');
+
 /**
  * Order Product
  */

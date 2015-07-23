@@ -9,61 +9,79 @@ class Product extends Model
 {
     protected $guarded = ['id'];
     protected $table = 'product';
-    public $properties = array('id', 'key_product', 'name_product','price_import', 'price', 'cost', 'image',
+    public $properties = array('id', 'key_product', 'name_product', 'status', 'price_import', 'price', 'cost', 'image',
         'information', 'category_id', 'selloff_id', 'style_id', 'madein_id',
         'material_id', 'height_id', 'created_at', 'updated_at');
     public $timestamps = true;
 
+    const STATUS_SHOW = 0;
+    const STATUS_HIDDEN = 1;
+    const STATUS_DELETE = 2;
+
 
     /**
      * getData for pagination using ajax bootgrid
-     * @param $dataRequest
-     * @param $config
+     * @param $allRequest
      * @return mixed
      */
 
-    public function getDataForPaginationAjax($dataRequest, $config)
+    public function getDataForPaginationAjax($allRequest)
     {
+        $pageCurrent = $allRequest['current'];
+        $limit       = $allRequest['rowCount'];
+        $offset      = ($pageCurrent - 1) * $limit;
+
         // Config sort
         $sortBy    = 'id';
         $sortOrder = 'asc';
-        if (isset($dataRequest['sort'])) {
-            $sort      = $dataRequest['sort'];
-            $sortColum = ['id', 'key_product', 'name_product', 'email', 'style_id', 'madein_id',
+
+        if (isset($allRequest['sort'])) {
+            $sort      = $allRequest['sort'];
+            $sortColum = ['id', 'key_product', 'name_product', 'status', 'price_import', 'price', 'cost', 'image',
+                'information', 'category_id', 'selloff_id', 'style_id', 'madein_id',
                 'material_id', 'height_id', 'created_at', 'updated_at'];
             $sortBy    = (in_array(key($sort), $sortColum)) ? key($sort) : 'id';
             $sortOrder = current($sort);
         }
 
-        $query         = $this->where('id', 'LIKE', '%' . $dataRequest['searchPhrase'] . '%')
-            ->orWhere('key_product', 'LIKE', '%' . $dataRequest['searchPhrase'] . '%')
-            ->orWhere('name_product', 'LIKE', '%' . $dataRequest['searchPhrase'] . '%')
-            ->orWhere('style_id', 'LIKE', '%' . $dataRequest['searchPhrase'] . '%')
-            ->orWhere('madein_id', 'LIKE', '%' . $dataRequest['searchPhrase'] . '%')
-            ->orWhere('material_id', 'LIKE', '%' . $dataRequest['searchPhrase'] . '%')
-            ->orWhere('height_id', 'LIKE', '%' . $dataRequest['searchPhrase'] . '%')
-            ->orWhere('created_at', 'LIKE', '%' . $dataRequest['searchPhrase'] . '%')
-            ->orWhere('updated_at', 'LIKE', '%' . $dataRequest['searchPhrase'] . '%');
+        $query   = $this->where(function($query) use ($allRequest) {
+                                $query->where('id', 'LIKE', '%' . $allRequest['searchPhrase'] . '%')
+                                    ->orWhere('key_product', 'LIKE', '%' . $allRequest['searchPhrase'] . '%')
+                                    ->orWhere('name_product', 'LIKE', '%' . $allRequest['searchPhrase'] . '%')
+                                    ->orWhere('style_id', 'LIKE', '%' . $allRequest['searchPhrase'] . '%')
+                                    ->orWhere('madein_id', 'LIKE', '%' . $allRequest['searchPhrase'] . '%')
+                                    ->orWhere('material_id', 'LIKE', '%' . $allRequest['searchPhrase'] . '%')
+                                    ->orWhere('height_id', 'LIKE', '%' . $allRequest['searchPhrase'] . '%')
+                                    ->orWhere('created_at', 'LIKE', '%' . $allRequest['searchPhrase'] . '%')
+                                    ->orWhere('updated_at', 'LIKE', '%' . $allRequest['searchPhrase'] . '%');
+                        })->where('status','<>', self::STATUS_DELETE);
+
         $queryGetTotal = $query;
         $total         = $queryGetTotal->count();
 
-        if ($config['limit'] == -1) {
+        if ($limit == -1) {
             $rows = $query->orderBy($sortBy, $sortOrder)
                 ->get();
         } else {
             $rows = $query->orderBy($sortBy, $sortOrder)
-                ->skip($config['offset'])
-                ->take($config['limit'])
+                ->skip($offset)
+                ->take($limit)
                 ->get();
         }
 
-        return ['total' => $total, 'rows' => $rows];
+        // Render field action
+        foreach ($rows as $k => $item) {
+            $rows[$k]['action'] = create_field_action('admin/product', $item->id);
+        }
+
+        $data['current']  = intval($pageCurrent);
+        $data['rowCount'] = intval($limit);
+        $data['total']    = intval($total);
+        $data['rows']     = $rows;
+        $data['_token']   = csrf_token();
+        return json_encode($data);
     }
 
-    /**
-     * array Selloff[$key]=>$value ($key = Selloff['id'] ; $value = Selloff['selloff_value'])
-     * @return array
-     */
     public static function arrayFromIdToValueOfSelloff()
     {
         $allSelloff = Selloff::all()->toArray();
@@ -77,18 +95,31 @@ class Product extends Model
         return $arrayFromIdToValueOfSelloff;
     }
 
-    public static function mapProductIdToInformationProduct(){
+    public static function mapProductIdToInformationProduct()
+    {
         $products = self::all()->toArray();
 
-        if($products == null){
+        if ($products == null) {
             return null;
         }
-        foreach($products as $product){
+        foreach ($products as $product) {
             $mapProductIdToInformationProduct[$product['id']] = $product;
         }
         return $mapProductIdToInformationProduct;
     }
 
+    public function getViewAllStatusForProduct($idSelected = 99)
+    {
+        if ($idSelected == 1) {
+            $result = "<option value='" . self::STATUS_SHOW . "' > Show </option> ";
+            $result .= "<option value='" . self::STATUS_HIDDEN . "' selected='selected'> Hidden </option> ";
+        } else {
+            $result = "<option value='" . self::STATUS_SHOW . "' selected='selected'> Show </option> ";
+            $result .= "<option value='" . self::STATUS_HIDDEN . "'> Hidden </option> ";
+        }
+
+        return $result;
+    }
 
 
 }

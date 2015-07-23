@@ -49,6 +49,18 @@ class Selloff extends Model {
         return ['total'=> $total, 'rows'=>$rows];
     }
 
-
+    public static function getViewAllSellOffForSelectTag($idSelected = 0)
+    {
+        $all = self::all()->toArray();
+        $result = "<option value='0'> None </option> ";
+        foreach ($all as $item) {
+            if ($idSelected != 0 && $item['id'] == $idSelected) {
+                $result .= "<option value='" . $item['id'] . "' selected='selected'> $item[selloff_value] </option> ";
+            } else {
+                $result .= "<option value='" . $item['id'] . "'> $item[selloff_value] </option> ";
+            }
+        }
+        return $result;
+    }
 }
 

@@ -26,11 +26,6 @@ class Color extends Model
         $limit       = $allRequest['rowCount'];
         $offset      = ($pageCurrent - 1) * $limit;
 
-        $config = array(
-            'limit'  => $limit,
-            'offset' => $offset,
-        );
-
         // Config sort
         $sortBy    = 'id';
         $sortOrder = 'asc';
@@ -42,7 +37,7 @@ class Color extends Model
             $sortOrder = current($sort);
         }
 
-        $query         = $this->where('id', 'LIKE', '%' . $allRequest['searchPhrase'] . '%')
+        $query = $this->where('id', 'LIKE', '%' . $allRequest['searchPhrase'] . '%')
             ->orWhere('color_name', 'LIKE', '%' . $allRequest['searchPhrase'] . '%')
             ->orWhere('created_at', 'LIKE', '%' . $allRequest['searchPhrase'] . '%')
             ->orWhere('updated_at', 'LIKE', '%' . $allRequest['searchPhrase'] . '%');
@@ -50,13 +45,13 @@ class Color extends Model
         $queryGetTotal = $query;
         $total         = $queryGetTotal->count();
 
-        if ($config['limit'] == -1) {
+        if ($limit == -1) {
             $rows = $query->orderBy($sortBy, $sortOrder)
                 ->get();
         } else {
             $rows = $query->orderBy($sortBy, $sortOrder)
-                ->skip($config['offset'])
-                ->take($config['limit'])
+                ->skip($offset)
+                ->take($limit)
                 ->get();
         }
 
@@ -94,6 +89,38 @@ class Color extends Model
             $mapIdColorToInformationColor[$color['id']] = $color;
         }
         return $mapIdColorToInformationColor;
+    }
+
+    public static function getViewColorForSelectTag($all){
+        $mapIdColorToInformationColor = self::mapIdColorToInformationColor();
+
+        if(empty($mapIdColorToInformationColor)){
+            return null;
+        }
+
+        $result   = null;
+        foreach ($all as $item) {
+            if(!array_key_exists($item,$mapIdColorToInformationColor)){
+                continue;
+            }
+            $colorName = $mapIdColorToInformationColor[$item]['color_name'];
+            $result .= "<option value='" . $item . "'> $colorName </option>";
+        }
+        return $result;
+    }
+
+    public static function getViewAllColorForSelectTag($idSelected = 0)
+    {
+        $all = self::all()->toArray();
+        $result   = null;
+        foreach ($all as $item) {
+            if ($idSelected != 0 && $item['id'] == $idSelected) {
+                $result .= "<option value='" . $item['id'] . "' selected='selected'> $item[color_name] </option> ";
+            } else {
+                $result .= "<option value='" . $item['id'] . "'> $item[color_name] </option> ";
+            }
+        }
+        return $result;
     }
 
 }
