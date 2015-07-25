@@ -1,21 +1,2 @@
-<tr>
-    <td>
-        <a href='#'>
-            Product 1 </a>
-    </td>
-    <td>
-																	<span class='label label-sm label-success'>
-																	Available
-                                                                        </span>
-    </td>
-    <td>
-        345.50$
-    </td>
-    <td>
-        345.50$
-    </td>
-    <td>
-        2
-    </td>
-
-</tr>
+<li><a href='shop-account.html'>My Account</a></li>
+<li><a href='{{action('Auth\AuthController@getLogin')}}'>Log In</a></li>

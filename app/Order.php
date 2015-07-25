@@ -78,6 +78,56 @@ class Order extends Model
         return json_encode($data);
     }
 
+    public static function updateCostPriceAndPriceImportInOrderByIdOrder($idOrder){
+        //update price/cost/price_import in table Order
+        $objDetailOrder = new DetailOrder();
+        $getAllProductInDetailOrderByIdOrder = $objDetailOrder->where('order_id', $idOrder)->get();
+        $totalCost                           = 0;
+        $totalPrice                          = 0;
+        $totalPriceImport                    = 0;
+
+        foreach ($getAllProductInDetailOrderByIdOrder as $item) {
+
+            $totalCost          += $item['number'] * $item['cost'];
+            $totalPrice         +=  $item['number'] * $item['price'];
+            $totalPriceImport   +=  $item['number'] * $item['price_import'];
+        }
+
+        $getOrderById = Order::find($idOrder);
+        $getOrderById->total_cost = $totalCost;
+        $getOrderById->total_price = $totalPrice;
+        $getOrderById->total_price_import = $totalPriceImport;
+        $getOrderById->save();
+    }
+
+    public static function getViewStatusForOrder($currentStatus){
+        $result = null;
+        if($currentStatus==self::PENDING){
+
+            $result.= "<div class='col-md-3'><input type='radio' checked name='status' style='margin-left:0px;' value='".self::PENDING."'>PENDING</div>";
+            $result.= "<div class='col-md-3'><input type='radio' style='margin-left:0px;' name='status' value='".self::DELEVERY."'>DELEVERY</div>";
+            $result.= "<div class='col-md-3'><input type='radio' style='margin-left:0px;' name='status' value='".self::OK."'>OK</div>";
+            $result.= "<div class='col-md-3'><input type='radio' style='margin-left:0px;' name='status' value='".self::CANCEL."'>CANCEL</div>";
+
+        }
+        if($currentStatus==self::DELEVERY){
+            $result.= "<div class='col-md-3'><input type='radio' checked style='margin-left:0px;' name='status' value='".self::DELEVERY."'>DELEVERY</div>";
+            $result.= "<div class='col-md-3'><input type='radio' style='margin-left:0px;' name='status' value='".self::OK."'>OK</div>";
+            $result.= "<div class='col-md-3'><input type='radio' style='margin-left:0px;' name='status' value='".self::CANCEL."'>CANCEL</div>";
+
+        }
+        if($currentStatus==self::OK){
+            $result.= "<div class='col-md-3'><input type='radio' checked style='margin-left:0px;' name='status' value='".self::OK."'>OK</div>";
+
+        }
+        if($currentStatus==self::CANCEL){
+            $result.= "<div class='col-md-3'><input type='radio' checked style='margin-left:0px;' name='status' value='".self::CANCEL."'>CANCEL</div>";
+
+        }
+        return $result;
+
+    }
+
     /**
      * For FrontEnd
      */
@@ -171,6 +221,43 @@ class Order extends Model
                         <a class='btn btn-default' href='cc'>Delete cart </a>
                         </div></form>";
         return $result;
+    }
+
+    public function getViewCartInIndexFrontEnd($sessionOrder)
+    {
+        if ($sessionOrder == null) {
+            $result = '<h3>Your shopping cart is empty!</h3>';
+            return $result;
+        }
+
+        $mapProductIdToInformationProduct = Product::mapProductIdToInformationProduct();
+        $mapIdColorToInformationColor     = Color::mapIdColorToInformationColor();
+        $mapIdSizeToInformationSize       = Size::mapIdSizeToInformationSize();
+        $result                           = '';
+        $totalCost = 0;
+        foreach ($sessionOrder as $sessionOrder) {
+            $idProduct             = $sessionOrder['product_id'];
+            $idColor               = $sessionOrder['color_id'];
+            $idSize                = $sessionOrder['size_id'];
+            $number                = $sessionOrder['number'];
+            $nameProduct           = $mapProductIdToInformationProduct[$idProduct]['name_product'];
+            $colorName             = $mapIdColorToInformationColor[$idColor]['color_name'];
+            $sizeValue             = $mapIdSizeToInformationSize[$idSize]['size_value'];
+            $costProduct           = $mapProductIdToInformationProduct[$idProduct]['cost'];
+            $costItemProductInCart = $costProduct * $number;
+            $totalCost += $costItemProductInCart;
+            $keyOfOrder = $sessionOrder['key'];
+            $result .= " <li>
+                        <a href='shop-item.html'><img src='' alt='Rolex Classic Watch' width='37' height='34'></a>
+                        <span class='cart-content-count'>x $number</span>
+                        <strong><a href='shop-item.html'>$nameProduct|$colorName|$sizeValue</a></strong>
+                        <em>$$costProduct</em>
+                        <a href='" . action('FrontendController@deletecartitem', array('id' => $keyOfOrder)) . "' class='del-goods'>&nbsp;</a>
+                    </li>";
+        }
+        $return[0] = $result;
+        $return[1] = $totalCost;
+        return $return;
     }
 
     public function updateNumberForSessionOrder($sessionOrder, $allRequest)

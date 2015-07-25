@@ -4,12 +4,16 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use DB;
+use Illuminate\Support\Facades\Session;
 
 class Users extends Model
 {
     protected $guarded = ['id'];
     protected $table = 'users';
-    public $properties = array('id', 'username','yourname', 'password', 'email', 'phone', 'avatar', 'status', 'role_id', 'keyactive', 'remember_token', 'address', 'city_id', 'region_id', 'created_at', 'updated_at');
+    public $properties = array('id', 'username','yourname', 'password',
+        'email', 'phone', 'avatar', 'status',
+        'role_id', 'keyactive', 'remember_token', 'address',
+        'city_id', 'region_id', 'created_at', 'updated_at');
     public $timestamps = true;
     const ACTIVE = 1;
     const INACTIVE = 0;
@@ -73,6 +77,17 @@ class Users extends Model
             $mapIdUserToInfoUser[$item['id']] = $item;
         }
         return $mapIdUserToInfoUser;
+    }
+
+    public static function getViewUserInIndexFrontEnd(){
+        $sessionUser = Session::get('user');
+        $result = null;
+        if(empty($sessionUser)){
+            $result .="<li><a href='".action('Auth\AuthController@getLogin')."'>Log In</a></li>";
+        }else {
+            $result .="<li>Hi, $sessionUser[username] </li><li><a href='".action('Auth\AuthController@getLogout')."'>Logout</a></li>";
+        }
+        return $result;
     }
 }
 

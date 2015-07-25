@@ -64,5 +64,17 @@ class Material extends Model
         }
         return $result;
     }
+
+    public static function arrayFromIdMaterialToNameMaterial(){
+        $all = self::all()->toArray();
+        if($all == null){
+            return null;
+        }
+        $newArray = array();
+        foreach($all as $item){
+            $newArray[$item['id']] = $item['material_name'];
+        }
+        return $newArray;
+    }
 }
 

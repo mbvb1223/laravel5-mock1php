@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use DB;
-
+use Carbon\Carbon;
 class Product extends Model
 {
     protected $guarded = ['id'];
@@ -17,6 +17,9 @@ class Product extends Model
     const STATUS_SHOW = 0;
     const STATUS_HIDDEN = 1;
     const STATUS_DELETE = 2;
+    const CHECK_NEW = 7;
+
+    const PATH_IMAGE = "upload/product";
 
 
     /**
@@ -74,6 +77,30 @@ class Product extends Model
             $rows[$k]['action'] = create_field_action('admin/product', $item->id);
         }
 
+        $arrayFromIdStyleToNameStyle = Style::arrayFromIdStyleToNameStyle();
+        foreach ($rows as $k => $item) {
+            $id =  $rows[$k]['style_id'];
+            $rows[$k]['style_id'] = $arrayFromIdStyleToNameStyle[$id];
+        }
+
+        $arrayFromIdMadeinToNameMadein = Madein::arrayFromIdMadeinToNameMadein();
+        foreach ($rows as $k => $item) {
+            $id =  $rows[$k]['madein_id'];
+            $rows[$k]['madein_id'] = $arrayFromIdMadeinToNameMadein[$id];
+        }
+
+        $arrayFromIdMaterialToNameMaterial = Material::arrayFromIdMaterialToNameMaterial();
+        foreach ($rows as $k => $item) {
+            $id =  $rows[$k]['material_id'];
+            $rows[$k]['material_id'] = $arrayFromIdMaterialToNameMaterial[$id];
+        }
+
+        $arrayFromIdHeightToValueHeight = Height::arrayFromIdHeightToValueHeight();
+        foreach ($rows as $k => $item) {
+            $id =  $rows[$k]['height_id'];
+            $rows[$k]['height_id'] = $arrayFromIdHeightToValueHeight[$id];
+        }
+
         $data['current']  = intval($pageCurrent);
         $data['rowCount'] = intval($limit);
         $data['total']    = intval($total);
@@ -119,6 +146,127 @@ class Product extends Model
         }
 
         return $result;
+    }
+
+    public static function getViewAllProductForSelectTag(){
+        $all = self::all()->toArray();
+        if ($all == null) {
+            return null;
+        }
+        $resulf = "<option value=''> </option>";
+        foreach ($all as $item) {
+            $resulf .="<option value='".$item['id']."'>".$item['name_product']." </option>";
+        }
+        return $resulf;
+    }
+
+    public function getViewFiveProductRelationForPageProduct($dataProductByIdCategory){
+        $result = null;
+        foreach($dataProductByIdCategory as $product){
+            $linkImage = url("/")."/upload/product/$product[image]";
+            $nameProduct = $product['name_product'];
+            $linkToProduct = change_alias($product['name_product'])."-".$product['id'];
+            $cost = number_format($product['cost'],2);
+            $checkNew = Carbon::now()->subDay(self::CHECK_NEW) <  $product['created_at'];
+            if($checkNew == true){
+                $stickNew = "<div class='sticker sticker-new'></div>";
+            }else {
+                $stickNew = null;
+            }
+            if($product['selloff_id']!=0){
+                $price = number_format($product['price'],2);
+                $checkSale = "<div class='sticker sticker-sale'></div>";
+            }else{
+                $price = null;
+                $checkSale = null;
+            }
+            $result .="<div>
+                <div class='product-item'>
+                    <div class='pi-img-wrapper'>
+                        <img src='".$linkImage."' class='img-responsive' alt='Berry Lace Dress'>
+                        <div>
+                            <a href='".$linkImage."' class='btn btn-default fancybox-button'>Zoom</a>
+                            <a href='#product-pop-up' class='btn btn-default fancybox-fast-view'>View</a>
+                        </div>
+                    </div>
+                    <h3><a href='".$linkToProduct."'>$nameProduct</a></h3>
+                    <div class='pi-price'>$$cost <small class='zprice'> $$price</small></div>
+                    <a href='".$linkToProduct."' class='btn btn-default add2cart'>Detail</a>
+                    $stickNew
+                    $checkSale
+                </div>
+            </div>";
+        }
+        return $result;
+
+    }
+
+    public function getViewProductByArrayProduct($dataProductByIdCategory){
+        $result = null;
+        foreach($dataProductByIdCategory as $product){
+            $idProduct = $product['id'];
+            $linkImage = url("/")."/upload/product/$product[image]";
+            $nameProduct = $product['name_product'];
+            $linkToProduct = change_alias($product['name_product'])."-".$product['id'];
+            $cost = number_format($product['cost'],2);
+            $checkNew = Carbon::now()->subDay(self::CHECK_NEW) <  $product['created_at'];
+            if($checkNew == true){
+                $stickNew = "<div class='sticker sticker-new'></div>";
+            }else {
+                $stickNew = null;
+            }
+            if($product['selloff_id']!=0){
+                $price = number_format($product['price'],2);
+                $checkSale = "<div class='sticker sticker-sale'></div>";
+            }else{
+                $price = null;
+                $checkSale = null;
+            }
+            $result .="<div>
+                <div class='product-item'>
+                    <div class='pi-img-wrapper'>
+                        <img src='".$linkImage."' class='img-responsive' alt='Berry Lace Dress'>
+                        <div>
+                            <a href='".$linkImage."' class='btn btn-default fancybox-button'>Zoom</a>
+                            <a href='#product-pop-up' class='btn btn-default fancybox-fast-view k-view'data-id='".$idProduct."'>View</a>
+                        </div>
+                    </div>
+                    <h3><a href='".action('FrontendController@product',$linkToProduct)."'>$nameProduct</a></h3>
+                    <div class='pi-price'>$$cost <small class='zprice'> $$price</small></div>
+                    <a href='".action('FrontendController@product',$linkToProduct)."' class='btn btn-default add2cart'>Detail</a>
+                    $stickNew
+                    $checkSale
+                </div>
+            </div>";
+        }
+        return $result;
+
+    }
+
+    public function getTenProducByArrayIdCategory($getAnyIdChildrentFromIdCategoryMen){
+        if (empty($getAnyIdChildrentFromIdCategoryMen)) {
+            return;
+        } else {
+            $flat = 0;
+            foreach ($getAnyIdChildrentFromIdCategoryMen as $category_id) {
+                $product = $this->where('category_id', $category_id)->orderBy('id', 'desc')->take(2)->get();
+                if (empty($product)) {
+                    continue;
+                }
+                $allProduct[] = $product->toArray();
+                $flat++;
+                if ($flat == 10) {
+                    break;
+                }
+            }
+
+            foreach ($allProduct as $products) {
+                foreach ($products as $product) {
+                    $newArray[] = $product;
+                }
+            }
+        }
+        return $newArray;
     }
 
 

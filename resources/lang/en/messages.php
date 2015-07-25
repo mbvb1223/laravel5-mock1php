@@ -7,6 +7,7 @@
  * To change this template use File | Settings | File Templates.
  */
 return [
+
     /**
      * Frontend Controller
      */
@@ -27,6 +28,7 @@ return [
     'order_cost'                        => 'Total cost',
     'not_in_stock'                      => 'Not in stock',
     'in_stock'                          => 'In stock',
+    'can_not_change_status'             => 'Can not change status. Please, review status product in stock',
 
 
     /**
@@ -37,9 +39,11 @@ return [
     'no_id'                             => "Don't have this ID in database",
     'success'                           => "Success",
     'error'                             => "Error",
+    'warning'                           => "Warning",
     'delete_success'                    => "Delete success",
     'create_new'                        => "Create New",
     'back'                              => 'Back',
+    'id'                              => 'Id',
     ''                                  => '',
     'create'                            => 'Create',
     'reset'                             => 'Reset',
@@ -139,6 +143,10 @@ return [
     'edit_product'                      => 'Edit Product',
     'price_import'                      => 'Price Import',
     'status'                            => 'Status',
+
+    //For invoice import
+    'total_price'=>'Total price',
+    'invoice_import'=>'Invoice import',
 
     /**
      * For Size

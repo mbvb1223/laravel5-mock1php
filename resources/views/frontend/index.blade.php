@@ -24,7 +24,7 @@
                                 <img src="<?php echo url("/"); ?>/../theme/assets/frontend/pages/img/products/k4.jpg" class="img-responsive" alt="Berry Lace Dress">
                                 <div>
                                     <a href="<?php echo url("/"); ?>/../theme/assets/frontend/pages/img/products/k4.jpg" class="btn btn-default fancybox-button">Zoom</a>
-                                    <a href="#product-pop-up" class="btn btn-default fancybox-fast-view">View</a>
+                                    <a href="#product-pop-up" class="btn btn-default fancybox-fast-view k-view" data-id="48">View</a>
                                 </div>
                             </div>
                             <h3><a href="shop-item.html">xxxxxxxxxxx</a></h3>

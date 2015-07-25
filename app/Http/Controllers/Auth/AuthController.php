@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Auth;
 
 use App\City;
 use App\Region;
+use App\User;
 use App\Users;
 use Validator;
 use App\libraries\Authen;
+use App\Order;
 use App\libraries\ReCaptcha;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -65,9 +67,30 @@ class AuthController extends Controller
         Callmenu($menuConvert, $parent, $topMenu);
         $sidebar = "";
         getSideBarForFrontEnd($menuConvert, $parent, $sidebar);
+
+        //=========================================View Cart in Index===================================================
+        $sessionOrder = Session::get('order');
+        if (!empty($sessionOrder)) {
+            $convertAndSortSessionOrder = convertAndSortByKeySessionCart($sessionOrder);
+            $objOrder                   = new Order();
+            $getViewCartInIndexFrontEnd = $objOrder->getViewCartInIndexFrontEnd($convertAndSortSessionOrder)[0];
+            $countSessionCart           = count($sessionOrder);
+            $totalCost                  = $objOrder->getViewCartInIndexFrontEnd($convertAndSortSessionOrder)[1];
+        } else {
+            $getViewCartInIndexFrontEnd = null;
+            $countSessionCart           = 0;
+            $totalCost                  = 0;
+        }
+        //=========================================View Cart in Index===================================================
+        $getViewUserInIndexFrontEnd = Users::getViewUserInIndexFrontEnd();
+
         View::share(array(
-            "menu"    => $topMenu,
-            "sidebar" => $sidebar
+            "menu"                       => $topMenu,
+            "sidebar"                    => $sidebar,
+            'getViewCartInIndexFrontEnd' => $getViewCartInIndexFrontEnd,
+            "countSessionCart"           => $countSessionCart,
+            "totalCost"                  => $totalCost,
+            "getViewUserInIndexFrontEnd" =>$getViewUserInIndexFrontEnd,
         ));
     }
 

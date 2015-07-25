@@ -99,7 +99,6 @@ class ProductController extends Controller
     public function getDataAjax(Request $request)
     {
         $allRequest               = $request->all();
-
         $objProduct                 = new Product();
         $getDataForPaginationAjax = $objProduct->getDataForPaginationAjax($allRequest);
 

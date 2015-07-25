@@ -6,3 +6,8 @@
     z-index: 1000;
     width: 400px;
 }
+.zprice {
+    font-size:13px;
+    text-decoration: line-through;
+    color:rgb(187, 187, 187);
+}

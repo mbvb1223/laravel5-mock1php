@@ -63,6 +63,17 @@ class Madein extends Model {
         return $result;
     }
 
+    public static function arrayFromIdMadeinToNameMadein(){
+        $all = self::all()->toArray();
+        if($all == null){
+            return null;
+        }
+        $newArray = array();
+        foreach($all as $item){
+            $newArray[$item['id']] = $item['madein_name'];
+        }
+        return $newArray;
+    }
 
 }
 

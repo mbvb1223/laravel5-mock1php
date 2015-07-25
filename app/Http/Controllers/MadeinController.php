@@ -10,7 +10,7 @@ use Lang;
 use View;
 use Route;
 
-class madeinController extends Controller
+class MadeinController extends Controller
 {
 
 

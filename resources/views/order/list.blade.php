@@ -49,15 +49,45 @@
 @stop
 @section('jscode')
 <script>
-    jQuery(document).ready(function() {
+   /* jQuery(document).ready(function() {
+        var  status =  $("#st").val();
         $("#grid-data-api").bootgrid({
             ajax: true,
 
             post: function ()
             {
-                /* To accumulate custom parameter with the request object */
+                /!* To accumulate custom parameter with the request object *!/
                 return {
                     _token: "{{csrf_token()}}",
+                    status :  status,
+                };
+            },
+            url: "{{url('admin/order/getDataAjax')}}"
+
+
+        });
+
+
+        $("#st").on('change',function () {
+            var  status =  $("#st").val();
+
+            $("#grid-data-api").bootgrid('reload');
+        });
+
+    })*/
+
+</script>
+
+<script>
+    jQuery(document).ready(function() {
+
+        $("#grid-data-api").bootgrid({
+            ajax: true,
+            post: function ()
+            {
+                /* To accumulate custom parameter with the request object */
+                return {
+                    _token: "{{csrf_token()}}"
                 };
             },
             url: "{{url('admin/order/getDataAjax')}}"

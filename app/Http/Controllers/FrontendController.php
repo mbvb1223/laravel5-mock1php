@@ -4,11 +4,16 @@ namespace App\Http\Controllers;
 use App\City;
 use App\Color;
 use App\ColorSizeNumber;
+use App\Height;
+use App\Madein;
+use App\Material;
 use App\Order;
 use App\Region;
 use App\Size;
+use App\Style;
 use App\User;
 use App\Users;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
@@ -53,57 +58,158 @@ class FrontendController extends Controller
         }
         Callmenu($menuConvert, $parent, $topMenu);
         getSideBarForFrontEnd($menuConvert, $parent, $sidebar, $display = "");
+
+        //===================================View Cart in Index===================================================
+        $sessionOrder = Session::get('order');
+        if (!empty($sessionOrder)) {
+            $convertAndSortSessionOrder = convertAndSortByKeySessionCart($sessionOrder);
+            $objOrder                   = new Order();
+            $getViewCartInIndexFrontEnd = $objOrder->getViewCartInIndexFrontEnd($convertAndSortSessionOrder)[0];
+            $countSessionCart           = count($sessionOrder);
+            $totalCost                  = $objOrder->getViewCartInIndexFrontEnd($convertAndSortSessionOrder)[1];
+        } else {
+            $getViewCartInIndexFrontEnd = null;
+            $countSessionCart           = 0;
+            $totalCost                  = 0;
+        }
+        //===================================View Cart in Index===================================================
+
+        $getViewUserInIndexFrontEnd = Users::getViewUserInIndexFrontEnd();
+
         View::share(array(
-            "menu"    => $topMenu,
-            "sidebar" => $sidebar
+            "menu"                       => $topMenu,
+            "sidebar"                    => $sidebar,
+            'getViewCartInIndexFrontEnd' => $getViewCartInIndexFrontEnd,
+            "countSessionCart"           => $countSessionCart,
+            "totalCost"                  => $totalCost,
+            "getViewUserInIndexFrontEnd" =>$getViewUserInIndexFrontEnd,
         ));
 
     }
 
     public function index()
     {
-        //get new product
-        $objProduct  = new Product();
-        $newProducts = $objProduct->skip(0)->take(7)->orderBy('id', 'desc')->get()->toArray();
+        //========================================Get 7 product new=====================================================
+        $objProduct        = new Product();
+        $newProducts       = $objProduct->skip(0)->take(7)->orderBy('id', 'desc')->get()->toArray();
+        $getViewNewProduct = $objProduct->getViewProductByArrayProduct($newProducts);
+        //========================================END-Get 7 product new=================================================
 
-        //get product for content
+        //===================================Get 10 product for Men=====================================================
         $objCategory = new Category();
         //get all childrent for MEN
         $getAnyIdChildrentFromIdCategoryMen = null;
-        $idCategory                         = Category::MEN;
+        $idCategoryMen                      = Category::MEN;
         $allCategory                        = $objCategory->all()->toArray();
-        $objCategory->getAnyIdChildrentFromIdCategory($idCategory, $allCategory, $getAnyIdChildrentFromIdCategoryMen);
+        $objCategory->getAnyIdChildrentFromIdCategory($idCategoryMen, $allCategory, $getAnyIdChildrentFromIdCategoryMen);
+        $allProductForMen  = $objProduct->getTenProducByArrayIdCategory($getAnyIdChildrentFromIdCategoryMen);
+        $getViewProductMen = $objProduct->getViewProductByArrayProduct($allProductForMen);
 
-        if (empty($getAnyIdChildrentFromIdCategoryMen)) {
-            return;
-        } else {
-            $flat = 0;
-            foreach ($getAnyIdChildrentFromIdCategoryMen as $category_id) {
-                $productForMen = $objProduct->where('category_id', $category_id)->orderBy('id', 'desc')->take(2)->get();
-                if (empty($productForMen)) {
-                    continue;
-                }
-                $allProductForMen[] = $productForMen->toArray();
-                $flat++;
-                if ($flat == 10) {
-                    break;
-                }
-            }
-            foreach($allProductForMen as $products){
-                foreach ($products as $product){
-                    $newArray[] = $product;
-                }
-            }
-        }
+        //===================================END-Get 10 product for Men=================================================
+
+        //===================================Get 10 product for Women===================================================
+        $getAnyIdChildrentFromIdCategoryWomen = null;
+        $idCategoryWomen                      = Category::WOMEN;
+        $objCategory->getAnyIdChildrentFromIdCategory($idCategoryWomen, $allCategory, $getAnyIdChildrentFromIdCategoryWomen);
+        $allProductForWomen  = $objProduct->getTenProducByArrayIdCategory($getAnyIdChildrentFromIdCategoryWomen);
+        $getViewProductWomen = $objProduct->getViewProductByArrayProduct($allProductForWomen);
+        //===================================END-Get 10 product for Women===============================================
+
 
         return view('frontend.index')->with([
-            "newProducts"      => $newProducts,
-            "allProductForMen" => $newArray,
+            "newProducts"         => $newProducts,
+            "getViewProductMen"   => $getViewProductMen,
+            "getViewProductWomen" => $getViewProductWomen,
+            "getViewNewProduct"   => $getViewNewProduct,
         ]);
     }
 
-    public function showProductByCategory($stringid)
+    public function getProductForFastView(Request $request)
     {
+        //====================================Get information of Product================================================
+        $allRequest     = $request->all();
+        $idProduct      = $allRequest['id'];
+        $objProduct     = new Product();
+        $getProductById = $objProduct->select('product.*', 'selloff.selloff_value', 'style.style_name', 'madein.madein_name', 'material.material_name', 'height.height_value')
+            ->join('style', 'style.id', '=', 'product.style_id')
+            ->join('selloff', 'selloff.id', '=', 'product.selloff_id')
+            ->join('madein', 'madein.id', '=', 'product.madein_id')
+            ->join('material', 'material.id', '=', 'product.material_id')
+            ->join('height', 'height.id', '=', 'product.height_id')
+            ->where('product.id', $idProduct)->first();
+
+        if (empty($getProductById)) {
+            return redirect()->action('FrontendController@index')->withErrors(Lang::get('messages.id_product_not_isset'));
+        }
+
+        //check product new
+        $checkNew = Carbon::now()->subDay(Product::CHECK_NEW) < $getProductById['created_at'];
+        if ($checkNew == true) {
+            $stickNew = "<div class='sticker sticker-new'></div>";
+        } else {
+            $stickNew = null;
+        }
+
+        //check sell_off
+        if ($getProductById['selloff_id'] != 0) {
+            $price     = number_format($getProductById['price'], 2);
+            $checkSale = "<div class='sticker sticker-sale'></div>";
+        } else {
+            $price     = null;
+            $checkSale = null;
+        }
+        $linkDetailProduct = url("/")."/product/". change_alias($getProductById->name_product) . "-" . $getProductById->id;
+        //====================================END-Get information of Product============================================
+
+        //====================================Check Product in Stock====================================================
+
+        $getProductById = $getProductById->toArray();
+
+        //check product in table color_size_number (check product in warehouse)
+        $colorSizeNumber                  = new ColorSizeNumber();
+        $getProductInTableColorSizeNumber = $colorSizeNumber->where('product_id', $idProduct)
+            ->where('number', '>', 0)->get()->toArray();
+
+        if ($getProductInTableColorSizeNumber == null) {
+            $getViewColorForSelectTag       = Color::getViewAllColorForSelectTag();
+            $getViewSizeForSelectTag        = Size::getViewAllSizeForSelectTag();
+            $getSizeFromColorForThisProduct = null;
+            $mapIdSizeToInformationSize     = null;
+            $vailability                    = Lang::get('messages.not_in_stock');
+
+        } else {
+            foreach ($getProductInTableColorSizeNumber as $color) {
+                $getSizeFromColorForThisProduct[$color['color_id']][] = $color['size_id'];
+            }
+            $getColorForThisProduct     = array_keys($getSizeFromColorForThisProduct);
+            $getViewColorForSelectTag   = Color::getViewColorForSelectTag($getColorForThisProduct);
+            $getViewSizeForSelectTag    = null;
+            $mapIdSizeToInformationSize = Size::mapIdSizeToInformationSize();
+            $vailability                = Lang::get('messages.in_stock');
+        }
+        //====================================END-Check Product in Stock================================================
+
+
+        return json_encode($data = array([
+            "product"                        => $getProductById,
+            'getViewColorForSelectTag'       => $getViewColorForSelectTag,
+            'getSizeFromColorForThisProduct' => $getSizeFromColorForThisProduct,
+            'getViewSizeForSelectTag'        => $getViewSizeForSelectTag,
+            'mapIdSizeToInformationSize'     => $mapIdSizeToInformationSize,
+            'vailability'                    => $vailability,
+            'stickNew'                       => $stickNew,
+            'price'                          => $price,
+            'checkSale'                      => $checkSale,
+            "linkDetailProduct"              => $linkDetailProduct,
+
+        ]));
+
+    }
+
+    public function showProductByCategory(Request $request, $stringid)
+    {
+        $allRequest = $request->all();
+
         //get Id category
         $arrayStringId = explode('-', $stringid);
         $idCategory    = intval(array_pop($arrayStringId));
@@ -125,37 +231,112 @@ class FrontendController extends Controller
 
 
         $objProduct              = new Product();
-        $dataProductByIdCategory = $objProduct->where('category_id', $idCategory)->paginate(10);
+        $dataProductByIdCategory = $objProduct->where('category_id', $idCategory);
+        //===========================================Filter=============================================================
+        $arraySort = array();
+        if (isset($allRequest['madein']) && $allRequest['madein'] != 0) {
+            $filterMadein            = $allRequest['madein'];
+            $dataProductByIdCategory = $dataProductByIdCategory->where('madein_id', $filterMadein);
+            $arraySort['madein']     = $filterMadein;
+        } else {
+            $filterMadein = 0;
+        }
+        if (isset($allRequest['style']) && $allRequest['style'] != 0) {
+            $filterStyle             = $allRequest['style'];
+            $dataProductByIdCategory = $dataProductByIdCategory->where('style_id', $filterStyle);
+            $arraySort['style']      = $filterStyle;
+        } else {
+            $filterStyle = 0;
+        }
+        if (isset($allRequest['material']) && $allRequest['material'] != 0) {
+            $filterMaterial          = $allRequest['material'];
+            $dataProductByIdCategory = $dataProductByIdCategory->where('material_id', $filterMaterial);
+            $arraySort['material']   = $filterMaterial;
+        } else {
+            $filterMaterial = 0;
+        }
+        if (isset($allRequest['height']) && $allRequest['height'] != 0) {
+            $filterHeight            = $allRequest['height'];
+            $dataProductByIdCategory = $dataProductByIdCategory->where('height_id', $filterHeight);
+            $arraySort['height']     = $filterHeight;
+        } else {
+            $filterHeight = 0;
+        }
+
+        $getViewAllMadeInForSelectTag   = Madein::getViewAllMadeInForSelectTag($filterMadein);
+        $getViewAllStyleForSelectTag    = Style::getViewAllStyleForSelectTag($filterStyle);
+        $getViewAllMaterialForSelectTag = Material::getViewAllMaterialForSelectTag($filterMaterial);
+        $getViewAllHeightForSelectTag   = Height::getViewAllHeightForSelectTag($filterHeight);
+        //===========================================END-Filter=============================================================
+
+        //dd($dataProductByIdCategory);
+        $dataProductByIdCategory = $dataProductByIdCategory->paginate(9);
 
 
         return view('frontend.category')->with([
-            "dataProductByIdCategory" => $dataProductByIdCategory,
+            "dataProductByIdCategory"        => $dataProductByIdCategory,
+            "getViewAllMadeInForSelectTag"   => $getViewAllMadeInForSelectTag,
+            "getViewAllStyleForSelectTag"    => $getViewAllStyleForSelectTag,
+            "getViewAllMaterialForSelectTag" => $getViewAllMaterialForSelectTag,
+            "getViewAllHeightForSelectTag"   => $getViewAllHeightForSelectTag,
+            'arraySort'                      => $arraySort,
+
 
         ]);
     }
 
     public function product($stringid)
     {
-        $idProduct = convertStringUrlToId($stringid);
+        //====================================Get information of Product================================================
 
-        $getProductById = Product::find($idProduct);
+        $idProduct      = convertStringUrlToId($stringid);
+        $objProduct     = new Product();
+        $getProductById = $objProduct->select('product.*', 'selloff.selloff_value', 'style.style_name', 'madein.madein_name', 'material.material_name', 'height.height_value')
+            ->join('style', 'style.id', '=', 'product.style_id')
+            ->join('selloff', 'selloff.id', '=', 'product.selloff_id')
+            ->join('madein', 'madein.id', '=', 'product.madein_id')
+            ->join('material', 'material.id', '=', 'product.material_id')
+            ->join('height', 'height.id', '=', 'product.height_id')
+            ->where('product.id', $idProduct)->first();
         if (empty($getProductById)) {
+            die();
             return redirect()->action('FrontendController@index')->withErrors(Lang::get('messages.id_product_not_isset'));
         }
+
+        //check product new
+        $checkNew = Carbon::now()->subDay(Product::CHECK_NEW) < $getProductById['created_at'];
+        if ($checkNew == true) {
+            $stickNew = "<div class='sticker sticker-new'></div>";
+        } else {
+            $stickNew = null;
+        }
+
+        //check sell_off
+        if ($getProductById['selloff_id'] != 0) {
+            $price     = number_format($getProductById['price'], 2);
+            $checkSale = "<div class='sticker sticker-sale'></div>";
+        } else {
+            $price     = null;
+            $checkSale = null;
+        }
+
+        //====================================END-Get information of Product============================================
+
+        //====================================Check Product in Stock====================================================
 
         $getProductById = $getProductById->toArray();
 
         //check product in table color_size_number (check product in warehouse)
         $colorSizeNumber                  = new ColorSizeNumber();
         $getProductInTableColorSizeNumber = $colorSizeNumber->where('product_id', $idProduct)
-                                                     ->where('number', '>', 0)->get()->toArray();
+            ->where('number', '>', 0)->get()->toArray();
 
         if ($getProductInTableColorSizeNumber == null) {
             $getViewColorForSelectTag       = Color::getViewAllColorForSelectTag();
             $getViewSizeForSelectTag        = Size::getViewAllSizeForSelectTag();
             $getSizeFromColorForThisProduct = null;
             $mapIdSizeToInformationSize     = null;
-            $vailability = Lang::get('messages.not_in_stock');
+            $vailability                    = Lang::get('messages.not_in_stock');
 
         } else {
             foreach ($getProductInTableColorSizeNumber as $color) {
@@ -165,17 +346,39 @@ class FrontendController extends Controller
             $getViewColorForSelectTag   = Color::getViewColorForSelectTag($getColorForThisProduct);
             $getViewSizeForSelectTag    = null;
             $mapIdSizeToInformationSize = Size::mapIdSizeToInformationSize();
-            $vailability = Lang::get('messages.in_stock');
+            $vailability                = Lang::get('messages.in_stock');
         }
+        //====================================END-Check Product in Stock================================================
+
+        //=========================================Get Product relation=================================================
+
+        $idCategory                               = $getProductById['category_id'];
+        $objProduct                               = new Product();
+        $dataProductByIdCategory                  = $objProduct->where('category_id', $idCategory)->take(5)->orderByRaw("RAND()")->get();
+        $getViewFiveProductRelationForPageProduct = $objProduct->getViewFiveProductRelationForPageProduct($dataProductByIdCategory);
+
+        //=====================================END-Get Product relation=================================================
+
+        //=========================================Set Title for Page===================================================
+        $title = $stringid;
+        View::share(array(
+            'title' => $title,
+        ));
+        //=====================================END-Set Title for Page===================================================
 
 
         return view('frontend.product')->with([
-            "product"                        => $getProductById,
-            'getViewColorForSelectTag'       => $getViewColorForSelectTag,
-            'getSizeFromColorForThisProduct' => $getSizeFromColorForThisProduct,
-            'getViewSizeForSelectTag'        => $getViewSizeForSelectTag,
-            'mapIdSizeToInformationSize'     => $mapIdSizeToInformationSize,
-            'vailability'=>$vailability,
+            "product"                                  => $getProductById,
+            'getViewColorForSelectTag'                 => $getViewColorForSelectTag,
+            'getSizeFromColorForThisProduct'           => $getSizeFromColorForThisProduct,
+            'getViewSizeForSelectTag'                  => $getViewSizeForSelectTag,
+            'mapIdSizeToInformationSize'               => $mapIdSizeToInformationSize,
+            'vailability'                              => $vailability,
+            'getViewFiveProductRelationForPageProduct' => $getViewFiveProductRelationForPageProduct,
+            'stickNew'                                 => $stickNew,
+            'price'                                    => $price,
+            'checkSale'                                => $checkSale,
+
         ]);
     }
 
@@ -255,7 +458,7 @@ class FrontendController extends Controller
         }
 
         Session::forget('order.' . $idItem);
-        return redirect()->action('FrontendController@vieworder')
+        return Redirect::back()
             ->withSuccess(Lang::get('messages.delete_success'));
     }
 
@@ -380,11 +583,13 @@ class FrontendController extends Controller
 
     }
 
-    public function contact(){
+    public function contact()
+    {
         return view('frontend.contact')->with([
 
         ]);
     }
+
     public function deleteall()
     {
         if (Session::has('order')) {

@@ -1,5 +1,5 @@
 <meta charset="utf-8">
-<title>Metronic Shop UI</title>
+<title>{{ $title or 'SmartOSC' }}</title>
 
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -13,7 +13,8 @@
 <meta property="og:type" content="website">
 <meta property="og:image" content="-CUSTOMER VALUE-"><!-- link to image for socio -->
 <meta property="og:url" content="-CUSTOMER VALUE-">
-
+<meta property="fb:app_id" content="1009813472392111" />
+<meta property="fb:admins" content="100009876453738"/>
 <link rel="shortcut icon" href="favicon.ico">
 
 <!-- Fonts START -->

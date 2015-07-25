@@ -37,35 +37,10 @@
                     </div>
                 </form>
                 <!-- END RESPONSIVE QUICK SEARCH FORM -->
-            </li>
-            <li class="start ">
-                <a href="javascript:;">
-                    <i class="icon-home"></i>
-                    <span class="title">Dashboard</span>
-                    <span class="arrow "></span>
-                </a>
-                <ul class="sub-menu">
-                    <li>
-                        <a href="index.html">
-                            <i class="icon-bar-chart"></i>
-                            Default Dashboard</a>
-                    </li>
-                    <li>
-                        <a href="index_2.html">
-                            <i class="icon-bulb"></i>
-                            New Dashboard #1</a>
-                    </li>
-                    <li>
-                        <a href="index_3.html">
-                            <i class="icon-graph"></i>
-                            New Dashboard #2</a>
-                    </li>
-                </ul>
-            </li>
             <!--Product-->
-            <li <?php if ($class_name == "CategoryController"|| $class_name == "MaterialController") echo 'class="start active open"'; ?>>
+            <li <?php if ($class_name == "ProductController") echo 'class="start active open"'; ?>>
                 <a href="javascript:;">
-                    <i class="icon-user"></i>
+                    <i class="icon-diamond"></i>
                     <span class="title">Product - Shoes</span>
                     <span class="arrow "></span>
                 </a>
@@ -74,6 +49,18 @@
                         <a href="{{ URL::action('ProductController@index') }}">
                             List/Create Product</a>
                     </li>
+                </ul>
+            </li>
+            <!--End Product-->
+
+            <!--Product-->
+            <li <?php if ($class_name == "StyleController" ||$class_name == "ColorController" || $class_name == "SizeController" || $class_name == "HeightController" || $class_name == "MadeinController" ||$class_name == "MaterialController") echo 'class="start active open"'; ?>>
+                <a href="javascript:;">
+                    <i class="icon-list"></i>
+                    <span class="title">Attribute - Product</span>
+                    <span class="arrow "></span>
+                </a>
+                <ul class="sub-menu">
                     <li <?php if ($action_name == "index") echo 'class="active"'; ?>>
                         <a href="{{ URL::action('StyleController@index') }}">
                             List/Create Style</a>
@@ -103,26 +90,44 @@
                 </ul>
             </li>
             <!--End Product-->
-            <!--User-->
-            <li <?php if ($class_name == "UsersController") echo 'class="start active open"'; ?>>
+
+
+            <!--Invoice Import-->
+            <li <?php if ($class_name == "InvoiceImportController") echo 'class="start active open"'; ?>>
                 <a href="javascript:;">
-                    <i class="icon-user"></i>
+                    <i class="icon-basket"></i>
                     <span class="title">Invoice Import</span>
                     <span class="arrow "></span>
                 </a>
                 <ul class="sub-menu">
                     <li <?php if ($action_name == "index") echo 'class="active"'; ?>>
-                        <a href="{{ URL::action('UsersController@index') }}">
+                        <a href="{{ URL::action('InvoiceImportController@index') }}">
                             List Invoice</a>
                     </li>
                     <li <?php if ($action_name == "create") echo 'class="active"'; ?>>
-                        <a href="{{ URL::action('UsersController@create') }}">
+                        <a href="{{ URL::action('InvoiceImportController@import') }}">
                             Create Invoice</a>
                     </li>
 
                 </ul>
             </li>
-            <!--End User-->
+            <!--End Invoice Import-->
+
+            <!--Order-->
+            <li <?php if ($class_name == "OrderController") echo 'class="start active open"'; ?>>
+                <a href="javascript:;">
+                    <i class="icon-basket"></i>
+                    <span class="title">Order</span>
+                    <span class="arrow "></span>
+                </a>
+                <ul class="sub-menu">
+                    <li <?php if ($action_name == "index") echo 'class="active"'; ?>>
+                        <a href="{{ URL::action('OrderController@index') }}">
+                            List Order</a>
+                    </li>
+                </ul>
+            </li>
+            <!--End Invoice Import-->
 
             <!--User-->
             <li <?php if ($class_name == "UsersController") echo 'class="start active open"'; ?>>
@@ -147,7 +152,7 @@
             <!--Roles-->
             <li <?php if ($class_name == "RolesController") echo 'class="start active open"'; ?>>
                 <a href="javascript:;">
-                    <i class="icon-user"></i>
+                    <i class="icon-fire"></i>
                     <span class="title">Roles</span>
                     <span class="arrow "></span>
                 </a>
@@ -167,7 +172,7 @@
             <!--Permission-->
             <li <?php if ($class_name == "PermissionController") echo 'class="start active open"'; ?>>
                 <a href="javascript:;">
-                    <i class="icon-user"></i>
+                    <i class="icon-shield"></i>
                     <span class="title">Permission</span>
                     <span class="arrow "></span>
                 </a>
@@ -184,7 +189,7 @@
             <!--Category-->
             <li <?php if ($class_name == "CategoryController") echo 'class="start active open"'; ?>>
                 <a href="javascript:;">
-                    <i class="icon-user"></i>
+                    <i class="icon-layers"></i>
                     <span class="title">Category</span>
                     <span class="arrow "></span>
                 </a>
@@ -202,39 +207,6 @@
             </li>
             <!--End Category-->
 
-            <li>
-                <a href="javascript:;">
-                    <i class="icon-briefcase"></i>
-                    <span class="title">Data Tables</span>
-                    <span class="arrow "></span>
-                </a>
-                <ul class="sub-menu">
-                    <li>
-                        <a href="table_basic.html">
-                            Basic Datatables</a>
-                    </li>
-                    <li>
-                        <a href="table_responsive.html">
-                            Responsive Datatables</a>
-                    </li>
-                    <li>
-                        <a href="table_managed.html">
-                            Managed Datatables</a>
-                    </li>
-                    <li>
-                        <a href="table_editable.html">
-                            Editable Datatables</a>
-                    </li>
-                    <li>
-                        <a href="table_advanced.html">
-                            Advanced Datatables</a>
-                    </li>
-                    <li>
-                        <a href="table_ajax.html">
-                            Ajax Datatables</a>
-                    </li>
-                </ul>
-            </li>
 
 
         </ul>

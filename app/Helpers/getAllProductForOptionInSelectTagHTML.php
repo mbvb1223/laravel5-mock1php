@@ -8,9 +8,9 @@ function getAllProductForOptionInSelectTagHTML($dataArray, $select = 0)
     foreach ($dataArray as $k => $value) {
             $id = $value['id'];
             if ($select != 0 && $id == $select) {
-                $result .= "<option value='" . $value['id'] . "' selected='selected'>" . $value['name_product'] . "</option>";
+                $result .= "<option value='" . $value['id'] . "' selected='selected'>" . $value['name_product']."|" .$value['key_product'] . "</option>";
             } else {
-                $result .= "<option value='" . $value['id'] . "'>"  . $value['name_product'] . "</option>";
+                $result .= "<option value='" . $value['id'] . "'>"  . $value['name_product']."|" .$value['key_product']. "</option>";
             }
         }
     return $result;

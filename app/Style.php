@@ -64,5 +64,17 @@ class Style extends Model
         }
         return $result;
     }
+
+    public static function arrayFromIdStyleToNameStyle(){
+        $all = self::all()->toArray();
+        if($all == null){
+            return null;
+        }
+        $newArray = array();
+        foreach($all as $item){
+            $newArray[$item['id']] = $item['style_name'];
+        }
+        return $newArray;
+    }
 }
 

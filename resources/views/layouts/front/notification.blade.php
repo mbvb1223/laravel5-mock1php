@@ -3,7 +3,7 @@
   <div id="prefix_632452753790" class="Metronic-alerts alert alert-notification alert-danger fade in">
      <button type="button" class="close" data-dismiss="alert" aria-hidden="true"></button>
       <i class="fa-lg fa fa-warning"></i>
-      <?php echo Lang::get('messages.error'); ?>
+      <?php echo Lang::get('messages.warning'); ?>
      <ul>
         @foreach ($errors->all() as $error)
         <li>{{ $error }}</li>

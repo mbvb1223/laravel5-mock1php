@@ -24,6 +24,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('admin/order', 'OrderController@index');
     Route::get('admin/order/{id}/edit', 'OrderController@edit');
     Route::post('admin/order/update', 'OrderController@update');
+    Route::post('admin/order/addproduct', 'OrderController@addproduct');
+    Route::get('admin/order/{id}/deleteItemInOrder', 'OrderController@deleteItemInOrder');
 
     /**
      * Users CONTROLLERS
@@ -153,6 +155,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('admin/invoiceimport/view', 'InvoiceImportController@view');
     Route::post('admin/invoiceimport/update', 'InvoiceImportController@update');
     Route::get('admin/invoiceimport/delete/{id}', 'InvoiceImportController@delete');
+    Route::get('admin/invoiceimport/{id}/edit', 'InvoiceImportController@viewDetail');
     Route::get('admin/invoiceimport/checkout', 'InvoiceImportController@checkout');
     Route::post('admin/invoiceimport/checkout', 'InvoiceImportController@checkoutpost');
     Route::get('admin/invoiceimport/test', 'InvoiceImportController@test');
@@ -196,7 +199,7 @@ Route::get('order/deleteall', 'FrontendController@deleteall');
 
 //show info product
 Route::get('product/{id}', 'FrontendController@product');
-
+Route::post('product/fastview', 'FrontendController@getProductForFastView');
 //show product by category
 Route::get('category/{id}', 'FrontendController@showProductByCategory');
 

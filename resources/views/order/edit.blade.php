@@ -3,7 +3,8 @@
     <form class="form-horizontal form-row-seperated" action="{{ URL::action('OrderController@update') }}"
           method="Post" enctype="multipart/form-data">
         <input type="hidden" name="_token" value="{{ csrf_token() }}">
-        <input type="hidden" name="id" value="{{ old('id', $dataOrderById['id'])}}">
+        <input type="hidden" name="id_order" value="{{ old('id_order', $dataOrderById['id'])}}">
+        <input type="hidden" name="user_id" value="{{ old('user_id', $dataOrderById['user_id'])}}">
     <div class="row">
         <div class="col-md-12">
             <!-- Begin: life time stats -->
@@ -61,13 +62,20 @@
                                 <a href="#tab_1" data-toggle="tab">
                                     Details </a>
                             </li>
+
+                            <li>
+                                <a href="#tab_2" data-toggle="tab">
+                                    Add product </a>
+                            </li>
                             <li>
                                 <a href="#tab_5" data-toggle="tab">
                                     Information </a>
                             </li>
                         </ul>
                         <div class="tab-content">
+
                             <div class="tab-pane active" id="tab_1">
+
                                 <div class="row">
                                     <div class="col-md-6 col-sm-12">
                                         <div class="portlet yellow-crusta box">
@@ -128,6 +136,22 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="col-md-12 col-sm-12 portlet blue-hoki box">
+
+                                                <div class="portlet-title">
+                                                    <div class="caption">
+                                                        <i class="fa fa-cogs"></i>Status
+                                                    </div>
+                                                </div>
+                                                <div class="portlet-body">
+                                                    <div class="row static-info">
+                                                        <div class="col-md-12 value" >
+                                                            <?php echo $getViewStatusForOrder; ?>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                        </div>
                                     </div>
                                     <div class="col-md-6 col-sm-12">
                                         <div class="portlet blue-hoki box">
@@ -143,7 +167,7 @@
                                                         UserName:
                                                     </div>
                                                     <div class="col-md-7 value">
-                                                        <?php echo $mapIdUserToInfoUser[$dataOrderById['id']]['username'];?>
+                                                        <input class="form-control" type="text" name="username" value="<?php echo $mapIdUserToInfoUser[$dataOrderById['id']]['username'];?>">
                                                     </div>
                                                 </div>
                                                 <div class="row static-info">
@@ -151,7 +175,7 @@
                                                         Full name:
                                                     </div>
                                                     <div class="col-md-7 value">
-                                                        <?php echo $mapIdUserToInfoUser[$dataOrderById['id']]['yourname'];?>
+                                                        <input class="form-control" type="text" name="yourname" value="<?php echo $mapIdUserToInfoUser[$dataOrderById['id']]['yourname'];?>">
                                                     </div>
                                                 </div>
                                                 <div class="row static-info">
@@ -159,7 +183,7 @@
                                                         Email:
                                                     </div>
                                                     <div class="col-md-7 value">
-                                                        <?php echo $mapIdUserToInfoUser[$dataOrderById['id']]['email'];?>
+                                                        <input class="form-control" type="text" name="email" value="<?php echo $mapIdUserToInfoUser[$dataOrderById['id']]['email'];?>">
                                                     </div>
                                                 </div>
 
@@ -168,7 +192,7 @@
                                                         Phone Number:
                                                     </div>
                                                     <div class="col-md-7 value">
-                                                        <?php echo $mapIdUserToInfoUser[$dataOrderById['id']]['phone'];?>
+                                                        <input class="form-control" type="text" name="phone" value="<?php echo $mapIdUserToInfoUser[$dataOrderById['id']]['phone'];?>">
                                                     </div>
                                                 </div>
                                                 <div class="row static-info">
@@ -176,7 +200,9 @@
                                                         City:
                                                     </div>
                                                     <div class="col-md-7 value">
-                                                        <?php echo $mapIdUserToInfoUser[$dataOrderById['id']]['city_id'];?>
+                                                        <select name="city_id" id="city_id" class="form-control">
+                                                        <?php echo $getViewSelectTagCity;?>
+                                                        </select>
                                                     </div>
                                                 </div>
                                                 <div class="row static-info">
@@ -184,7 +210,9 @@
                                                         Region:
                                                     </div>
                                                     <div class="col-md-7 value">
-                                                        <?php echo $mapIdUserToInfoUser[$dataOrderById['id']]['region_id'];?>
+                                                        <select name="region_id" id="region_id" class="form-control">
+                                                            <?php echo $getViewSelectTagRegion; ?>
+                                                        </select>
                                                     </div>
                                                 </div>
                                                 <div class="row static-info">
@@ -192,12 +220,13 @@
                                                         Address:
                                                     </div>
                                                     <div class="col-md-7 value">
-                                                        <?php echo $mapIdUserToInfoUser[$dataOrderById['id']]['address'];?>
+                                                        <input class="form-control" type="text" name="address" value="<?php echo $mapIdUserToInfoUser[$dataOrderById['id']]['address'];?>">
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12 col-sm-12">
@@ -228,7 +257,7 @@
                                                                 Quantity
                                                             </th>
                                                             <th>
-                                                                Price
+                                                                Cost
                                                             </th>
                                                             <th>
                                                                 Total
@@ -252,6 +281,64 @@
                                 <div class="table-container">
                                     <textarea name="information" id="information"><?php echo $dataOrderById['information'];?></textarea>
                                 </div>
+
+                            </div>
+    </form>
+                            <div class="tab-pane" id="tab_2">
+                                <form class="form-horizontal form-row-seperated" action="{{ URL::action('OrderController@addproduct') }}"
+                                      method="Post" enctype="multipart/form-data">
+                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="order_id" value="{{ old('id', $dataOrderById['id'])}}">
+                                    <table class="table table-striped table-bordered table-hover" id="datatable_products">
+                                        <thead>
+                                        <tr role="row" class="heading">
+                                            <th width="15%">
+                                                Product&nbsp;Name
+                                            </th>
+                                            <th width="15%">
+                                                Color
+                                            </th>
+                                            <th width="10%">
+                                                Size
+                                            </th>
+                                            <th width="10%">
+                                                Quantity
+                                            </th>
+                                            <th width="10%">
+                                                Actions
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr role="row" class="heading">
+                                            <th width="15%">
+                                                <select name="product_id" id="product_id">
+                                                    <?php echo $getViewAllProductForSelectTag; ?>
+                                                </select>
+                                            </th>
+                                            <th width="15%">
+                                                <select name="color_id" id="color_id">
+
+                                                </select>
+                                            </th>
+                                            <th width="10%">
+                                                <select name="size_id" id="size_id">
+
+                                                </select>
+                                            </th>
+                                            <th width="10%">
+                                                <select name="number" id="number">
+
+                                                </select>
+                                            </th>
+                                            <th width="10%">
+                                                Actions
+                                            </th>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    <button type="submit" >Add product</button>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -260,7 +347,7 @@
             <!-- End: life time stats -->
         </div>
     </div>
-    </form>
+
 @stop
 @section('js')
     <script src="<?php echo url("/"); ?>/../theme/assets/global/plugins/ckeditor/ckeditor.js"
@@ -282,4 +369,135 @@
         );
 
     </script>
-    @stop
+    <script>
+        jQuery(document).ready(function() {
+            var mapIdCityToArrayRegion = <?php echo json_encode($mapIdCityToArrayRegion);?>;
+            var city_id = $("#city_id").val();
+            var regions = mapIdCityToArrayRegion[city_id];
+            var option = '';
+            var i = 0;
+            if(regions !=null) {
+                for (; i < regions.length;) {
+                    option += '<option value="' + regions[i]['id'] + '">' + regions[i]['name_region'] + '</option>';
+                    i++;
+                }
+                $("#region_id").html(option);
+            }
+
+            $("#city_id").change(function(){
+                var city_id = $("#city_id").val();
+                var regions = mapIdCityToArrayRegion[city_id];
+                var option = '';
+                var i = 0;
+                if(regions !=null) {
+                    for (; i < regions.length;) {
+                        option += '<option value="' + regions[i]['id'] + '">' + regions[i]['name_region'] + '</option>';
+                        i++;
+                    }
+                    $("#region_id").html(option);
+                }
+            });
+        })
+
+    </script>
+
+    <script>
+        jQuery(document).ready(function() {
+            var mapIdProductToAllColorOfThisProduct = <?php echo json_encode($mapIdProductToAllColorOfThisProduct);?>;
+
+            $("#product_id").change(function(){
+                $("#color_id").html("");
+                $("#size_id").html("");
+                $("#number").html("");
+                var product_id = $("#product_id").val();
+                var colors = mapIdProductToAllColorOfThisProduct[product_id];
+                if(colors !=null){
+                    var option = '';
+                    var i = 0;
+                    $.each( colors, function( key, value ) {
+                        option += '<option value="' + key +'">'+ value.color_name +'</option>';
+                    });
+                    $("#color_id").html(option);
+                }
+
+
+                var color_id = $("#color_id").val();
+                var sizes = mapIdColorToAllSizeOfThisProduct[product_id][color_id];
+                if(sizes !=null){
+                    var option = '';
+                    var i = 0;
+                    $.each( sizes, function( key, value ) {
+                        option += '<option value="' + key +'">'+ value.size_value +'</option>';
+                    });
+                    $("#size_id").html(option);
+                }
+
+                var size_id = $("#size_id").val();
+                var numbers = mapIdSizeToNumberOfThisColorAndThisProduct[product_id][color_id][size_id];
+                console.log(numbers);
+                if(numbers !=null){
+                    var option = '';
+                    var i = 0;
+                    for(var i = 1;i <= numbers;i++){
+                        option += '<option value="' + i +'">'+ i +'</option>';
+                    }
+                    $("#number").html(option);
+                }
+
+
+            });
+
+
+            var mapIdColorToAllSizeOfThisProduct = <?php echo json_encode($mapIdColorToAllSizeOfThisProduct);?>;
+            $("#color_id").change(function(){
+                $("#size_id").html("");
+                $("#number").html("");
+                var product_id = $("#product_id").val();
+                var color_id = $("#color_id").val();
+                var sizes = mapIdColorToAllSizeOfThisProduct[product_id][color_id];
+                if(sizes !=null){
+                    var option = '';
+                    var i = 0;
+                    $.each( sizes, function( key, value ) {
+                        option += '<option value="' + key +'">'+ value.size_value +'</option>';
+                    });
+                    $("#size_id").html(option);
+                }
+
+                var size_id = $("#size_id").val();
+                var numbers = mapIdSizeToNumberOfThisColorAndThisProduct[product_id][color_id][size_id];
+                console.log(numbers);
+                if(numbers !=null){
+                    var option = '';
+                    var i = 0;
+                    for(var i = 1;i <= numbers;i++){
+                        option += '<option value="' + i +'">'+ i +'</option>';
+                    }
+                    $("#number").html(option);
+                }
+            });
+
+            var mapIdSizeToNumberOfThisColorAndThisProduct = <?php echo json_encode($mapIdSizeToNumberOfThisColorAndThisProduct);?>;
+            $("#size_id").change(function(){
+                $("#number").html("");
+                var product_id = $("#product_id").val();
+                var color_id = $("#color_id").val();
+                var size_id = $("#size_id").val();
+                var numbers = mapIdSizeToNumberOfThisColorAndThisProduct[product_id][color_id][size_id];
+                console.log(numbers);
+                if(numbers !=null){
+                    var option = '';
+                    var i = 0;
+                    for(var i = 1;i <= numbers;i++){
+                        option += '<option value="' + i +'">'+ i +'</option>';
+                    }
+                    $("#number").html(option);
+                }
+            });
+
+        })
+
+    </script>
+
+
+@stop

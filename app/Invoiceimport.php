@@ -79,6 +79,65 @@ class Invoiceimport extends Model
         return $result;
     }
 
+
+
+    public function getDataForPaginationAjax($allRequest){
+        $pageCurrent = $allRequest['current'];
+        $limit       = $allRequest['rowCount'];
+        $offset      = ($pageCurrent - 1) * $limit;
+
+        // Config sort
+        $sortBy    = 'invoice_import.id';
+        $sortOrder = 'asc';
+
+        if (isset($allRequest['sort'])) {
+            $sort      = $allRequest['sort'];
+            $sortColum = ['invoice_import.id', 'invoice_import.total_price', 'invoice_import.information', 'invoice_import.created_at', 'invoice_import.updated_at'];
+            $sortBy    = (in_array(key($sort), $sortColum)) ? key($sort) : 'invoice_import.id';
+            $sortOrder = current($sort);
+        }
+
+        $query   = $this->select('invoice_import.*','users.username','users.email') ->join('users', 'users.id', '=', 'invoice_import.user_id')->where(function($query) use ($allRequest) {
+            $query->where('invoice_import.id', 'LIKE', '%' . $allRequest['searchPhrase'] . '%')
+                ->orWhere('users.username', 'LIKE', '%' . $allRequest['searchPhrase'] . '%')
+                ->orWhere('invoice_import.total_price', 'LIKE', '%' . $allRequest['searchPhrase'] . '%')
+                ->orWhere('invoice_import.created_at', 'LIKE', '%' . $allRequest['searchPhrase'] . '%')
+                ->orWhere('invoice_import.updated_at', 'LIKE', '%' . $allRequest['searchPhrase'] . '%');
+        });
+
+        $queryGetTotal = $query;
+        $total         = $queryGetTotal->count();
+
+        if ($limit == -1) {
+            $rows = $query->orderBy($sortBy, $sortOrder)
+                ->get();
+        } else {
+            $rows = $query->orderBy($sortBy, $sortOrder)
+                ->skip($offset)
+                ->take($limit)
+                ->get();
+        }
+
+        // Render field action
+        foreach ($rows as $k => $item) {
+            $rows[$k]['action'] = create_field_action('admin/invoiceimport', $item->id);
+        }
+
+//        $arrayFromIdStyleToNameStyle = Style::arrayFromIdStyleToNameStyle();
+//        foreach ($rows as $k => $item) {
+//            $id =  $rows[$k]['style_id'];
+//            $rows[$k]['style_id'] = $arrayFromIdStyleToNameStyle[$id];
+//        }
+
+
+        $data['current']  = intval($pageCurrent);
+        $data['rowCount'] = intval($limit);
+        $data['total']    = intval($total);
+        $data['rows']     = $rows;
+        $data['_token']   = csrf_token();
+        return json_encode($data);
+    }
+
     public function saveProductToSessionCart($sessionCart, $allRequest)
     {
         $idProduct = $allRequest['product_id'];

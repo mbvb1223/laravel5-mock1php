@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Detailinvoiceimport;
 use App\Http\Requests;
 use App\Invoiceimport;
 use Illuminate\Http\Request;
@@ -31,7 +32,7 @@ class InvoiceImportController extends Controller
 
     public function index()
     {
-        return view('color.list');
+        return view('invoiceimport.list');
     }
 
     //Form import Product
@@ -55,6 +56,14 @@ class InvoiceImportController extends Controller
             'allColorForOptionInSelectTagHTML'   => $allColorForOptionInSelectTagHTML,
             'allAllSizeAndInputTagNumber'        => $allAllSizeAndInputTagNumber
         ]);
+    }
+
+    public function getDataAjax(Request $request){
+        $allRequest               = $request->all();
+        $objInvoiceImport                 = new Invoiceimport();
+        $getDataForPaginationAjax = $objInvoiceImport->getDataForPaginationAjax($allRequest);
+
+        return $getDataForPaginationAjax;
     }
 
     //Save Product to Session
@@ -109,6 +118,41 @@ class InvoiceImportController extends Controller
             'viewCartButton' => $viewCartButton,
 
         ]);
+    }
+
+    public function viewDetail($id)
+    {
+        $objInvoiceImport      = new Invoiceimport();
+        $getDataInvoiceImportById1 = $objInvoiceImport->find($id);
+
+        if (empty($getDataInvoiceImportById1)) {
+            return redirect()->action('InvoiceImportController@index')->withErrors(Lang::get('messages.no_id'));
+        }
+
+        //========================================Get info Invoice Import===============================================
+        $objInvoiceImport2 = clone $objInvoiceImport;
+        $getDataInvoiceImportById = $objInvoiceImport2->select('invoice_import.*', 'users.username')
+            ->join('users', 'users.id', '=', 'invoice_import.user_id')->where('invoice_import.id',$id)->first();
+
+
+        //======================================END-Get info Invoice Import=============================================
+
+        //===============================Get info Detail Invoice Import=============================================
+
+        $objDetailInvoiceImport            = new Detailinvoiceimport();
+        $getAllDetailInvoiceImportByIdInvoiceImport = $objDetailInvoiceImport->where('invoice_import_id', $id)->get();
+
+        if (empty($getAllDetailInvoiceImportByIdInvoiceImport)) {
+            return redirect()->action('InvoiceImportController@index')->withErrors(Lang::get('messages.no_id'));
+        }
+        $getViewAllDetailInvoiceImportByIdInvoiceImport = $objDetailInvoiceImport->getViewAllDetailInvoiceImportByIdInvoiceImport($getAllDetailInvoiceImportByIdInvoiceImport);
+
+        return view('invoiceimport.detail')->with([
+            "getDataInvoiceImportById"=>$getDataInvoiceImportById,
+            "getViewAllDetailInvoiceImportByIdInvoiceImport"=>$getViewAllDetailInvoiceImportByIdInvoiceImport
+        ]);
+
+
     }
 
     //Update Number for SessionCart in Form ViewCart

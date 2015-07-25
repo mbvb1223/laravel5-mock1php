@@ -30,6 +30,35 @@
         LayersliderInit.initLayerSlider();
         Layout.initImageZoom();
         Layout.initTouchspin();
-        Layout.initTwitter();
+        $(".k-view").click(function(){
+            var idProduct = $(this).attr('data-id');
+            $.ajax({
+                type: "POST",
+                url: "{{action('FrontendController@getProductForFastView')}}" ,
+                data: {'id': idProduct, '_token': "{{csrf_token()}}"},
+                success: function(data){
+                    for (i = 0; i < data.length; i++) {
+                        var linkImage = "<?php echo url("/")."/upload/product/";?>" + data[i].product.image;
+                        $nameProduct = data[i].product.name_product;
+                        $("#k-titleProduct").text(data[i].product.name_product);
+                        $(".k-idProduct").attr('value',data[i].product.id);
+                        $('#k-imageProduct').attr('src',linkImage);
+                        $('#k-imageProduct').attr('data-BigImgsrc',linkImage);
+                        $("#k-costProduct").text("$" + data[i].product.cost);
+                        $("#k-priceProduct").text(data[i].product.price);
+                        $("#k-vailabilityProduct").text(data[i].vailability);
+                        $(".k-colorProduct").append(data[i].getViewColorForSelectTag);
+                        $(".k-sizeProduct").append(data[i].getViewSizeForSelectTag);
+                        $('.k-linkDetailProduct').attr('href',data[i].linkDetailProduct);
+
+
+                    }
+
+                },
+                dataType: 'json',
+            });
+        });
+
+
     });
 </script>
