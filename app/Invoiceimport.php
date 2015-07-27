@@ -19,27 +19,30 @@ class Invoiceimport extends Model
 
     public function getViewCartInvoiceImport($sessionCartConverted)
     {
+        $mapIdColorToInformationColor = Color::mapIdColorToInformationColor();
+        $mapIdSizeToInformationSize = Size::mapIdSizeToInformationSize();
         $mapProductIdToInformationProduct = $this->mapProductIdToInformationProduct();
         $resultCart                       = null;
         $resultButton                     = null;
         $totalPrice                       = 0;
         foreach ($sessionCartConverted as $k => $value) {
-            $keyProduct = $value['product_id'];
-            if (!array_key_exists($keyProduct, $mapProductIdToInformationProduct)) {
+            $idProduct = $value['product_id'];
+            if (!array_key_exists($idProduct, $mapProductIdToInformationProduct)) {
                 continue;
             }
-            $nameProduct        = strip_tags($mapProductIdToInformationProduct["$keyProduct"]['name_product']);
-            $priceImportProduct = $mapProductIdToInformationProduct["$keyProduct"]['price_import'];
+            $nameProduct        = strip_tags($mapProductIdToInformationProduct["$idProduct"]['name_product']);
+            $keyProduct        = strip_tags($mapProductIdToInformationProduct["$idProduct"]['key_product']);
+            $priceImportProduct = number_format($mapProductIdToInformationProduct["$idProduct"]['price_import'],2);
             $numberProduct      = $value['number'];
-            $priceForItem       = $priceImportProduct * $numberProduct;
-            $colorName          = $value['color_id'];
-            $sizeValue          = $value['size_id'];
+            $priceForItem       = number_format($priceImportProduct * $numberProduct,2);
+            $colorName          = $mapIdColorToInformationColor[$value['color_id']]['color_name'];
+            $sizeValue          = $mapIdSizeToInformationSize[$value['size_id']]['size_value'];
             $keyOfCart          = $value['key'];
 
             $resultCart .= "<tr>";
 
             $resultCart .= "<td>";
-            $resultCart .=  $nameProduct;
+            $resultCart .=  "$idProduct|$nameProduct | $keyProduct";
             $resultCart .= "</td>";
 
             $resultCart .= "<td>";
@@ -51,11 +54,11 @@ class Invoiceimport extends Model
             $resultCart .= "</td>";
 
             $resultCart .= "<td>";
-            $resultCart .= $priceImportProduct;
+            $resultCart .= "$ ".$priceImportProduct;
             $resultCart .= "</td>";
 
             $resultCart .= "<td>";
-            $resultCart .= $priceForItem;
+            $resultCart .= "$ ".$priceForItem;
             $resultCart .= "</td>";
 
             $resultCart .= "<td>";
@@ -68,7 +71,7 @@ class Invoiceimport extends Model
         }
         $resultButton .= "
                             <ul>
-                                <li><strong class='price'>Total: <input name='total_price' value='" . $totalPrice . "' readonly/></strong></li>
+                                <li><strong class='price'>Total: <input name='total_price' value='" . number_format($totalPrice,2) . "' readonly/></strong></li>
                             </ul>
                         ";
 

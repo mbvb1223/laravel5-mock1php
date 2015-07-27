@@ -28,50 +28,16 @@
         <!-- BEGIN NAVIGATION -->
         <div class="header-navigation">
             <ul>
-                <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="#">
-                        Woman
-
-                    </a>
-
-                    <!-- BEGIN DROPDOWN MENU -->
-
-                    <ul class="dropdown-menu">
-                        <li class="dropdown-submenu">
-                            <a href="shop-product-list.html">Hi Tops <i class="fa fa-angle-right"></i></a>
-                            <ul class="dropdown-menu" role="menu">
-                                <li><a href="shop-product-list.html">Second Level Link</a></li>
-                                <li><a href="shop-product-list.html">Second Level Link</a></li>
-                                <li class="dropdown-submenu">
-                                    <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="#">
-                                        Second Level Link
-                                        <i class="fa fa-angle-right"></i>
-                                    </a>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="shop-product-list.html">Third Level Link</a></li>
-                                        <li><a href="shop-product-list.html">Third Level Link</a></li>
-                                        <li><a href="shop-product-list.html">Third Level Link</a></li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </li>
-                        <li><a href="shop-product-list.html">Running Shoes</a></li>
-                        <li><a href="shop-product-list.html">Jackets and Coats</a></li>
-
-                    </ul>
-
-                    <!-- END DROPDOWN MENU -->
-                </li>
                 <?php echo $menu;?>
-
-                <!-- BEGIN TOP SEARCH -->
+                 <li> <a href="{{action('FrontendController@contact')}}">Contact</a></li>
+                    <!-- BEGIN TOP SEARCH -->
                 <li class="menu-search">
                     <span class="sep"></span>
                     <i class="fa fa-search search-btn"></i>
                     <div class="search-box">
-                        <form action="#">
+                        <form action="{{action('FrontendController@searchProduct')}}" method="GET">
                             <div class="input-group">
-                                <input type="text" placeholder="Search" class="form-control">
+                                <input name="key" type="text" placeholder="Search" class="form-control">
                     <span class="input-group-btn">
                       <button class="btn btn-primary" type="submit">Search</button>
                     </span>

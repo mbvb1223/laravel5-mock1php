@@ -125,6 +125,10 @@
                         <a href="{{ URL::action('OrderController@index') }}">
                             List Order</a>
                     </li>
+                    <li <?php if ($action_name == "analytics") echo 'class="active"'; ?>>
+                        <a href="{{ URL::action('OrderController@analytics') }}">
+                            Analytics Order</a>
+                    </li>
                 </ul>
             </li>
             <!--End Invoice Import-->

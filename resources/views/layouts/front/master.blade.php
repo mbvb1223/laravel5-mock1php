@@ -48,11 +48,6 @@
                     <div class="product-main-image">
                         <img id="k-imageProduct" src="" alt="Cool green dress with red bell" class="img-responsive" data-BigImgsrc="">
                     </div>
-                    <div class="product-other-images">
-                        <a href="../../assets/frontend/pages/img/products/model3.jpg" class="fancybox-button" rel="photos-lib"><img alt="Berry Lace Dress" src="../../assets/frontend/pages/img/products/model3.jpg"></a>
-                        <a href="../../assets/frontend/pages/img/products/model4.jpg" class="fancybox-button" rel="photos-lib"><img alt="Berry Lace Dress" src="../../assets/frontend/pages/img/products/model4.jpg"></a>
-                        <a href="../../assets/frontend/pages/img/products/model5.jpg" class="fancybox-button" rel="photos-lib"><img alt="Berry Lace Dress" src="../../assets/frontend/pages/img/products/model5.jpg"></a>
-                    </div>
                 </div>
                 <div class="col-md-6 col-sm-6">
                     <h1 id="k-titleProduct"> </h1>

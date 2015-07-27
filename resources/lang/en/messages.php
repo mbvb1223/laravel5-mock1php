@@ -43,7 +43,10 @@ return [
     'delete_success'                    => "Delete success",
     'create_new'                        => "Create New",
     'back'                              => 'Back',
-    'id'                              => 'Id',
+    'id'                                => 'Id',
+    'ok'                                => 'Ok',
+    'start'                             => 'Start',
+    'end'                               => 'End',
     ''                                  => '',
     'create'                            => 'Create',
     'reset'                             => 'Reset',
@@ -55,6 +58,12 @@ return [
     'updated_at'                        => 'Update at',
 
     /**
+     * Analytics
+     */
+    'time_start_empty'                  => "Time start empty",
+    'set_time_again'                    => 'Please, set time again',
+
+    /**
      * For Users
      */
     'create_user'                       => 'Create User',
@@ -62,6 +71,7 @@ return [
     'login_user'                        => 'Login',
     'edit_user'                         => 'Edit User',
     'users_username'                    => 'Username',
+    'users_fullname'                    => 'Full name',
     'users_password'                    => 'Password',
     'users_repassword'                  => 'Re-Password',
     'fail_password'                     => 'Password is not correct',
@@ -145,8 +155,8 @@ return [
     'status'                            => 'Status',
 
     //For invoice import
-    'total_price'=>'Total price',
-    'invoice_import'=>'Invoice import',
+    'total_price'                       => 'Total price',
+    'invoice_import'                    => 'Invoice import',
 
     /**
      * For Size

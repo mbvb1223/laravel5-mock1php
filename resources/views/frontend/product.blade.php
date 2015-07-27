@@ -20,24 +20,7 @@
                         <?php echo $sidebar; ?>
                     </ul>
 
-                    <div class="sidebar-products clearfix">
-                        <h2>Bestsellers</h2>
-                        <div class="item">
-                            <a href="shop-item.html"><img src="../../assets/frontend/pages/img/products/k1.jpg" alt="Some Shoes in Animal with Cut Out"></a>
-                            <h3><a href="shop-item.html">Some Shoes in Animal with Cut Out</a></h3>
-                            <div class="price">$31.00</div>
-                        </div>
-                        <div class="item">
-                            <a href="shop-item.html"><img src="../../assets/frontend/pages/img/products/k4.jpg" alt="Some Shoes in Animal with Cut Out"></a>
-                            <h3><a href="shop-item.html">Some Shoes in Animal with Cut Out</a></h3>
-                            <div class="price">$23.00</div>
-                        </div>
-                        <div class="item">
-                            <a href="shop-item.html"><img src="../../assets/frontend/pages/img/products/k3.jpg" alt="Some Shoes in Animal with Cut Out"></a>
-                            <h3><a href="shop-item.html">Some Shoes in Animal with Cut Out</a></h3>
-                            <div class="price">$86.00</div>
-                        </div>
-                    </div>
+
                 </div>
                 <!-- END SIDEBAR -->
 
@@ -52,11 +35,6 @@
                             <div class="col-md-6 col-sm-6">
                                 <div class="product-main-image">
                                     <img src="<?php echo url("/"); ?>/upload/product/<?php echo $product['image'];?>" alt="Cool green dress with red bell" class="img-responsive" data-BigImgsrc="<?php echo url("/"); ?>/upload/product/<?php echo $product['image'];?>">
-                                </div>
-                                <div class="product-other-images">
-                                    <a href="../../assets/frontend/pages/img/products/model3.jpg" class="fancybox-button" rel="photos-lib"><img alt="Berry Lace Dress" src="../../assets/frontend/pages/img/products/model3.jpg"></a>
-                                    <a href="../../assets/frontend/pages/img/products/model4.jpg" class="fancybox-button" rel="photos-lib"><img alt="Berry Lace Dress" src="../../assets/frontend/pages/img/products/model4.jpg"></a>
-                                    <a href="../../assets/frontend/pages/img/products/model5.jpg" class="fancybox-button" rel="photos-lib"><img alt="Berry Lace Dress" src="../../assets/frontend/pages/img/products/model5.jpg"></a>
                                 </div>
                             </div>
                             <div class="col-md-6 col-sm-6">
@@ -90,12 +68,6 @@
                                         <input name="number" id="product-quantity" type="text" value="1" readonly class="form-control input-sm">
                                     </div>
                                     <button class="btn btn-primary" type="submit">Add to cart</button>
-                                </div>
-                                <div class="review">
-                                    <input type="range" value="4" step="0.25" id="backing4">
-                                    <div class="rateit" data-rateit-backingfld="#backing4" data-rateit-resetable="false"  data-rateit-ispreset="true" data-rateit-min="0" data-rateit-max="5">
-                                    </div>
-                                    <a href="#">7 reviews</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#">Write a review</a>
                                 </div>
                                 <ul class="social-icons">
                                     <li><a class="facebook" data-original-title="facebook" href="#"></a></li>

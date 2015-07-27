@@ -19,11 +19,13 @@
 function callMenu($menuConvert, $parent=0, &$result){
     if(isset($menuConvert[$parent])){
         foreach($menuConvert[$parent] as $key=> $value){
+            $link = "/product/".change_alias($value['category_name'])."-".$value['id'];
+
             $numberInArray = count($menuConvert[$parent])-1;
             if($parent==0){
                 $id = $value['id'];
                 $result.= "<li class='dropdown'>";
-                $result.=  "<a class='dropdown-toggle' data-toggle='dropdown' data-target='#' href='#'>". $value['category_name']. "</a>";
+                $result.=  "<a class='dropdown-toggle' data-toggle='dropdown' data-target='".$link."' href=''>". $value['category_name']. "</a>";
                 callMenu($menuConvert, $id, $result);
                 $result.= "</li>";
             }else {
@@ -33,12 +35,12 @@ function callMenu($menuConvert, $parent=0, &$result){
                 }
                 if(isset($menuConvert[$value['id']])){
                     $result.= "<li class='dropdown-submenu'>";
-                    $result.=  "<a href=''>". $value['category_name']. "</a><i class='fa fa-angle-right'></i>";
+                    $result.=  "<a href='$link'>". $value['category_name']. "</a><i class='fa fa-angle-right'></i>";
                     callMenu($menuConvert, $id, $result);
                     $result.= "</li>";
                 }else {
                 $result.= "<li>";
-                $result.=  "<a href=''>". $value['category_name']. "</a>";
+                $result.=  "<a href='$link'>". $value['category_name']. "</a>";
                 $result.= "</li>";
                 callMenu($menuConvert, $id, $result);
                 }

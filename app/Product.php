@@ -186,7 +186,7 @@ class Product extends Model
                         <img src='".$linkImage."' class='img-responsive' alt='Berry Lace Dress'>
                         <div>
                             <a href='".$linkImage."' class='btn btn-default fancybox-button'>Zoom</a>
-                            <a href='#product-pop-up' class='btn btn-default fancybox-fast-view'>View</a>
+                            <a href='#product-pop-up' class='btn btn-default fancybox-fast-view k-view' data-id='".$product['id']."'>View</a>
                         </div>
                     </div>
                     <h3><a href='".$linkToProduct."'>$nameProduct</a></h3>
@@ -203,6 +203,9 @@ class Product extends Model
 
     public function getViewProductByArrayProduct($dataProductByIdCategory){
         $result = null;
+        if(empty($dataProductByIdCategory)){
+            return;
+        }
         foreach($dataProductByIdCategory as $product){
             $idProduct = $product['id'];
             $linkImage = url("/")."/upload/product/$product[image]";
@@ -249,7 +252,7 @@ class Product extends Model
         } else {
             $flat = 0;
             foreach ($getAnyIdChildrentFromIdCategoryMen as $category_id) {
-                $product = $this->where('category_id', $category_id)->orderBy('id', 'desc')->take(2)->get();
+                $product = $this->where('status',Product::STATUS_SHOW)->where('category_id', $category_id)->orderBy('id', 'desc')->take(2)->get();
                 if (empty($product)) {
                     continue;
                 }

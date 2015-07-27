@@ -14,6 +14,7 @@ use App\Size;
 use App\City;
 use App\Region;
 use App\Product;
+use App\Status;
 
 class DatabaseSeeder extends Seeder
 {
@@ -83,6 +84,27 @@ class DatabaseSeeder extends Seeder
             ]);
 
         }
+
+        /**
+         * Status
+         */
+        Status::create([
+            "name_status"  => "Pending",
+        ]);
+        Status::create([
+            "name_status"  => "Delevery",
+        ]);
+
+        Status::create([
+            "name_status"  => "Ok",
+        ]);
+
+        Status::create([
+            "name_status"  => "Cancel",
+        ]);
+
+
+
 
         /**
          * For Height

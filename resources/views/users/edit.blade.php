@@ -3,10 +3,11 @@
     <div class="row">
         <div class="col-md-12">
             <form class="form-horizontal form-row-seperated"
-                  action="{{ URL::action('UsersController@update', $result->id) }}" method="Post"
+                  action="{{ URL::action('UsersController@update', $result['id']) }}" method="Post"
                   enctype="multipart/form-data">
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                 <input type="hidden" name="_method" value="PUT">
+                <input type="hidden" name="id" value="{{ $result['id']}}">
 
                 <div class="portlet">
                     <div class="portlet-title">
@@ -31,6 +32,17 @@
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" name="username"
                                        value="{{ old('username', $result['username'])}}" id="username"
+                                       placeholder="<?php echo Lang::get('messages.users_username'); ?>"
+                                        />
+                            </div>
+                        </div>
+                        <div class=" form-group">
+                            <label for="yourname"
+                                   class="col-sm-2 control-label"><?php echo Lang::get('messages.users_fullname'); ?></label>
+
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="yourname"
+                                       value="{{ old('yourname', $result['yourname'])}}" id="yourname"
                                        placeholder="<?php echo Lang::get('messages.users_username'); ?>"
                                         />
                             </div>
@@ -126,11 +138,42 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label for="city_id"
+                                   class="col-sm-2 control-label"><?php echo Lang::get('messages.users_city'); ?></label>
+
+                            <div class="col-sm-10">
+                                <select class="form-control" name="city_id" id="city_id" required="required">
+                                    <?php echo $getViewSelectTagCity; ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="region_id"
+                                   class="col-sm-2 control-label"><?php echo Lang::get('messages.users_region'); ?> </label>
+
+                            <div class="col-sm-10">
+                                <select class="form-control" name="region_id" id="region_id" required="required"/>
+
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="address"
+                                   class="col-sm-2 control-label"><?php echo Lang::get('messages.users_address'); ?></label>
+
+                            <div class="col-sm-10">
+                                <input type="address" class="form-control" name="address"
+                                       value="{{ old('address', $result['address'])}}" id="address"
+                                       placeholder="<?php echo Lang::get('messages.users_address'); ?>"
+                                       required="required"/>
+                            </div>
+                        </div>
                     </div>
                     <div class="porlet-body-right col-xs-12 col-sm-3">
                         <img id="output" class="img-responsive"
                         <?php if (isset($result['avatar'])) {
-                            echo "src='/public/upload/images/" . "$result[avatar]'";
+                            echo "src='/upload/images/" . "$result[avatar]'";
                         } ?>/>
                     </div>
                 </div>
@@ -146,5 +189,31 @@
             var output = document.getElementById('output');
             output.src = URL.createObjectURL(event.target.files[0]);
         };
+    </script>
+    <script>
+        jQuery(document).ready(function() {
+            var mapIdCityToArrayRegion = <?php echo json_encode($mapIdCityToArrayRegion);?>;
+            var city_id = $("#city_id").val();
+            var regions = mapIdCityToArrayRegion[city_id];
+            var option = '';
+            var i = 0;
+            for(; i< regions.length;){
+                option += '<option value="' + regions[i]['id'] +'">'+ regions[i]['name_region'] +'</option>';
+                i++;
+            }
+            $("#region_id").html(option);
+            $("#city_id").change(function(){
+                var city_id = $("#city_id").val();
+                var regions = mapIdCityToArrayRegion[city_id];
+                var option = '';
+                var i = 0;
+                for(; i< regions.length;){
+                    option += '<option value="' + regions[i]['id'] +'">'+ regions[i]['name_region'] +'</option>';
+                    i++;
+                }
+                $("#region_id").html(option);
+            });
+        })
+
     </script>
 @stop

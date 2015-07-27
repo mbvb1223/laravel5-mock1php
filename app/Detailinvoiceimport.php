@@ -5,37 +5,43 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use DB;
 
-class Detailinvoiceimport extends Model {
+class Detailinvoiceimport extends Model
+{
     protected $guarded = ['id'];
     protected $table = 'detail_invoice_import';
-    public $properties = array('id','product_id','color_id','size_id','number','price_import','created_at','updated_at');
+    public $properties = array('id', 'product_id', 'color_id', 'size_id', 'number', 'price_import', 'created_at', 'updated_at');
     public $timestamps = true;
 
 
     public function getViewAllDetailInvoiceImportByIdInvoiceImport($getAllDetailInvoiceImportByIdInvoiceImport)
     {
-        $result = null;
+        $mapIdColorToInformationColor = Color::mapIdColorToInformationColor();
+        $mapIdSizeToInformationSize   = Size::mapIdSizeToInformationSize();
+        $result                       = null;
         foreach ($getAllDetailInvoiceImportByIdInvoiceImport as $item) {
-            $totalCost = $item['price_import'] * $item['number'];
+            $totalCost = number_format($item['price_import'] * $item['number'], 2);
+            $nameColor = $mapIdColorToInformationColor[$item['color_id']]['color_name'];
+            $sizeValue = $mapIdSizeToInformationSize[$item['size_id']]['size_value'];
+            $priceImport = number_format($item['price_import'],2);
             $result .= "<tr>
                 <td>
-                    <a href='#'>$item[product_id] </a>
+                    $item[product_id] | $item[name_product] | $item[key_product]
                 </td>
 
                 <td>
-                        $item[color_id]
+                    $nameColor
                 </td>
                 <td>
-                       $item[size_id]
+                    $sizeValue
                 </td>
                 <td>
-                        $item[number]
+                    $item[number]
                 </td>
                 <td>
-                        $$item[price_import]
+                    $$priceImport
                 </td>
                  <td>
-                        $$totalCost
+                    $$totalCost
                 </td>
             </tr>";
         }

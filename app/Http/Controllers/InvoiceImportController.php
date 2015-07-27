@@ -132,7 +132,7 @@ class InvoiceImportController extends Controller
         //========================================Get info Invoice Import===============================================
         $objInvoiceImport2 = clone $objInvoiceImport;
         $getDataInvoiceImportById = $objInvoiceImport2->select('invoice_import.*', 'users.username')
-            ->join('users', 'users.id', '=', 'invoice_import.user_id')->where('invoice_import.id',$id)->first();
+            ->join('users', 'users.id', '=', 'invoice_import.user_id')->where('invoice_import.id', $id)->first();
 
 
         //======================================END-Get info Invoice Import=============================================
@@ -140,7 +140,9 @@ class InvoiceImportController extends Controller
         //===============================Get info Detail Invoice Import=============================================
 
         $objDetailInvoiceImport            = new Detailinvoiceimport();
-        $getAllDetailInvoiceImportByIdInvoiceImport = $objDetailInvoiceImport->where('invoice_import_id', $id)->get();
+        $getAllDetailInvoiceImportByIdInvoiceImport = $objDetailInvoiceImport->where('invoice_import_id', $id)
+            ->leftJoin('product', 'product.id', '=', 'detail_invoice_import.product_id')
+            ->get();
 
         if (empty($getAllDetailInvoiceImportByIdInvoiceImport)) {
             return redirect()->action('InvoiceImportController@index')->withErrors(Lang::get('messages.no_id'));

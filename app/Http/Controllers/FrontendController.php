@@ -11,7 +11,7 @@ use App\Order;
 use App\Region;
 use App\Size;
 use App\Style;
-use App\User;
+use App\DetailOrder;
 use App\Users;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -31,7 +31,7 @@ class FrontendController extends Controller
     use AuthenticatesAndRegistersUsers;
 
 
-    public function __construct()
+    public function __construct(Request $request)
     {
         $title       = 'Shop';
         $class_name  = substr(__CLASS__, 21);
@@ -72,7 +72,7 @@ class FrontendController extends Controller
             $countSessionCart           = 0;
             $totalCost                  = 0;
         }
-        //===================================View Cart in Index===================================================
+        //===================================END-View Cart in Index===================================================
 
         $getViewUserInIndexFrontEnd = Users::getViewUserInIndexFrontEnd();
 
@@ -82,7 +82,7 @@ class FrontendController extends Controller
             'getViewCartInIndexFrontEnd' => $getViewCartInIndexFrontEnd,
             "countSessionCart"           => $countSessionCart,
             "totalCost"                  => $totalCost,
-            "getViewUserInIndexFrontEnd" =>$getViewUserInIndexFrontEnd,
+            "getViewUserInIndexFrontEnd" => $getViewUserInIndexFrontEnd,
         ));
 
     }
@@ -91,7 +91,7 @@ class FrontendController extends Controller
     {
         //========================================Get 7 product new=====================================================
         $objProduct        = new Product();
-        $newProducts       = $objProduct->skip(0)->take(7)->orderBy('id', 'desc')->get()->toArray();
+        $newProducts       = $objProduct->where('status', Product::STATUS_SHOW)->skip(0)->take(7)->orderBy('id', 'desc')->get()->toArray();
         $getViewNewProduct = $objProduct->getViewProductByArrayProduct($newProducts);
         //========================================END-Get 7 product new=================================================
 
@@ -115,12 +115,41 @@ class FrontendController extends Controller
         $getViewProductWomen = $objProduct->getViewProductByArrayProduct($allProductForWomen);
         //===================================END-Get 10 product for Women===============================================
 
+        //==========================================Get hot product=====================================================
+        $objOrder            = new Order();
+        $getDataOrderOk      = $objOrder
+            ->where('created_at', '>=', Carbon::now()->subDay(15))
+            ->where('created_at', '<=', Carbon::now())
+            ->where('status', Order::OK)
+            ->get();
+        $getArrayDataOrderOk = $getDataOrderOk->toArray();
+        if (!empty($getArrayDataOrderOk)) {
+            $objDetailOrder = new DetailOrder();
+            $objDetailOrder = $objDetailOrder->selectRaw('detail_order.product_id,
+            product.*,
+            sum(detail_order.number) as sum')
+                ->leftJoin('product', 'product.id', '=', 'detail_order.product_id');
+            foreach ($getArrayDataOrderOk as $item) {
+                $objDetailOrder = $objDetailOrder->orwhere('detail_order.order_id', $item['id']);
+            }
+            $getHotProduct     = $objDetailOrder->groupBy('detail_order.product_id')
+                ->orderBy('sum', 'desc')
+                ->take(9)
+                ->get()
+                ->toArray();
+            $getViewHotProduct = $objProduct->getViewProductByArrayProduct($getHotProduct);
+        } else {
+            $getViewHotProduct = null;
+        }
+        //============================================END-Get hot product===============================================
+
 
         return view('frontend.index')->with([
             "newProducts"         => $newProducts,
             "getViewProductMen"   => $getViewProductMen,
             "getViewProductWomen" => $getViewProductWomen,
             "getViewNewProduct"   => $getViewNewProduct,
+            'getViewHotProduct'   => $getViewHotProduct,
         ]);
     }
 
@@ -158,7 +187,7 @@ class FrontendController extends Controller
             $price     = null;
             $checkSale = null;
         }
-        $linkDetailProduct = url("/")."/product/". change_alias($getProductById->name_product) . "-" . $getProductById->id;
+        $linkDetailProduct = url("/") . "/product/" . change_alias($getProductById->name_product) . "-" . $getProductById->id;
         //====================================END-Get information of Product============================================
 
         //====================================Check Product in Stock====================================================
@@ -262,7 +291,16 @@ class FrontendController extends Controller
         } else {
             $filterHeight = 0;
         }
-
+        if (isset($allRequest['cost']) && $allRequest['cost'] == 0) {
+            $dataProductByIdCategory = $dataProductByIdCategory->orderBy('cost', 'desc');
+            $arraySort['cost']       = 0;
+        }
+        if (isset($allRequest['cost']) && $allRequest['cost'] == 1) {
+            $dataProductByIdCategory = $dataProductByIdCategory->orderBy('cost', 'asc');
+            $arraySort['cost']       = 1;
+        } else {
+            $arraySort['cost'] = null;
+        }
         $getViewAllMadeInForSelectTag   = Madein::getViewAllMadeInForSelectTag($filterMadein);
         $getViewAllStyleForSelectTag    = Style::getViewAllStyleForSelectTag($filterStyle);
         $getViewAllMaterialForSelectTag = Material::getViewAllMaterialForSelectTag($filterMaterial);
@@ -285,6 +323,80 @@ class FrontendController extends Controller
         ]);
     }
 
+    public function searchProduct(Request $request)
+    {
+        $allRequest = $request->all();
+
+        if (!isset($allRequest['key']) || $allRequest['key'] == null) {
+            return redirect()->action('FrontendController@index');
+        }
+        $searchString = $allRequest['key'];
+
+        $objProduct          = new Product();
+        $dataProductBySearch = $objProduct->where('name_product', 'LIKE', '%' . $searchString . '%')
+            ->orwhere('key_product', 'LIKE', '%' . $searchString . '%');
+
+        //===========================================Filter=============================================================
+        $arraySort = array();
+        if (isset($allRequest['madein']) && $allRequest['madein'] != 0) {
+            $filterMadein        = $allRequest['madein'];
+            $dataProductBySearch = $dataProductBySearch->where('madein_id', $filterMadein);
+            $arraySort['madein'] = $filterMadein;
+        } else {
+            $filterMadein = 0;
+        }
+        if (isset($allRequest['style']) && $allRequest['style'] != 0) {
+            $filterStyle         = $allRequest['style'];
+            $dataProductBySearch = $dataProductBySearch->where('style_id', $filterStyle);
+            $arraySort['style']  = $filterStyle;
+        } else {
+            $filterStyle = 0;
+        }
+        if (isset($allRequest['material']) && $allRequest['material'] != 0) {
+            $filterMaterial        = $allRequest['material'];
+            $dataProductBySearch   = $dataProductBySearch->where('material_id', $filterMaterial);
+            $arraySort['material'] = $filterMaterial;
+        } else {
+            $filterMaterial = 0;
+        }
+        if (isset($allRequest['height']) && $allRequest['height'] != 0) {
+            $filterHeight        = $allRequest['height'];
+            $dataProductBySearch = $dataProductBySearch->where('height_id', $filterHeight);
+            $arraySort['height'] = $filterHeight;
+        } else {
+            $filterHeight = 0;
+        }
+        if (isset($allRequest['cost']) && $allRequest['cost'] == 0) {
+            $dataProductBySearch = $dataProductBySearch->orderBy('cost', 'desc');
+            $arraySort['cost']   = 0;
+        }
+        if (isset($allRequest['cost']) && $allRequest['cost'] == 1) {
+            $dataProductBySearch = $dataProductBySearch->orderBy('cost', 'asc');
+            $arraySort['cost']   = 1;
+        } else {
+            $arraySort['cost'] = null;
+        }
+        $getViewAllMadeInForSelectTag   = Madein::getViewAllMadeInForSelectTag($filterMadein);
+        $getViewAllStyleForSelectTag    = Style::getViewAllStyleForSelectTag($filterStyle);
+        $getViewAllMaterialForSelectTag = Material::getViewAllMaterialForSelectTag($filterMaterial);
+        $getViewAllHeightForSelectTag   = Height::getViewAllHeightForSelectTag($filterHeight);
+        //=======================================END-Filter=============================================================
+
+        $dataProductBySearch = $dataProductBySearch->paginate(9);
+
+        //appending key serach
+        $arraySort['key'] = $searchString;
+
+        return view('frontend.search')->with([
+            "dataProductBySearch"            => $dataProductBySearch,
+            "getViewAllMadeInForSelectTag"   => $getViewAllMadeInForSelectTag,
+            "getViewAllStyleForSelectTag"    => $getViewAllStyleForSelectTag,
+            "getViewAllMaterialForSelectTag" => $getViewAllMaterialForSelectTag,
+            "getViewAllHeightForSelectTag"   => $getViewAllHeightForSelectTag,
+            'arraySort'                      => $arraySort,
+        ]);
+    }
+
     public function product($stringid)
     {
         //====================================Get information of Product================================================
@@ -292,14 +404,13 @@ class FrontendController extends Controller
         $idProduct      = convertStringUrlToId($stringid);
         $objProduct     = new Product();
         $getProductById = $objProduct->select('product.*', 'selloff.selloff_value', 'style.style_name', 'madein.madein_name', 'material.material_name', 'height.height_value')
-            ->join('style', 'style.id', '=', 'product.style_id')
-            ->join('selloff', 'selloff.id', '=', 'product.selloff_id')
-            ->join('madein', 'madein.id', '=', 'product.madein_id')
-            ->join('material', 'material.id', '=', 'product.material_id')
-            ->join('height', 'height.id', '=', 'product.height_id')
+            ->leftJoin('style', 'style.id', '=', 'product.style_id')
+            ->leftJoin('selloff', 'selloff.id', '=', 'product.selloff_id')
+            ->leftJoin('madein', 'madein.id', '=', 'product.madein_id')
+            ->leftJoin('material', 'material.id', '=', 'product.material_id')
+            ->leftJoin('height', 'height.id', '=', 'product.height_id')
             ->where('product.id', $idProduct)->first();
         if (empty($getProductById)) {
-            die();
             return redirect()->action('FrontendController@index')->withErrors(Lang::get('messages.id_product_not_isset'));
         }
 
@@ -548,7 +659,6 @@ class FrontendController extends Controller
             $objOrder                   = new Order();
             $objOrder->submitDataCheckoutToTableOrderAndDetailOrder($convertAndSortSessionOrder, $idUser, $informationForOrder);
         } else {
-
             //Insert new user
             $dataUserForInsertToDatabase = array(
                 'username'  => md5(time()),
@@ -559,10 +669,9 @@ class FrontendController extends Controller
                 'region_id' => $allRequest['region_id'],
                 'address'   => $allRequest['address'],
             );
-
-            $objUser             = new Users();
-            $idUser              = $objUser->insertGetId($dataUserForInsertToDatabase);
-            $informationForOrder = $allRequest['information'];
+            $objUser                     = new Users();
+            $idUser                      = $objUser->insertGetId($dataUserForInsertToDatabase);
+            $informationForOrder         = $allRequest['information'];
             //Insert to Order
             //insert to table order
             $sessionOrder = Session::get('order');

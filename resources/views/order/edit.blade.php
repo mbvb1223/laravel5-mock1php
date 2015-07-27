@@ -4,7 +4,7 @@
           method="Post" enctype="multipart/form-data">
         <input type="hidden" name="_token" value="{{ csrf_token() }}">
         <input type="hidden" name="id_order" value="{{ old('id_order', $dataOrderById['id'])}}">
-        <input type="hidden" name="user_id" value="{{ old('user_id', $dataOrderById['user_id'])}}">
+        <input type="hidden" name="user_id" value="{{ old('user_id', $idUser)}}">
     <div class="row">
         <div class="col-md-12">
             <!-- Begin: life time stats -->
@@ -167,7 +167,7 @@
                                                         UserName:
                                                     </div>
                                                     <div class="col-md-7 value">
-                                                        <input class="form-control" type="text" name="username" value="<?php echo $mapIdUserToInfoUser[$dataOrderById['id']]['username'];?>">
+                                                        <input class="form-control" type="text" name="username" value="<?php echo $mapIdUserToInfoUser[$idUser]['username'];?>">
                                                     </div>
                                                 </div>
                                                 <div class="row static-info">
@@ -175,7 +175,7 @@
                                                         Full name:
                                                     </div>
                                                     <div class="col-md-7 value">
-                                                        <input class="form-control" type="text" name="yourname" value="<?php echo $mapIdUserToInfoUser[$dataOrderById['id']]['yourname'];?>">
+                                                        <input class="form-control" type="text" name="yourname" value="<?php echo $mapIdUserToInfoUser[$idUser]['yourname'];?>">
                                                     </div>
                                                 </div>
                                                 <div class="row static-info">
@@ -183,7 +183,7 @@
                                                         Email:
                                                     </div>
                                                     <div class="col-md-7 value">
-                                                        <input class="form-control" type="text" name="email" value="<?php echo $mapIdUserToInfoUser[$dataOrderById['id']]['email'];?>">
+                                                        <input class="form-control" type="text" name="email" value="<?php echo $mapIdUserToInfoUser[$idUser]['email'];?>">
                                                     </div>
                                                 </div>
 
@@ -192,7 +192,7 @@
                                                         Phone Number:
                                                     </div>
                                                     <div class="col-md-7 value">
-                                                        <input class="form-control" type="text" name="phone" value="<?php echo $mapIdUserToInfoUser[$dataOrderById['id']]['phone'];?>">
+                                                        <input class="form-control" type="text" name="phone" value="<?php echo $mapIdUserToInfoUser[$idUser]['phone'];?>">
                                                     </div>
                                                 </div>
                                                 <div class="row static-info">
@@ -226,7 +226,6 @@
                                             </div>
                                         </div>
                                     </div>
-
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12 col-sm-12">

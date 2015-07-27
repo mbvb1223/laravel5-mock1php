@@ -13,14 +13,14 @@ class Order extends Model
 {
     protected $guarded = ['id'];
     protected $table = 'order';
-    public $properties = array('id', 'user_id', 'status','token', 'total_price_import',
+    public $properties = array('id', 'user_id', 'status', 'token', 'total_price_import',
         'total_price', 'total_cost', 'information', 'created_at', 'updated_at');
     public $timestamps = true;
 
-    const PENDING = 0;
-    const DELEVERY = 1;
-    const OK = 2;
-    const CANCEL = 3;
+    const PENDING = 1;
+    const DELEVERY = 2;
+    const OK = 3;
+    const CANCEL = 4;
 
     /**
      * For BackEnd
@@ -32,25 +32,28 @@ class Order extends Model
         $offset      = ($pageCurrent - 1) * $limit;
 
         // Config sort
-        $sortBy    = 'id';
+        $sortBy    = 'order.id';
         $sortOrder = 'asc';
 
         if (isset($allRequest['sort'])) {
             $sort      = $allRequest['sort'];
-            $sortColum = ['id', 'user_id', 'status','token',
+            $sortColum = ['id', 'user_id', 'status', 'token',
                 'total_price_import', 'total_price', 'total_cost',
                 'information', 'created_at', 'updated_at'];
             $sortBy    = (in_array(key($sort), $sortColum)) ? key($sort) : 'id';
             $sortOrder = current($sort);
         }
 
-        $query = $this->where(function($query) use ($allRequest) {
-                            $query->where('id', 'LIKE', '%' . $allRequest['searchPhrase'] . '%')
-                                ->orWhere('user_id', 'LIKE', '%' . $allRequest['searchPhrase'] . '%')
-                                ->orWhere('status', 'LIKE', '%' . $allRequest['searchPhrase'] . '%')
-                                ->orWhere('total_cost', 'LIKE', '%' . $allRequest['searchPhrase'] . '%')
-                                ->orWhere('created_at', 'LIKE', '%' . $allRequest['searchPhrase'] . '%');
-        });
+        $query = $this->select('users.*', 'status.*', 'order.*')->where(function ($query) use ($allRequest) {
+            $query->where('order.id', 'LIKE', '%' . $allRequest['searchPhrase'] . '%')
+                ->orWhere('order.user_id', 'LIKE', '%' . $allRequest['searchPhrase'] . '%')
+                ->orWhere('users.email', 'LIKE', '%' . $allRequest['searchPhrase'] . '%')
+                ->orWhere('status.name_status', 'LIKE', '%' . $allRequest['searchPhrase'] . '%')
+                ->orWhere('order.status', 'LIKE', '%' . $allRequest['searchPhrase'] . '%')
+                ->orWhere('order.total_cost', 'LIKE', '%' . $allRequest['searchPhrase'] . '%')
+                ->orWhere('order.created_at', 'LIKE', '%' . $allRequest['searchPhrase'] . '%');
+        })->leftJoin('users', 'users.id', '=', 'order.user_id')
+            ->leftJoin('status', 'status.id', '=', 'order.status');
 
         $queryGetTotal = $query;
         $total         = $queryGetTotal->count();
@@ -69,7 +72,6 @@ class Order extends Model
         foreach ($rows as $k => $item) {
             $rows[$k]['action'] = create_field_action('admin/order', $item->id);
         }
-
         $data['current']  = intval($pageCurrent);
         $data['rowCount'] = intval($limit);
         $data['total']    = intval($total);
@@ -78,9 +80,10 @@ class Order extends Model
         return json_encode($data);
     }
 
-    public static function updateCostPriceAndPriceImportInOrderByIdOrder($idOrder){
+    public static function updateCostPriceAndPriceImportInOrderByIdOrder($idOrder)
+    {
         //update price/cost/price_import in table Order
-        $objDetailOrder = new DetailOrder();
+        $objDetailOrder                      = new DetailOrder();
         $getAllProductInDetailOrderByIdOrder = $objDetailOrder->where('order_id', $idOrder)->get();
         $totalCost                           = 0;
         $totalPrice                          = 0;
@@ -88,40 +91,41 @@ class Order extends Model
 
         foreach ($getAllProductInDetailOrderByIdOrder as $item) {
 
-            $totalCost          += $item['number'] * $item['cost'];
-            $totalPrice         +=  $item['number'] * $item['price'];
-            $totalPriceImport   +=  $item['number'] * $item['price_import'];
+            $totalCost += $item['number'] * $item['cost'];
+            $totalPrice += $item['number'] * $item['price'];
+            $totalPriceImport += $item['number'] * $item['price_import'];
         }
 
-        $getOrderById = Order::find($idOrder);
-        $getOrderById->total_cost = $totalCost;
-        $getOrderById->total_price = $totalPrice;
+        $getOrderById                     = Order::find($idOrder);
+        $getOrderById->total_cost         = $totalCost;
+        $getOrderById->total_price        = $totalPrice;
         $getOrderById->total_price_import = $totalPriceImport;
         $getOrderById->save();
     }
 
-    public static function getViewStatusForOrder($currentStatus){
+    public static function getViewStatusForOrder($currentStatus)
+    {
         $result = null;
-        if($currentStatus==self::PENDING){
+        if ($currentStatus == self::PENDING) {
 
-            $result.= "<div class='col-md-3'><input type='radio' checked name='status' style='margin-left:0px;' value='".self::PENDING."'>PENDING</div>";
-            $result.= "<div class='col-md-3'><input type='radio' style='margin-left:0px;' name='status' value='".self::DELEVERY."'>DELEVERY</div>";
-            $result.= "<div class='col-md-3'><input type='radio' style='margin-left:0px;' name='status' value='".self::OK."'>OK</div>";
-            $result.= "<div class='col-md-3'><input type='radio' style='margin-left:0px;' name='status' value='".self::CANCEL."'>CANCEL</div>";
-
-        }
-        if($currentStatus==self::DELEVERY){
-            $result.= "<div class='col-md-3'><input type='radio' checked style='margin-left:0px;' name='status' value='".self::DELEVERY."'>DELEVERY</div>";
-            $result.= "<div class='col-md-3'><input type='radio' style='margin-left:0px;' name='status' value='".self::OK."'>OK</div>";
-            $result.= "<div class='col-md-3'><input type='radio' style='margin-left:0px;' name='status' value='".self::CANCEL."'>CANCEL</div>";
+            $result .= "<div class='col-md-3'><input type='radio' checked name='status' style='margin-left:0px;' value='" . self::PENDING . "'>PENDING</div>";
+            $result .= "<div class='col-md-3'><input type='radio' style='margin-left:0px;' name='status' value='" . self::DELEVERY . "'>DELEVERY</div>";
+            $result .= "<div class='col-md-3'><input type='radio' style='margin-left:0px;' name='status' value='" . self::OK . "'>OK</div>";
+            $result .= "<div class='col-md-3'><input type='radio' style='margin-left:0px;' name='status' value='" . self::CANCEL . "'>CANCEL</div>";
 
         }
-        if($currentStatus==self::OK){
-            $result.= "<div class='col-md-3'><input type='radio' checked style='margin-left:0px;' name='status' value='".self::OK."'>OK</div>";
+        if ($currentStatus == self::DELEVERY) {
+            $result .= "<div class='col-md-3'><input type='radio' checked style='margin-left:0px;' name='status' value='" . self::DELEVERY . "'>DELEVERY</div>";
+            $result .= "<div class='col-md-3'><input type='radio' style='margin-left:0px;' name='status' value='" . self::OK . "'>OK</div>";
+            $result .= "<div class='col-md-3'><input type='radio' style='margin-left:0px;' name='status' value='" . self::CANCEL . "'>CANCEL</div>";
 
         }
-        if($currentStatus==self::CANCEL){
-            $result.= "<div class='col-md-3'><input type='radio' checked style='margin-left:0px;' name='status' value='".self::CANCEL."'>CANCEL</div>";
+        if ($currentStatus == self::OK) {
+            $result .= "<div class='col-md-3'><input type='radio' checked style='margin-left:0px;' name='status' value='" . self::OK . "'>OK</div>";
+
+        }
+        if ($currentStatus == self::CANCEL) {
+            $result .= "<div class='col-md-3'><input type='radio' checked style='margin-left:0px;' name='status' value='" . self::CANCEL . "'>CANCEL</div>";
 
         }
         return $result;
@@ -161,6 +165,7 @@ class Order extends Model
             $idColor               = $sessionOrder['color_id'];
             $idSize                = $sessionOrder['size_id'];
             $number                = $sessionOrder['number'];
+            $linkImage             = "/upload/product/" . $mapProductIdToInformationProduct[$idProduct]['image'];
             $nameProduct           = $mapProductIdToInformationProduct[$idProduct]['name_product'];
             $colorName             = $mapIdColorToInformationColor[$idColor]['color_name'];
             $sizeValue             = $mapIdSizeToInformationSize[$idSize]['size_value'];
@@ -171,7 +176,7 @@ class Order extends Model
 
             $result .= " <tr>
                             <td class='goods-page-image'>
-                                <a href='#'><img src='../../assets/frontend/pages/img/products/model4.jpg' alt='Berry Lace Dress'></a>
+                                <a href='#'><img src='" . $linkImage . "' alt=''></a>
                             </td>
                             <td class='goods-page-description'>
                                 <h3><a href='#'> $nameProduct</a></h3>
@@ -204,10 +209,7 @@ class Order extends Model
                                     <em>Sub total</em>
                                     <strong class='price'><span>$ </span>$totalCost</strong>
                                 </li>
-                                <li>
-                                    <em>Shipping cost</em>
-                                    <strong class='price'><span>$ </span>3.00</strong>
-                                </li>
+
                                 <li class='shopping-total-price'>
                                     <em>Total</em>
                                      <strong class='price'><span>$ </span>$totalCost</strong>
@@ -234,12 +236,13 @@ class Order extends Model
         $mapIdColorToInformationColor     = Color::mapIdColorToInformationColor();
         $mapIdSizeToInformationSize       = Size::mapIdSizeToInformationSize();
         $result                           = '';
-        $totalCost = 0;
+        $totalCost                        = 0;
         foreach ($sessionOrder as $sessionOrder) {
             $idProduct             = $sessionOrder['product_id'];
             $idColor               = $sessionOrder['color_id'];
             $idSize                = $sessionOrder['size_id'];
             $number                = $sessionOrder['number'];
+            $linkImageProduct      = "/upload/product/" . $mapProductIdToInformationProduct[$idProduct]['image'];
             $nameProduct           = $mapProductIdToInformationProduct[$idProduct]['name_product'];
             $colorName             = $mapIdColorToInformationColor[$idColor]['color_name'];
             $sizeValue             = $mapIdSizeToInformationSize[$idSize]['size_value'];
@@ -248,7 +251,7 @@ class Order extends Model
             $totalCost += $costItemProductInCart;
             $keyOfOrder = $sessionOrder['key'];
             $result .= " <li>
-                        <a href='shop-item.html'><img src='' alt='Rolex Classic Watch' width='37' height='34'></a>
+                        <a href='shop-item.html'><img src='" . $linkImageProduct . "' alt='' width='37' height='34'></a>
                         <span class='cart-content-count'>x $number</span>
                         <strong><a href='shop-item.html'>$nameProduct|$colorName|$sizeValue</a></strong>
                         <em>$$costProduct</em>
@@ -307,8 +310,8 @@ class Order extends Model
         $this->save();
 
         //Submit data to Table Detail_order
-        $idOrder = $this->id;
-        $dateTimeCreatedAndUpdated        = new \DateTime();
+        $idOrder                   = $this->id;
+        $dateTimeCreatedAndUpdated = new \DateTime();
         foreach ($sessionOrder as $itemOrder) {
 
             $idProduct = $itemOrder['product_id'];
@@ -328,9 +331,9 @@ class Order extends Model
                 'price_import' => $priceImportProduct,
                 'price'        => $priceProduct,
                 'cost'         => $costProduct,
-                'order_id'   => $idOrder,
-                'created_at'        => $dateTimeCreatedAndUpdated,
-                'updated_at'        => $dateTimeCreatedAndUpdated
+                'order_id'     => $idOrder,
+                'created_at'   => $dateTimeCreatedAndUpdated,
+                'updated_at'   => $dateTimeCreatedAndUpdated
             );
         }
         $objDetailOrder = new DetailOrder();
@@ -442,20 +445,20 @@ class Order extends Model
             <div class='col-md-6 col-sm-6'>
                 <h3>Returning Customer</h3>
                 <p>I am a returning customer.</p>
-                <form role='form' action='".action('\App\Http\Controllers\Auth\AuthController@postLoginToBuy')."' method='post'>
-                    <input type='hidden' name='_token' value='".csrf_token()."'>
+                <form role='form' action='" . action('\App\Http\Controllers\Auth\AuthController@postLoginToBuy') . "' method='post'>
+                    <input type='hidden' name='_token' value='" . csrf_token() . "'>
                     <div class='form-group'>
                         <label for='email-login'>E-Mail</label>
                         <input type='text' class='form-control' name='username'
-                               value='".old('username')."' id='username'
-                               placeholder='".Lang::get('messages.users_username')."'
+                               value='" . old('username') . "' id='username'
+                               placeholder='" . Lang::get('messages.users_username') . "'
                                required='required'/>
                     </div>
                     <div class='form-group'>
                         <label for='password-login'>Password</label>
                         <input type='password' class='form-control' name='password'
                                id='password'
-                               placeholder='". Lang::get('messages.users_password')."'
+                               placeholder='" . Lang::get('messages.users_password') . "'
                                required='required'/>
                     </div>
                     <a href='#'>Forgotten Password?</a>
@@ -572,6 +575,7 @@ class Order extends Model
             $idColor               = $sessionOrder['color_id'];
             $idSize                = $sessionOrder['size_id'];
             $number                = $sessionOrder['number'];
+            $linkImageProduct      = "/upload/product/" . $mapProductIdToInformationProduct[$idProduct]['image'];
             $nameProduct           = $mapProductIdToInformationProduct[$idProduct]['name_product'];
             $colorName             = $mapIdColorToInformationColor[$idColor]['color_name'];
             $sizeValue             = $mapIdSizeToInformationSize[$idSize]['size_value'];
@@ -582,7 +586,7 @@ class Order extends Model
 
             $result .= " <tr>
                             <td class='goods-page-image'>
-                                <a href='#'><img src='../../assets/frontend/pages/img/products/model4.jpg' alt='Berry Lace Dress'></a>
+                                <a href='#'><img src='" . $linkImageProduct . "' alt='Berry Lace Dress'></a>
                             </td>
                             <td class='goods-page-description'>
                                 <h3><a href='#'> $nameProduct</a></h3>
@@ -613,10 +617,6 @@ class Order extends Model
                                 <li>
                                     <em>Sub total</em>
                                     <strong class='price'><span>$ </span>$totalCost</strong>
-                                </li>
-                                <li>
-                                    <em>Shipping cost</em>
-                                    <strong class='price'><span>$ </span>3.00</strong>
                                 </li>
                                 <li class='shopping-total-price'>
                                     <em>Total</em>

@@ -25,10 +25,10 @@ class UserRequest extends Request {
     public function rules()
     {
         return [
-            'username'=>'required|unique:users',
+            'username'=>'required|unique:users,username,'.$this->get('id'),
             'password'=>'required',
             'repassword'=>'required|same:password',
-            'email'=>'required|unique:users',
+            'email'=>'required|unique:users,email,'.$this->get('id'),
             'phone'=>'required',
             'avatar'=>'required|image|max:2000',
             'status'=>'required',

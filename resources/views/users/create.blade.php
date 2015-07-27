@@ -36,6 +36,17 @@
                             </div>
                         </div>
                         <div class="form-group">
+                            <label for="username"
+                                   class="col-sm-2 control-label"><?php echo Lang::get('messages.users_fullname'); ?></label>
+
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="yourname"
+                                       value="{{ old('yourname')}}" id="yourname"
+                                       placeholder="<?php echo Lang::get('messages.users_fullname'); ?>"
+                                       required="required"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
                             <label for="password"
                                    class="col-sm-2 control-label"><?php echo Lang::get('messages.users_password'); ?></label>
 
@@ -94,10 +105,9 @@
                                    class="col-sm-2 control-label"><?php echo Lang::get('messages.users_status'); ?></label>
 
                             <div class="col-sm-10">
-                                <select class="form-control" name="status" id="status" required="required"/>
+                                <select class="form-control" name="status" id="status" required="required">
                                 <option value="<?php echo $status['active']; ?> ">Active</option>
                                 <option value="<?php echo $status['inactive']; ?>">Inactive</option>
-
                                 </select>
                             </div>
                         </div>
@@ -106,12 +116,44 @@
                                    class="col-sm-2 control-label"><?php echo Lang::get('messages.users_rolename'); ?></label>
 
                             <div class="col-sm-10">
-                                <select class="form-control" name="role_id" id="role_id" required="required"/>
-                                <?php foreach ($roles as $role): ?>
+                                <select class="form-control" name="role_id" id="role_id" required="required">
+                                <?php foreach ($roles as $role) :  ?>
                                 <option value="<?php echo $role['id']; ?>"><?php echo $role['rolename']; ?></option>
-                                @endforeach;
+                                <?php endforeach; ?>
+                                 </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="city_id"
+                                   class="col-sm-2 control-label"><?php echo Lang::get('messages.users_city'); ?></label>
+
+                            <div class="col-sm-10">
+                                <select class="form-control" name="city_id" id="city_id" required="required">
+                                <?php echo $getViewSelectTagCity; ?>
                                 </select>
                             </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="region_id"
+                                   class="col-sm-2 control-label"><?php echo Lang::get('messages.users_region'); ?> </label>
+
+                            <div class="col-sm-10">
+                                <select class="form-control" name="region_id" id="region_id" required="required"/>
+
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="address"
+                                   class="col-sm-2 control-label"><?php echo Lang::get('messages.users_address'); ?></label>
+
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="address"
+                                       value="{{ old('phone', '')}}" id="address"
+                                       placeholder="<?php echo Lang::get('messages.users_address'); ?> "
+                                       required="required"/>
+                            </div>
+
                         </div>
                     </div>
                     <div class="porlet-body-right col-xs-12 col-sm-3">
@@ -130,5 +172,31 @@
             var output = document.getElementById('output');
             output.src = URL.createObjectURL(event.target.files[0]);
         };
+    </script>
+    <script>
+        jQuery(document).ready(function() {
+            var mapIdCityToArrayRegion = <?php echo json_encode($mapIdCityToArrayRegion);?>;
+            var city_id = $("#city_id").val();
+            var regions = mapIdCityToArrayRegion[city_id];
+            var option = '';
+            var i = 0;
+            for(; i< regions.length;){
+                option += '<option value="' + regions[i]['id'] +'">'+ regions[i]['name_region'] +'</option>';
+                i++;
+            }
+            $("#region_id").html(option);
+            $("#city_id").change(function(){
+                var city_id = $("#city_id").val();
+                var regions = mapIdCityToArrayRegion[city_id];
+                var option = '';
+                var i = 0;
+                for(; i< regions.length;){
+                    option += '<option value="' + regions[i]['id'] +'">'+ regions[i]['name_region'] +'</option>';
+                    i++;
+                }
+                $("#region_id").html(option);
+            });
+        })
+
     </script>
 @stop

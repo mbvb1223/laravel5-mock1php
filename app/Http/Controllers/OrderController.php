@@ -5,10 +5,13 @@ use App\City;
 use App\ColorSizeNumber;
 use App\DetailOrder;
 use App\Http\Requests;
+use App\Http\Requests\UpdateOrderRequest;
 use App\Order;
 use App\Product;
 use App\Region;
 use App\Users;
+use DateTime;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use App\Http\Requests\AddProductToOrderInBackEndRequest;
 use Illuminate\Support\Facades\Redirect;
@@ -118,6 +121,7 @@ class OrderController extends Controller
             'mapIdSizeToNumberOfThisColorAndThisProduct' => $mapIdSizeToNumberOfThisColorAndThisProduct,
             'mapIdCityToArrayRegion'                     => $mapIdCityToArrayRegion,
             'getViewStatusForOrder'                      => $getViewStatusForOrder,
+            'idUser'                                     => $idUser,
 
         ]);
     }
@@ -172,7 +176,7 @@ class OrderController extends Controller
 
     }
 
-    public function update(Request $request)
+    public function update(UpdateOrderRequest $request)
     {
 
         $allRequest         = $request->all();
@@ -218,6 +222,27 @@ class OrderController extends Controller
                 }
             }
             if ($flat) {
+                if ($selectStatus == Order::OK) {
+                    $objDetailOrder             = new DetailOrder();
+                    $getAllDetailOrderByIdOrder = $objDetailOrder->where('order_id', $idOrder)->get();
+                    $objColorSizeNumber         = new ColorSizeNumber();
+                    foreach ($getAllDetailOrderByIdOrder as $itemOrder) {
+                        $objColorSizeNumber2    = clone $objColorSizeNumber;
+                        $getDataColorSizeNumber = $objColorSizeNumber2->where('product_id', $itemOrder['product_id'])
+                            ->where('size_id', $itemOrder['size_id'])
+                            ->where('color_id', $itemOrder['color_id'])->first();
+                        $getDataColorSizeNumber->number -= $itemOrder['number'];
+                        $getDataColorSizeNumber->save();
+
+                    }
+                }
+                //Sent mail to this user
+                Mail::send('mail.order', ['getUserById' => $getUserById], function ($message) use ($getUserById) {
+                    $message->subject("Status of Order at SmartOSC's Shop");
+                    $message->from('khienpc.sosc@gmail.com');
+                    $message->to($getUserById['email']);
+                });
+
 
                 $getOrderById->status = $selectStatus;
                 $getOrderById->save();
@@ -257,5 +282,133 @@ class OrderController extends Controller
         return Redirect::back()->withSuccess(Lang::get('messages.delete_success'));
     }
 
+    public function analytics()
+    {
+        return view('order.analytics');
+    }
+
+    public function analyticsView(Request $request)
+    {
+        $allRequest = $request->all();
+        //========================================Check time Start & End================================================
+        if (!isset($allRequest['start']) || $allRequest['start'] == null) {
+            return redirect()->action('OrderController@analytics')->withErrors(Lang::get('messages.time_start_empty'));
+        }
+        if ($allRequest['start'] != null) {
+            $start = $allRequest['start'];
+            $date  = new DateTime($start);
+            $start = $date->format('Y/m/d');
+        }
+        if (!isset($allRequest['end']) || $allRequest['end'] == null) {
+            $end = date("Y/m/d");
+        } else {
+            $end  = $allRequest['end'];
+            $date = new DateTime($end);
+            $end  = $date->format('Y/m/d');
+        }
+        if ($start > $end) {
+            return redirect()->action('OrderController@analytics')->withErrors(Lang::get('messages.set_time_again'));
+        }
+        //========================================END-Check time Start & End============================================
+        //===============================Get info order (pending, delevery, ok, cancel)=================================
+        $objOrder                      = new Order();
+        $getDataOrderOk                = $objOrder
+            ->where('created_at', '>=', $start)
+            ->where('created_at', '<=', $end)
+            ->where('status', Order::OK)
+            ->get();
+        $orderOk['count']              = $getDataOrderOk->count();
+        $orderOk['total_cost']         = $getDataOrderOk->sum('total_cost');
+        $orderOk['total_price_import'] = $getDataOrderOk->sum('total_price_import');
+        $orderOk['total_profit']       = $orderOk['total_cost'] - $orderOk['total_price_import'];
+
+        $getDataOrderPending                = $objOrder
+            ->where('created_at', '>=', $start)
+            ->where('created_at', '<=', $end)
+            ->where('status', Order::PENDING)
+            ->get();
+        $orderPending['count']              = $getDataOrderPending->count();
+        $orderPending['total_cost']         = $getDataOrderPending->sum('total_cost');
+        $orderPending['total_price_import'] = $getDataOrderPending->sum('total_price_import');
+        $orderPending['total_profit']       = $orderPending['total_cost'] - $orderPending['total_price_import'];
+
+        $getDataOrderDelevery                = $objOrder
+            ->where('created_at', '>=', $start)
+            ->where('created_at', '<=', $end)
+            ->where('status', Order::DELEVERY)
+            ->get();
+        $orderDelevery['count']              = $getDataOrderDelevery->count();
+        $orderDelevery['total_cost']         = $getDataOrderDelevery->sum('total_cost');
+        $orderDelevery['total_price_import'] = $getDataOrderDelevery->sum('total_price_import');
+        $orderDelevery['total_profit']       = $orderDelevery['total_cost'] - $orderDelevery['total_price_import'];
+
+
+        $getDataOrderCancel                = $objOrder
+            ->where('created_at', '>=', $start)
+            ->where('created_at', '<=', $end)
+            ->where('status', Order::CANCEL)
+            ->get();
+        $orderCancel['count']              = $getDataOrderCancel->count();
+        $orderCancel['total_cost']         = $getDataOrderCancel->sum('total_cost');
+        $orderCancel['total_price_import'] = $getDataOrderCancel->sum('total_price_import');
+        $orderCancel['total_profit']       = $orderCancel['total_cost'] - $orderCancel['total_price_import'];
+        //===========================END-Get info order (pending, delevery, ok, cancel)=================================
+
+        //===========================================Get hot Product====================================================
+        $getArrayDataOrderOk = $getDataOrderOk->toArray();
+        if (!empty($getArrayDataOrderOk)) {
+            $objDetailOrder = new DetailOrder();
+            $objDetailOrder = $objDetailOrder->selectRaw('detail_order.product_id,
+            product.name_product,
+            product.key_product,
+            sum(detail_order.number) as sum')
+                ->leftJoin('product', 'product.id', '=', 'detail_order.product_id');
+            foreach ($getArrayDataOrderOk as $item) {
+                $objDetailOrder = $objDetailOrder->orwhere('detail_order.order_id', $item['id']);
+            }
+            $getHotProduct = $objDetailOrder->groupBy('detail_order.product_id')
+                ->orderBy('sum', 'desc')
+                ->take(10)
+                ->get()
+                ->toArray();
+
+        }
+        //=======================================END-Get hot Product====================================================
+
+        return view('order.analyticsView')->with([
+            'orderPending'  => $orderPending,
+            'orderOk'       => $orderOk,
+            'orderDelevery' => $orderDelevery,
+            'orderCancel'   => $orderCancel,
+            'start'         => $start,
+            'end'           => $end,
+            'getHotProduct' => $getHotProduct,
+        ]);
+    }
+
+    public function analyticsView2()
+    {
+
+        $objOrder = new Order();
+
+        $getDataOrderOk = $objOrder
+            ->where('created_at', '>=', "2015/07/01")
+            ->where('created_at', '<=', "2015/07/30")
+            ->where('status', Order::OK)
+            ->get()->toArray();
+        var_dump($getDataOrderOk);
+        if (!empty($getDataOrderOk)) {
+            $objDetailOrder = new DetailOrder();
+            $objDetailOrder = $objDetailOrder->selectRaw('product_id, sum(number) as sum');
+            foreach ($getDataOrderOk as $item) {
+                $objDetailOrder = $objDetailOrder->orwhere('order_id', $item['id']);
+            }
+            $objDetailOrder = $objDetailOrder->groupBy('product_id')->get();
+            var_dump($objDetailOrder->toArray());
+            die();
+        }
+
+
+    }
 }
 

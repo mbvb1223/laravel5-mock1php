@@ -162,6 +162,12 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('admin/invoiceimport/test2', 'InvoiceImportController@test2');
 
 
+    Route::get('admin/analytics', 'OrderController@analytics');
+    Route::any('admin/analytics/view', 'OrderController@analyticsView');
+    Route::get('admin/analytics/view2', 'OrderController@analyticsView2');
+
+
+
     Route::get('admin/home', 'HomeController@index');
     Route::get('home', 'HomeController@index');
 });
@@ -203,6 +209,8 @@ Route::post('product/fastview', 'FrontendController@getProductForFastView');
 //show product by category
 Route::get('category/{id}', 'FrontendController@showProductByCategory');
 
+//search
+Route::get('search/{string}', 'FrontendController@searchProduct');
 //contact in frontend
 Route::get('contact', 'FrontendController@contact');
 

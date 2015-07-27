@@ -15,35 +15,39 @@
                 <form action="" method="get">
 
                     <div class="col-md-2 col-sm-2">
-
                         <label class="control-label">Height:</label>
                         <select class="form-control input-sm" name="height">
-                            <option value="0" selected="selected">Default</option>
+                            <option value="0">Default</option>
                             <?php echo $getViewAllHeightForSelectTag;?>
                         </select>
                     </div>
                     <div class="col-md-2 col-sm-2">
-
                         <label class="control-label">Material:</label>
                         <select class="form-control input-sm" name="material">
-                            <option value="0" selected="selected">Default</option>
+                            <option value="0">Default</option>
                             <?php echo $getViewAllMaterialForSelectTag;?>
                         </select>
                     </div>
                     <div class="col-md-2 col-sm-2">
-
                         <label class="control-label">Madein:</label>
                         <select class="form-control input-sm" name="madein">
-                            <option value="0" selected="selected">Default</option>
+                            <option value="0" >Default</option>
                             <?php echo $getViewAllMadeInForSelectTag;?>
                         </select>
                     </div>
                     <div class="col-md-2 col-sm-2">
-
                         <label class="control-label">Style:</label>
                         <select class="form-control input-sm" name="style">
-                            <option value="0" selected="selected">Default</option>
+                            <option value="0">Default</option>
                             <?php echo $getViewAllStyleForSelectTag;?>
+                        </select>
+                    </div>
+                    <div class="col-md-2 col-sm-2">
+                        <label class="control-label">Cost:</label>
+                        <select class="form-control input-sm" name="cost">
+                            <option value="33" >Default</option>
+                            <option value="0"<?php if( $arraySort['cost'] ==0){echo "selected='selected'";} ?>>Desc</option>
+                            <option value="1" <?php if( $arraySort['cost'] ==1){echo "selected='selected'";} ?>>Asc</option>
                         </select>
                     </div>
                     <div class="col-md-2 col-sm-2">

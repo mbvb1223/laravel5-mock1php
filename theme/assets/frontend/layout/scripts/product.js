@@ -13,9 +13,7 @@ $(document).ready(function () {
             var price = $("#price").val();
             var cost = price - (price * selloffValue / 100);
 
-            if (cost % 1000 > 0) {
-                cost = (parseInt(cost / 1000) + 1) * 1000;
-            }
+           
             $("#cost").val(cost);
         }
     });
@@ -32,9 +30,7 @@ $(document).ready(function () {
             var price = $("#price").val();
             var cost = price - (price * selloffValue / 100);
 
-            if (cost % 1000 > 0) {
-                cost = (parseInt(cost / 1000) + 1) * 1000;
-            }
+          
             $("#cost").val(cost);
         }
 

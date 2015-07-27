@@ -68,7 +68,7 @@
                                                         Total price:
                                                     </div>
                                                     <div class="col-md-7 value">
-                                                        $<?php echo $getDataInvoiceImportById['total_price']; ?>
+                                                        $<?php echo number_format($getDataInvoiceImportById['total_price'], 2); ?>
                                                     </div>
                                                 </div>
                                             </div>
@@ -121,7 +121,7 @@
                             </div>
                             <div class="tab-pane" id="tab_5">
                                 <div class="table-container">
-                                    <textarea name="information"
+                                    <textarea disabled name="information"
                                               id="information">  <?php echo $getDataInvoiceImportById['information']; ?></textarea>
                                 </div>
                             </div>
@@ -148,7 +148,8 @@
 
                     ],
                     height: ['300px'],
-                    weight: ['100%']
+                    weight: ['100%'],
+
 
                 }
         );
